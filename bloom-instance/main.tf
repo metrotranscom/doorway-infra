@@ -14,6 +14,14 @@ terraform {
 }
 
 provider "aws" {
-  # TODO: replace with var
-  region = "us-west-1"
+  region = tags.aws_region
+
+  default_tags {
+    tags = {
+      Team = tags.team_name
+      Projects = tags.project_name
+      Application = tags.application_name
+      Environment = tags.sdlc_stage
+    }
+  }
 }
