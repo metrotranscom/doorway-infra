@@ -14,14 +14,19 @@ terraform {
 }
 
 provider "aws" {
-  region = tags.aws_region
+  region = var.aws_region
 
-  default_tags {
-    tags = {
-      Team = tags.team_name
-      Projects = tags.project_name
-      Application = tags.application_name
-      Environment = tags.sdlc_stage
-    }
+  default_tags = local.default_tags
+}
+
+locals {
+  default_name = "${var.resource_prefix}-${var.sdlc_stage}-${var.application_name}"
+  
+  default_tags = {
+      Name = local.default_name
+      Team = var.team_name
+      Projects = var.project_name
+      Application = var.application_name
+      Environment = var.sdlc_stage
   }
 }
