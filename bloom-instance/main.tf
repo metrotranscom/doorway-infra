@@ -21,12 +21,18 @@ provider "aws" {
 
 locals {
   default_name = "${var.resource_prefix}-${var.sdlc_stage}-${var.application_name}"
-  
+
   default_tags = {
-      Name = local.default_name
-      Team = var.team_name
-      Projects = var.project_name
-      Application = var.application_name
-      Environment = var.sdlc_stage
+    Team        = var.team_name
+    Projects    = var.project_name
+    Application = var.application_name
+    Environment = var.sdlc_stage
   }
+
+  default_tags_with_name = merge(
+    {
+      Name = local.default_name,
+    },
+    local.default_tags
+  )
 }
