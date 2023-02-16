@@ -14,6 +14,25 @@ terraform {
 }
 
 provider "aws" {
-  # TODO: replace with var
-  region = "us-west-1"
+  region = var.aws_region
+
+  default_tags = local.default_tags
+}
+
+locals {
+  default_name = "${var.resource_prefix}-${var.sdlc_stage}-${var.application_name}"
+
+  default_tags = {
+    Team        = var.team_name
+    Projects    = var.project_name
+    Application = var.application_name
+    Environment = var.sdlc_stage
+  }
+
+  default_tags_with_name = merge(
+    {
+      Name = local.default_name,
+    },
+    local.default_tags
+  )
 }
