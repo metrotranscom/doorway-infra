@@ -59,6 +59,26 @@ variable "sdlc_stage" {
   }
 }
 
+variable "subnet_map" {
+  type        = object({
+    public = list(object({
+      az   = string
+      cidr = string
+    }))
+
+    backend = list(object({
+      az   = string
+      cidr = string
+    }))
+
+    data = list(object({
+      az   = string
+      cidr = string
+    }))
+  })
+  description = "The subnets to create in our VPC"
+}
+
 variable "vpc_cidr" {
   type        = string
   description = "The IP addresses to allocate to our VPC, e.g. 10.0.0.0/16"
