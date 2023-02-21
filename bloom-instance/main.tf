@@ -34,16 +34,3 @@ locals {
     local.default_tags
   )
 }
-
-# Set up our network
-module "network" {
-  source = "./network"
-
-  # This defines the CIDR block allocated for our VPC, 
-  # which we can then carve up into subnets
-  # @NOCOMMIT -- figure out if this is right
-  vpc_cidr = var.vpc_cidr
-
-  # Pass along the standard set of tags we defined above
-  tags = local.default_tags
-}
