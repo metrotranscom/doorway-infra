@@ -19,7 +19,9 @@ provider "aws" {
 }
 
 locals {
-  default_name = "${var.resource_prefix}-${var.sdlc_stage}-${var.application_name}"
+  # We may want to rearrange the order of these in the future based on how easy
+  # or hard it is to read at a glance in the console.
+  default_name = "${var.resource_prefix}:${terraform.workspace}-${var.sdlc_stage}:${var.application_name}"
 
   default_tags = {
     Team        = var.team_name
