@@ -58,3 +58,23 @@ variable "sdlc_stage" {
     error_message = "Valid values for var: sdlc_stage are (dev, test, qa, staging, prod)."
   }
 }
+
+variable "subnet_map" {
+  type        = object({
+    public = list(object({
+      az   = string
+      cidr = string
+    }))
+
+    backend = list(object({
+      az   = string
+      cidr = string
+    }))
+
+    data = list(object({
+      az   = string
+      cidr = string
+    }))
+  })
+  description = "The subnets to create in our VPC"
+}
