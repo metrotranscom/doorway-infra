@@ -4,4 +4,32 @@ resource_prefix = "doorway_bloom"
 team_name = "doorway"
 aws_region = "us-west-1"
 sdlc_stage = "dev"
+subnet_map = {
+    "public" = [
+      {
+        az   = "${var.aws_region}a", # us-west-1a
+        cidr = "10.0.0.0/24"
+      },
+      {
+        az   = "${var.aws_region}b", # us-west-1b
+        cidr = "10.0.1.0/24"
+      }
+    ]
+    "backend" = [
+      {
+        az   = "${var.aws_region}a", # us-west-1a
+        cidr = "10.0.2.0/24"
+      },
+      {
+        az   = "${var.aws_region}b", # us-west-1b
+        cidr = "10.0.3.0/24"
+      }
+    ]
+    "data" = [
+      {
+        az   = "${var.aws_region}a", # us-west-1a
+        cidr = "10.0.4.0/24"
+      }
+    ]
+  }
 vpc_cidr = "10.0.0.0/16"
