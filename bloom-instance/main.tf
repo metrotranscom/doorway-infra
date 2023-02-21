@@ -26,6 +26,7 @@ locals {
     Projects    = var.project_name
     Application = var.application_name
     Environment = var.sdlc_stage
+    Workspace   = terraform.workspace
   }
 
   default_tags_with_name = merge(
