@@ -11,7 +11,7 @@ subnet_map = {
         cidr = "10.0.0.0/24"
       },
       {
-        az   = "us-west-1b",
+        az   = "us-west-1c",
         cidr = "10.0.1.0/24"
       }
     ]
@@ -21,7 +21,7 @@ subnet_map = {
         cidr = "10.0.2.0/24"
       },
       {
-        az   = "us-west-1b",
+        az   = "us-west-1c",
         cidr = "10.0.3.0/24"
       }
     ]
