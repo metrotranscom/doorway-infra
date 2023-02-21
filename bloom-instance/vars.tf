@@ -58,3 +58,8 @@ variable "sdlc_stage" {
     error_message = "Valid values for var: sdlc_stage are (dev, test, qa, staging, prod)."
   }
 }
+
+variable "vpc_cidr" {
+  type        = string
+  description = "The IP addresses to allocate to our VPC, e.g. 10.0.0.0/16"
+}
