@@ -3,7 +3,7 @@ variable "project_name" {
   description = "Name of the project"
 
   validation {
-    condition = can(regex("^[\\w\\s\\.\\-]+$", var.project_name))
+    condition     = can(regex("^[\\w\\s\\.\\-]+$", var.project_name))
     error_message = "project_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
   }
 }
@@ -13,7 +13,7 @@ variable "application_name" {
   description = "The name for the application deployed"
 
   validation {
-    condition = can(regex("^[\\w\\s\\.\\-]+$", var.application_name))
+    condition     = can(regex("^[\\w\\s\\.\\-]+$", var.application_name))
     error_message = "application_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
   }
 }
@@ -23,7 +23,7 @@ variable "resource_prefix" {
   description = "A prefix to be used when creating resources to provide a distinct, yet recognizable name"
 
   validation {
-    condition = can(regex("^[\\w\\-]+$", var.resource_prefix))
+    condition     = can(regex("^[\\w\\-]+$", var.resource_prefix))
     error_message = "resource_prefix can only contain letters, numbers, underscores, and hyphens"
   }
 }
@@ -33,7 +33,7 @@ variable "team_name" {
   description = "The name of the team that owns this deployment"
 
   validation {
-    condition = can(regex("^[\\w\\s\\.\\-]+$", var.team_name))
+    condition     = can(regex("^[\\w\\s\\.\\-]+$", var.team_name))
     error_message = "team_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
   }
 }
@@ -43,7 +43,7 @@ variable "aws_region" {
   description = "The region to use when deploying regional resources"
 
   validation {
-    condition = can(regex("^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\\d$", var.aws_region))
+    condition     = can(regex("^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\\d$", var.aws_region))
     error_message = "Must be a valid AWS region"
   }
 }
@@ -77,4 +77,9 @@ variable "subnet_map" {
     }))
   })
   description = "The subnets to create in our VPC"
+}
+
+variable "vpc_cidr" {
+  type        = string
+  description = "The IP addresses to allocate to our VPC, e.g. 10.0.0.0/16"
 }
