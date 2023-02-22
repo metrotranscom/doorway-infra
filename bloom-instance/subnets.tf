@@ -1,3 +1,19 @@
+# Public subnets
+resource "aws_subnet" "public" {
+  for_each = { for idx, subnet in var.subnet_map.public : idx => subnet }
+
+  vpc_id            = aws_vpc.vpc.id
+  availability_zone = each.value.az
+  cidr_block        = each.value.cidr
+
+  tags = merge(
+    {
+      Name = "${local.default_name}:public_subnet-${each.key}"
+    },
+    local.default_tags,
+  )
+}
+
 # Backend subnets
 resource "aws_subnet" "backend" {
   for_each = { for idx, subnet in var.subnet_map.backend : idx => subnet }
