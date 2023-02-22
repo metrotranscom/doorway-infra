@@ -60,7 +60,7 @@ variable "sdlc_stage" {
 }
 
 variable "subnet_map" {
-  type        = object({
+  type = object({
     public = list(object({
       az   = string
       cidr = string
