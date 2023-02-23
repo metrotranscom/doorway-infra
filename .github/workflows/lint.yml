@@ -8,7 +8,7 @@ on:
       - main
 
 jobs:
-  tflint:
+  tflint-bloom-instance:
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -18,6 +18,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         name: Checkout source code
+
+      - name: Change directory to bloom-instance
+        run: cd bloom-instance
 
       - uses: actions/cache@v3
         name: Cache plugin dir
