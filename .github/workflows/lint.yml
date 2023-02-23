@@ -8,8 +8,11 @@ on:
       - main
 
 jobs:
-  tflint:
+  tflint-bloom-instance:
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: ./bloom-instance
 
     strategy:
       matrix:
