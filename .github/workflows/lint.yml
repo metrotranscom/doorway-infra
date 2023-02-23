@@ -10,6 +10,9 @@ on:
 jobs:
   tflint-bloom-instance:
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: ./bloom-instance
 
     strategy:
       matrix:
@@ -18,12 +21,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         name: Checkout source code
-
-      - name: Change directory to bloom-instance
-        run: cd bloom-instance
-
-      - name: what is pwd
-        run: pwd
 
       - uses: actions/cache@v3
         name: Cache plugin dir
