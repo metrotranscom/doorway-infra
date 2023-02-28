@@ -1,7 +1,7 @@
 # Anything related to our Application Load Balancer goes here
 
 resource "aws_lb" "public_alb" {
-  name_prefix        = "public"
+  name               = "${terraform.workspace}-${var.sdlc_stage}-Public-ALB"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.public_alb.id]
