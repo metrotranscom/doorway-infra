@@ -28,7 +28,7 @@ resource "aws_route_table" "public_route_table" {
 
   tags = merge(
     {
-      Name = "${local.default_name}:backend_subnet_route_table"
+      Name = "${local.default_name}:public_subnet"
     },
     local.default_tags
   )
