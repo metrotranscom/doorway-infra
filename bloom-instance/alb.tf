@@ -1,7 +1,7 @@
 # Anything related to our Application Load Balancer goes here
 
 resource "aws_lb" "public_alb" {
-  name               = "Public-ALB"
+  name_prefix        = "public"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.public_alb.id]
@@ -16,8 +16,6 @@ resource "aws_lb" "public_alb" {
     prefix  = "public-alb-logs"
     enabled = true
   }
-
-  tags = local.default_tags_with_name
 }
 
 # A Listener defines how to handle certain requests
@@ -40,7 +38,7 @@ resource "aws_lb_listener" "alb_listener" {
 # ALBs need Security Groups, too
 # This one enables access from any external IP
 resource "aws_security_group" "public_alb" {
-  name        = "Public-ALB"
+  name_prefix = "${var.resource_prefix}-Public-ALB"
   description = "Enable access to public ALB"
   vpc_id      = aws_vpc.vpc.id
 
@@ -60,6 +58,4 @@ resource "aws_security_group" "public_alb" {
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
-
-  tags = local.default_tags_with_name
 }
