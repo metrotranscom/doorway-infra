@@ -1,0 +1,3 @@
+project_name = "Doorway" # TBD
+aws_region = "us-west-1"
+resource_prefix = "doorway"
