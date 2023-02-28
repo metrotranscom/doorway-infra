@@ -15,4 +15,12 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
+
+  default_tags {
+    tags = {
+      Project    = var.project_name
+      Workspace  = terraform.workspace
+      Production = var.is_production ? "true" : "false"
+    }
+  }
 }
