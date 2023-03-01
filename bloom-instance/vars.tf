@@ -23,8 +23,8 @@ variable "resource_prefix" {
   description = "A prefix to be used when creating resources to provide a distinct, yet recognizable name"
 
   validation {
-    condition     = can(regex("^[\\w\\-]+$", var.resource_prefix))
-    error_message = "resource_prefix can only contain letters, numbers, underscores, and hyphens"
+    condition     = can(regex("^[[:alnum:]\\-]+$", var.resource_prefix))
+    error_message = "resource_prefix can only contain letters, numbers, and hyphens"
   }
 }
 

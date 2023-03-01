@@ -1,6 +1,6 @@
 project_name = "Doorway" # TBD
 application_name = "Bloom Housing Instance"
-resource_prefix = "doorway_bloom"
+resource_prefix = "doorway"
 team_name = "doorway"
 aws_region = "us-west-1"
 sdlc_stage = "dev"
