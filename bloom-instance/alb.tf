@@ -38,7 +38,7 @@ resource "aws_lb_listener" "alb_listener" {
 # ALBs need Security Groups, too
 # This one enables access from any external IP
 resource "aws_security_group" "public_alb" {
-  name_prefix = "${var.resource_prefix}-Public-ALB"
+  name        = "${var.resource_prefix}-${terraform.workspace}-Public-ALB"
   description = "Enable access to public ALB"
   vpc_id      = aws_vpc.vpc.id
 
