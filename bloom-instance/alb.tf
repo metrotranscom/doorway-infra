@@ -7,7 +7,7 @@ resource "aws_lb" "public_alb" {
   security_groups    = [aws_security_group.public_alb.id]
 
   # Note that an ALB requires at least 2 subnets
-  subnets = [for subnet in module.network.public_subnets : subnet.id]
+  subnets = [for subnet in module.network.subnets.public : subnet.id]
 
   enable_deletion_protection = false
 
