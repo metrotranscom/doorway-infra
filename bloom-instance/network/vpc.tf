@@ -1,12 +1,12 @@
 
 resource "aws_vpc" "vpc" {
-  cidr_block  = var.vpc_cidr
-  tags        = local.tags_with_name
+  cidr_block = var.vpc_cidr
+  tags       = local.tags_with_name
 }
 
 resource "aws_internet_gateway" "igw" {
-  vpc_id  = aws_vpc.vpc.id
-  tags    = local.tags_with_name
+  vpc_id = aws_vpc.vpc.id
+  tags   = local.tags_with_name
 }
 
 # Skip NGW for now
