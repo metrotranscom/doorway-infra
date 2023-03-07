@@ -1,13 +1,13 @@
 # Anything related to our Application Load Balancer goes here
 
 resource "aws_lb" "public_alb" {
-  name               = "${var.resource_prefix}-${terraform.workspace}-Public-ALB"
+  name               = "${local.default_name}-Public-ALB"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.public_alb.id]
 
   # Note that an ALB requires at least 2 subnets
-  subnets = [for subnet in aws_subnet.public : subnet.id]
+  subnets = [for subnet in module.network.public_subnets : subnet.id]
 
   enable_deletion_protection = false
 
@@ -38,16 +38,16 @@ resource "aws_lb_listener" "alb_listener" {
 # ALBs need Security Groups, too
 # This one enables access from any external IP
 resource "aws_security_group" "public_alb" {
-  name        = "${var.resource_prefix}-${terraform.workspace}-Public-ALB"
+  name        = "${local.default_name}-Public-ALB"
   description = "Enable access to public ALB"
-  vpc_id      = aws_vpc.vpc.id
+  vpc_id      = module.network.vpc.id
 
   ingress {
     description = "Allow HTTP from Internet on port 80"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.vpc.cidr_block]
+    cidr_blocks = [module.network.vpc.cidr_block]
   }
 
   egress {

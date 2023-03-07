@@ -22,11 +22,11 @@ provider "aws" {
 locals {
   # We may want to rearrange the order of these in the future based on how easy
   # or hard it is to read at a glance in the console.
-  default_name = "${var.resource_prefix}:${terraform.workspace}-${var.sdlc_stage}:${var.application_name}"
+  default_name = "${var.name_prefix}-${terraform.workspace}"
 
   default_tags = {
     Team        = var.team_name
-    Projects    = var.project_name
+    Project    = var.project_name
     Application = var.application_name
     Environment = var.sdlc_stage
     Workspace   = terraform.workspace
@@ -38,4 +38,13 @@ locals {
     },
     local.default_tags
   )
+}
+
+module "network" {
+  source = "./network"
+
+  name_prefix = local.default_name
+  vpc_cidr = var.vpc_cidr
+  subnet_map = var.subnet_map
+  tags = local.default_tags
 }
