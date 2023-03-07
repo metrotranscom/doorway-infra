@@ -11,11 +11,13 @@ resource "aws_lb" "public_alb" {
 
   enable_deletion_protection = false
 
+  /*
   access_logs {
     bucket  = aws_s3_bucket.logging_bucket.id
     prefix  = "public-alb-logs"
     enabled = true
   }
+  */
 }
 
 # A Listener defines how to handle certain requests
