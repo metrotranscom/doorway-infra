@@ -26,25 +26,27 @@ locals {
 
   default_tags = {
     Team        = var.team_name
-    Project    = var.project_name
+    Project     = var.project_name
     Application = var.application_name
     Environment = var.sdlc_stage
     Workspace   = terraform.workspace
   }
 
+  /*
   default_tags_with_name = merge(
     {
       Name = local.default_name,
     },
     local.default_tags
   )
+  */
 }
 
 module "network" {
   source = "./network"
 
   name_prefix = local.default_name
-  vpc_cidr = var.vpc_cidr
-  subnet_map = var.subnet_map
-  tags = local.default_tags
+  vpc_cidr    = var.vpc_cidr
+  subnet_map  = var.subnet_map
+  tags        = local.default_tags
 }
