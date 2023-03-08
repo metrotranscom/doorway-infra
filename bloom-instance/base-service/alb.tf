@@ -6,6 +6,8 @@ resource "aws_lb_target_group" "service" {
   protocol    = var.service_protocol
   vpc_id      = local.vpc_id
   target_type = "ip"
+
+  tags = var.additional_tags
 }
 
 resource "aws_lb_listener_rule" "service" {
@@ -27,4 +29,6 @@ resource "aws_lb_listener_rule" "service" {
     }
     */
   }
+
+  tags = var.additional_tags
 }

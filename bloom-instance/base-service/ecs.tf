@@ -1,6 +1,7 @@
 
 resource "aws_ecs_cluster" "service" {
   name = "${var.name_prefix}-${var.service_name}"
+  tags = var.additional_tags
 }
 
 resource "aws_ecs_task_definition" "task" {
@@ -32,6 +33,7 @@ resource "aws_ecs_task_definition" "task" {
     }
   ])
 
+  tags = var.additional_tags
 }
 
 resource "aws_ecs_service" "service" {
@@ -60,5 +62,7 @@ resource "aws_ecs_service" "service" {
   lifecycle {
     ignore_changes = [desired_count]
   }
+
+  tags = var.additional_tags
 }
 
