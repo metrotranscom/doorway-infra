@@ -33,3 +33,22 @@ subnet_map = {
     ]
   }
 vpc_cidr = "10.0.0.0/16"
+
+public_sites = [
+  {
+    name = "public"
+    cpu = 256
+    ram = 512
+    image = "nginx:latest"
+    #host_port = 3000
+    host_port = 80
+    container_port = 80
+    domains = [ "doorway.test" ]
+
+    env_vars = {
+      LISTINGS_QUERY = "/listings"
+      LANGUAGES = "en,es,zh,vi,tl"
+      CACHE_REVALIDATE = 60
+    }
+  }
+]

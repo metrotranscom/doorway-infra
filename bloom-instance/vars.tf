@@ -83,3 +83,18 @@ variable "vpc_cidr" {
   type        = string
   description = "The IP addresses to allocate to our VPC, e.g. 10.0.0.0/16"
 }
+
+variable "public_sites" {
+  type = list(object({
+    name           = string
+    cpu            = optional(number)
+    ram            = optional(number)
+    image          = string
+    host_port      = optional(number)
+    container_port = optional(number)
+    domains        = list(string)
+    env_vars       = map(string)
+  }))
+
+  description = "A list of public portal service definitions"
+}

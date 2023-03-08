@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 4.57.0"
     }
   }
 
@@ -37,5 +37,31 @@ locals {
       Name = local.default_name,
     },
     local.default_tags
+  )
+}
+
+module "public_sites" {
+  for_each = { for idx, srv in var.public_sites : idx => srv }
+  source   = "./base-service"
+
+  name_prefix    = "doorway-${terraform.workspace}"
+  service_name   = each.value.name
+  cpu            = each.value.cpu
+  ram            = each.value.ram
+  image          = each.value.image
+  host_port      = each.value.host_port
+  container_port = each.value.container_port
+  #alb_id         = aws_lb.alb.id
+
+  alb_listener_arn = aws_lb_listener.alb_listener.arn
+  alb_sg_id        = aws_security_group.public_alb.id
+  #subnet_ids       = [for subnet in module.network.private_subnets : subnet.id]
+  subnet_ids = [for subnet in aws_subnet.backend : subnet.id]
+
+  env_vars = merge(
+    tomap({
+      HELLO_WORLD = "true",
+    }),
+    each.value.env_vars,
   )
 }
