@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 4.57.0"
     }
   }
 
@@ -49,4 +49,26 @@ module "network" {
   vpc_cidr    = var.vpc_cidr
   subnet_map  = var.subnet_map
   tags        = local.default_tags
+}
+
+module "public_alb" {
+  source = "./alb"
+
+  name_prefix = local.default_name
+  name        = "Public"
+  vpc_id      = module.network.vpc.id
+  subnet_ids  = [for subnet in module.network.subnets.public : subnet.id]
+
+  listeners = {
+    public = {
+      port        = 80
+      use_tls     = false
+      allowed_ips = ["0.0.0.0/0"]
+    }
+    internal = {
+      port        = 8080
+      use_tls     = false
+      allowed_ips = [for subnet in module.network.subnets.app : subnet.cidr_block]
+    }
+  }
 }
