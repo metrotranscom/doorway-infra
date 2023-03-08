@@ -68,6 +68,14 @@ variable "image" {
   description = "The fully-qualified name of the container image to use"
 }
 
+variable "port" {
+  type        = number
+  default     = 80
+  description = "The port to send requests to"
+}
+
+// Host port and container port must be the same with the awsvpc network type
+/* 
 variable "host_port" {
   type        = number
   default     = 80
@@ -79,6 +87,7 @@ variable "container_port" {
   default     = 80
   description = "The port on the container where the service will listen"
 }
+*/
 
 variable "service_protocol" {
   type        = string

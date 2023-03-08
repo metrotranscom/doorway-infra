@@ -44,13 +44,13 @@ module "public_sites" {
   for_each = { for idx, srv in var.public_sites : idx => srv }
   source   = "./base-service"
 
-  name_prefix    = "doorway-${terraform.workspace}"
-  service_name   = each.value.name
-  cpu            = each.value.cpu
-  ram            = each.value.ram
-  image          = each.value.image
-  host_port      = each.value.host_port
-  container_port = each.value.container_port
+  name_prefix  = "doorway-${terraform.workspace}"
+  service_name = each.value.name
+  cpu          = each.value.cpu
+  ram          = each.value.ram
+  image        = each.value.image
+  port         = each.value.port
+  #container_port = each.value.container_port
   #alb_id         = aws_lb.alb.id
 
   alb_listener_arn = aws_lb_listener.alb_listener.arn

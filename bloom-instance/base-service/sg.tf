@@ -34,10 +34,10 @@ resource "aws_vpc_security_group_egress_rule" "https" {
 resource "aws_vpc_security_group_ingress_rule" "from_alb" {
   security_group_id = aws_security_group.service.id
 
-  description     = "Allow HTTP from ALB"
-  from_port   = var.host_port
-  to_port     = var.host_port
-  ip_protocol = "tcp"
+  description                  = "Allow HTTP from ALB to service ${var.service_name}"
+  from_port                    = var.port
+  to_port                      = var.port
+  ip_protocol                  = "tcp"
   referenced_security_group_id = var.alb_sg_id
 
   tags = var.additional_tags

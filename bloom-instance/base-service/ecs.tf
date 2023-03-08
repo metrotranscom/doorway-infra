@@ -24,8 +24,8 @@ resource "aws_ecs_task_definition" "task" {
       essential = true
       portMappings = [
         {
-          containerPort = var.container_port
-          hostPort      = var.host_port
+          containerPort = var.port
+          hostPort      = var.port
         }
       ]
       environment = [for n, val in var.env_vars : { name = n, value = val }]
@@ -46,7 +46,7 @@ resource "aws_ecs_service" "service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.service.arn
     container_name   = var.service_name
-    container_port   = var.container_port
+    container_port   = var.port
   }
 
   network_configuration {

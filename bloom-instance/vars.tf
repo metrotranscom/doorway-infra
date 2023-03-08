@@ -86,14 +86,13 @@ variable "vpc_cidr" {
 
 variable "public_sites" {
   type = list(object({
-    name           = string
-    cpu            = optional(number)
-    ram            = optional(number)
-    image          = string
-    host_port      = optional(number)
-    container_port = optional(number)
-    domains        = list(string)
-    env_vars       = map(string)
+    name     = string
+    cpu      = optional(number)
+    ram      = optional(number)
+    image    = string
+    port     = optional(number)
+    domains  = list(string)
+    env_vars = map(string)
   }))
 
   description = "A list of public portal service definitions"

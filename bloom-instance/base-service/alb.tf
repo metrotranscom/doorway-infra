@@ -2,7 +2,7 @@
 resource "aws_lb_target_group" "service" {
   # Only alphanumeric characters and hyphens
   name        = "${var.name_prefix}-${var.service_name}"
-  port        = var.host_port
+  port        = var.port
   protocol    = var.service_protocol
   vpc_id      = local.vpc_id
   target_type = "ip"

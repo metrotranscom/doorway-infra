@@ -40,9 +40,7 @@ public_sites = [
     cpu = 256
     ram = 512
     image = "nginx:latest"
-    #host_port = 3000
-    host_port = 80
-    container_port = 80
+    port = 80
     domains = [ "doorway.test" ]
 
     env_vars = {
