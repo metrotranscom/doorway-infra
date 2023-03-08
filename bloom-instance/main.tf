@@ -48,5 +48,4 @@ module "network" {
   name_prefix = local.default_name
   vpc_cidr    = var.vpc_cidr
   subnet_map  = var.subnet_map
-  tags        = local.default_tags
 }

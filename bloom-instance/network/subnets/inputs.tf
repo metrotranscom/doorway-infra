@@ -1,7 +1,23 @@
 
 variable "name" {
   type        = string
+  default     = "default"
   description = "The name to use for subnet resources"
+
+  validation {
+    condition     = can(regex("^[[:alnum:]\\-]+$", var.name))
+    error_message = "name can only contain letters, numbers, and hyphens"
+  }
+}
+
+variable "name_prefix" {
+  type        = string
+  description = "The prefix to prepend to resource names"
+
+  validation {
+    condition     = can(regex("^[[:alnum:]\\-]+$", var.name_prefix))
+    error_message = "name_prefix can only contain letters, numbers, and hyphens"
+  }
 }
 
 variable "subnet_mappings" {
@@ -42,8 +58,8 @@ variable "igw_id" {
   description = "The ID for the Internet Gateway to attach (if any). Required if gateway_type is \"igw\", ignored otherwise"
 }
 
-variable "tags" {
+variable "additional_tags" {
   type        = map(string)
   default     = null
-  description = "The tags to apply to network resources. Defaults to aws_default_tags"
+  description = "Additional tags to apply to our network resources"
 }

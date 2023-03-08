@@ -9,8 +9,8 @@ resource "aws_subnet" "subnets" {
 
   tags = merge(
     {
-      Name = "${var.name} ${each.key}"
+      Name = "${var.name_prefix}:${var.name} ${each.key}"
     },
-    local.tags,
+    var.additional_tags,
   )
 }
