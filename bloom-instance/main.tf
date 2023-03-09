@@ -55,6 +55,8 @@ module "public_alb" {
       use_tls     = false
       allowed_ips = ["0.0.0.0/0"]
     }
+
+    # internal is here just to provide an easy path forward if we want an internal route to services
     internal = {
       port        = 8080
       use_tls     = false
@@ -73,6 +75,9 @@ module "public_sites" {
   alb_listener_arn = module.public_alb.listeners.public.arn
   alb_sg_id        = module.public_alb.security_group.id
   subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
+
+  public_upload_bucket_name = aws_s3_bucket.user_upload_bucket.name
+  secure_upload_bucket_name = aws_s3_bucket.user_upload_bucket.name
 
   # Just a placeholder for now
   backend_api_base = "http://localhost:3100"
