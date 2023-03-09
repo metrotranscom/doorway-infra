@@ -8,6 +8,7 @@ resource "aws_security_group" "alb" {
 }
 
 # Allow outbound TCP traffic to anywhere
+# TODO: Change to internal only?
 resource "aws_vpc_security_group_egress_rule" "https" {
   security_group_id = aws_security_group.alb.id
 
