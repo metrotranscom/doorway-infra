@@ -40,6 +40,7 @@ locals {
   )
 }
 
+/*
 module "public_sites" {
   for_each = { for idx, srv in var.public_sites : idx => srv }
   source   = "./base-service"
@@ -64,4 +65,20 @@ module "public_sites" {
     }),
     each.value.env_vars,
   )
+}
+*/
+
+module "public_sites" {
+  for_each = { for idx, srv in var.public_sites : idx => srv }
+  source   = "./public-site"
+
+  name_prefix        = "doorway-${terraform.workspace}"
+  service_definition = each.value
+
+  alb_listener_arn = aws_lb_listener.alb_listener.arn
+  alb_sg_id        = aws_security_group.public_alb.id
+  subnet_ids       = [for subnet in aws_subnet.backend : subnet.id]
+
+  # Just a placeholder for now
+  backend_api_base = "http://localhost:3100"
 }

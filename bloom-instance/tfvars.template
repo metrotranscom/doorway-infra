@@ -46,6 +46,7 @@ public_sites = [
     env_vars = {
       LISTINGS_QUERY = "/listings"
       LANGUAGES = "en,es,zh,vi,tl"
+      IDLE_TIMEOUT = 5
       CACHE_REVALIDATE = 60
     }
   }
