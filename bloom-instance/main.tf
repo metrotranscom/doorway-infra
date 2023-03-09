@@ -70,8 +70,8 @@ module "public_sites" {
   name_prefix        = local.default_name
   service_definition = each.value
 
-  alb_listener_arn = aws_lb_listener.alb_listener.arn
-  alb_sg_id        = aws_security_group.public_alb.id
+  alb_listener_arn = module.public_alb.alb.arn
+  alb_sg_id        = module.public_alb.security_group.id
   subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
 
   # Just a placeholder for now
