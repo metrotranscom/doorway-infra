@@ -27,21 +27,10 @@ locals {
   default_tags = {
     Team        = var.team_name
     Project     = var.project_name
-    Project     = var.project_name
     Application = var.application_name
     Environment = var.sdlc_stage
     Workspace   = terraform.workspace
   }
-
-  /*
-  /*
-  default_tags_with_name = merge(
-    {
-      Name = local.default_name,
-    },
-    local.default_tags
-  )
-  */
 }
 
 module "network" {
@@ -56,7 +45,7 @@ module "public_alb" {
   source = "./alb"
 
   name_prefix = local.default_name
-  name        = "Public"
+  name        = "public"
   vpc_id      = module.network.vpc.id
   subnet_ids  = [for subnet in module.network.subnets.public : subnet.id]
 
@@ -72,47 +61,18 @@ module "public_alb" {
       allowed_ips = [for subnet in module.network.subnets.app : subnet.cidr_block]
     }
   }
-
 }
-
-/*
-module "public_sites" {
-  for_each = { for idx, srv in var.public_sites : idx => srv }
-  source   = "./base-service"
-
-  name_prefix  = "doorway-${terraform.workspace}"
-  service_name = each.value.name
-  cpu          = each.value.cpu
-  ram          = each.value.ram
-  image        = each.value.image
-  port         = each.value.port
-  #container_port = each.value.container_port
-  #alb_id         = aws_lb.alb.id
-
-  alb_listener_arn = aws_lb_listener.alb_listener.arn
-  alb_sg_id        = aws_security_group.public_alb.id
-  #subnet_ids       = [for subnet in module.network.private_subnets : subnet.id]
-  subnet_ids = [for subnet in aws_subnet.backend : subnet.id]
-
-  env_vars = merge(
-    tomap({
-      HELLO_WORLD = "true",
-    }),
-    each.value.env_vars,
-  )
-}
-*/
 
 module "public_sites" {
   for_each = { for idx, srv in var.public_sites : idx => srv }
   source   = "./public-site"
 
-  name_prefix        = "doorway-${terraform.workspace}"
+  name_prefix        = local.default_name
   service_definition = each.value
 
   alb_listener_arn = aws_lb_listener.alb_listener.arn
   alb_sg_id        = aws_security_group.public_alb.id
-  subnet_ids       = [for subnet in aws_subnet.backend : subnet.id]
+  subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
 
   # Just a placeholder for now
   backend_api_base = "http://localhost:3100"
