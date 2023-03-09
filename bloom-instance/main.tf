@@ -74,11 +74,3 @@ module "public_alb" {
   }
 
 }
-
-module "network" {
-  source = "./network"
-
-  name_prefix = local.default_name
-  vpc_cidr    = var.vpc_cidr
-  subnet_map  = var.subnet_map
-}
