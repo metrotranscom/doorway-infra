@@ -4,9 +4,9 @@ resource "aws_route_table" "route_table" {
 
   tags = merge(
     {
-      Name = var.name
+      Name = "${var.name_prefix}:${var.name}"
     },
-    local.tags,
+    var.additional_tags,
   )
 }
 

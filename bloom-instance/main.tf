@@ -27,11 +27,13 @@ locals {
   default_tags = {
     Team        = var.team_name
     Project     = var.project_name
+    Project     = var.project_name
     Application = var.application_name
     Environment = var.sdlc_stage
     Workspace   = terraform.workspace
   }
 
+  /*
   /*
   default_tags_with_name = merge(
     {
@@ -48,7 +50,6 @@ module "network" {
   name_prefix = local.default_name
   vpc_cidr    = var.vpc_cidr
   subnet_map  = var.subnet_map
-  tags        = local.default_tags
 }
 
 module "public_alb" {
@@ -71,4 +72,13 @@ module "public_alb" {
       allowed_ips = [for subnet in module.network.subnets.app : subnet.cidr_block]
     }
   }
+
+}
+
+module "network" {
+  source = "./network"
+
+  name_prefix = local.default_name
+  vpc_cidr    = var.vpc_cidr
+  subnet_map  = var.subnet_map
 }

@@ -2,10 +2,11 @@
 module "public" {
   source = "./subnets"
 
-  name            = "${var.name_prefix}:Public"
+  name            = "Public"
+  name_prefix     = var.name_prefix
   vpc_id          = aws_vpc.vpc.id
   subnet_mappings = var.subnet_map.public
-  tags            = var.tags
+  additional_tags = var.additional_tags
 
   gateway_type = "igw"
   igw_id       = aws_internet_gateway.igw.id
@@ -14,17 +15,19 @@ module "public" {
 module "app" {
   source = "./subnets"
 
-  name            = "${var.name_prefix}:App"
+  name            = "App"
+  name_prefix     = var.name_prefix
   vpc_id          = aws_vpc.vpc.id
   subnet_mappings = var.subnet_map.app
-  tags            = var.tags
+  additional_tags = var.additional_tags
 }
 
 module "data" {
   source = "./subnets"
 
-  name            = "${var.name_prefix}:Data"
+  name            = "Data"
+  name_prefix     = var.name_prefix
   vpc_id          = aws_vpc.vpc.id
   subnet_mappings = var.subnet_map.data
-  tags            = var.tags
+  additional_tags = var.additional_tags
 }
