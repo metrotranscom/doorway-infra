@@ -18,13 +18,13 @@ variable "application_name" {
   }
 }
 
-variable "resource_prefix" {
+variable "name_prefix" {
   type        = string
   description = "A prefix to be used when creating resources to provide a distinct, yet recognizable name"
 
   validation {
-    condition     = can(regex("^[[:alnum:]\\-]+$", var.resource_prefix))
-    error_message = "resource_prefix can only contain letters, numbers, and hyphens"
+    condition     = can(regex("^[[:alnum:]\\-]+$", var.name_prefix))
+    error_message = "name_prefix can only contain letters, numbers, and hyphens"
   }
 }
 
@@ -66,7 +66,7 @@ variable "subnet_map" {
       cidr = string
     }))
 
-    backend = list(object({
+    app = list(object({
       az   = string
       cidr = string
     }))
