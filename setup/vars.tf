@@ -19,13 +19,13 @@ variable "project_name" {
   }
 }
 
-variable "resource_prefix" {
+variable "project_id" {
   type        = string
-  description = "An identifier prepended to resource names"
+  description = "A project-specific identifier prepended to resource names"
 
   validation {
-    condition     = can(regex("^[\\w\\-]+$", var.resource_prefix))
-    error_message = "resource_prefix can only contain letters, numbers, underscores, and hyphens"
+    condition     = can(regex("^[[:alnum:]\\-]+$", var.project_id))
+    error_message = "project_id can only contain letters, numbers, and hyphens"
   }
 }
 

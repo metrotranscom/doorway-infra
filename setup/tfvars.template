@@ -1,3 +1,3 @@
 project_name = "Doorway" # TBD
+project_id = "doorway"
 aws_region = "us-west-1"
-resource_prefix = "doorway"
