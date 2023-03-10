@@ -28,7 +28,5 @@ module "service" {
     var.service_definition.env_vars,
   )
 
-  additional_tags = {
-    ServiceName = var.service_definition.name
-  }
+  additional_tags = var.additional_tags
 }

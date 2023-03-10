@@ -145,5 +145,5 @@ variable "path_patterns" {
 variable "additional_tags" {
   type        = map(string)
   default     = null
-  description = "Additional tags to apply to ALB resources"
+  description = "Additional tags to apply to service resources"
 }

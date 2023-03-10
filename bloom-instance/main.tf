@@ -81,4 +81,9 @@ module "public_sites" {
 
   # Just a placeholder for now
   backend_api_base = "http://localhost:3100"
+
+  additional_tags = {
+    ServiceType = "public-site"
+    ServiceName = each.value.name
+  }
 }
