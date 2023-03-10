@@ -1,15 +1,4 @@
 
-
-variable "service_name" {
-  type        = string
-  description = "The name of the service"
-
-  validation {
-    condition     = can(regex("^[[:alnum:]\\-]+$", var.service_name))
-    error_message = "service_name can only contain letters, numbers, and hyphens"
-  }
-}
-
 variable "name_prefix" {
   type        = string
   description = "The prefix to prepend to resource names"
@@ -20,9 +9,81 @@ variable "name_prefix" {
   }
 }
 
-variable "env_vars" {
-  type        = map(string)
-  description = "The environment variables to pass to your container"
+variable "service_definition" {
+  type = object({
+    # The name of the service (must be unique)
+    name = string
+
+    # The amount of CPU to allocate to the service
+    cpu = optional(number, 256)
+
+    # The amount of memory to allocate to the service
+    ram = optional(number, 512)
+
+    # The container image to use
+    image = string
+
+    # Which port to send requests to
+    port = optional(number, 80)
+
+    # Which protocol to use for sending requests from ALB to container
+    protocol = optional(string, "HTTP")
+
+    # Which domains this service should respond to requests for
+    domains = list(string)
+
+    # Environment variables to pass to the running containers
+    env_vars = map(string)
+
+    # Values for controlling health check behavior on the target group.
+    health_check = object({
+      #enabled      = optional(bool, true)
+      interval     = optional(number, 10)
+      valid_status = optional(list(string), ["200"])
+      path         = optional(string, "/")
+      protocol     = optional(string, "HTTP")
+      timeout      = optional(number, 5)
+
+      healthy_threshold   = optional(number, 3)
+      unhealthy_threshold = optional(number, 3)
+    })
+  })
+
+  validation {
+    condition     = can(regex("^[[:alnum:]\\-]+$", var.service_definition.name))
+    error_message = "name can only contain letters, numbers, and hyphens"
+  }
+
+  validation {
+    #condition     = var.service_definition.cpu % 128 != 0 || var.service_definition.cpu > 16384
+    condition     = contains([256, 512, 1024, 2048, 4096, 8192, 16384], var.service_definition.cpu)
+    error_message = "cpu must be one of the valid options for Fargate (see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html)"
+  }
+
+  validation {
+    # More advanced validation than this would be prone to breakage in the future
+    condition     = var.service_definition.ram % 512 == 0 || var.service_definition.ram > (120 * 1024)
+    error_message = "ram must be one of the valid options for the specified cpu (see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html)"
+  }
+
+  validation {
+    condition     = var.service_definition.port > 0 && var.service_definition.port <= 65535
+    error_message = "port must be a number in the range 1-65535"
+  }
+
+  validation {
+    condition     = contains(["HTTP", "HTTPS"], var.service_definition.protocol)
+    error_message = "protocol must be either HTTP or HTTPS"
+  }
+
+  validation {
+    condition     = contains(["HTTP", "HTTPS"], var.service_definition.health_check.protocol)
+    error_message = "health_check.protocol must be either HTTP or HTTPS"
+  }
+
+  # TODO: add more health_check validation 
+
+  description = "An object containing information about the service"
 }
 
 variable "desired_count" {
@@ -43,51 +104,6 @@ variable "max_count" {
   description = "The maximum number of running containers"
 }
 
-variable "cpu" {
-  type        = number
-  default     = 256
-  description = "The number of CPU units to make available to each container"
-}
-
-variable "ram" {
-  type        = number
-  default     = 512
-  description = "The amount of RAM to make available to each container"
-}
-
-variable "image" {
-  type        = string
-  default     = null
-  description = "The fully-qualified name of the container image to use"
-}
-
-variable "port" {
-  type        = number
-  default     = 80
-  description = "The port to send requests to"
-}
-
-// Host port and container port must be the same with the awsvpc network type
-/* 
-variable "host_port" {
-  type        = number
-  default     = 80
-  description = "The port on the host to listen on"
-}
-
-variable "container_port" {
-  type        = number
-  default     = 80
-  description = "The port on the container where the service will listen"
-}
-*/
-
-variable "service_protocol" {
-  type        = string
-  default     = "HTTP"
-  description = "The protocol for the ALB to use when communicating with the service"
-}
-
 variable "alb_listener_arn" {
   type        = string
   description = "The ARN of the ALB Listener to add this service to"
@@ -101,42 +117,6 @@ variable "alb_sg_id" {
 variable "subnet_ids" {
   type        = list(string)
   description = "The ID(s) of the subnet(s) to run this service in"
-}
-
-variable "host_patterns" {
-  type        = list(string)
-  default     = ["*.elb.amazonaws.com"]
-  description = "Requests with a host header matching any of these patterns will be sent to this service"
-}
-
-/*
-variable "path_patterns" {
-  type        = list(string)
-  default     = ["*"]
-  description = "Requests with a path matching any of these patterns will be sent to this service"
-}
-*/
-
-/*
-# Values for controlling health check behavior on the target group.
-
-We don't make these optional because child services will want to set their own
-defaults.  Terraform automatically sets values for optional attributes and 
-filters out any attributes that aren't explicitly defined, so none of them will
-ever be empty by the time they hit here.
-*/
-variable "health_check" {
-  type = object({
-    enabled      = optional(bool, true)
-    interval     = optional(number, 10)
-    valid_status = optional(list(string), ["200"])
-    path         = optional(string, "/")
-    protocol     = optional(string, "HTTP")
-    timeout      = optional(number, 5)
-
-    healthy_threshold   = optional(number, 3)
-    unhealthy_threshold = optional(number, 3)
-  })
 }
 
 variable "additional_tags" {

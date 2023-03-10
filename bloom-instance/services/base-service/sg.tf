@@ -1,8 +1,8 @@
 
 
 resource "aws_security_group" "service" {
-  name        = "${var.name_prefix}:ecs-service:${var.service_name}"
-  description = "ECS Service ${var.service_name}"
+  name        = local.default_name
+  description = "ECS Service ${local.name}"
   vpc_id      = local.vpc_id
 }
 
@@ -34,9 +34,9 @@ resource "aws_vpc_security_group_egress_rule" "https" {
 resource "aws_vpc_security_group_ingress_rule" "from_alb" {
   security_group_id = aws_security_group.service.id
 
-  description                  = "Allow HTTP from ALB to service ${var.service_name}"
-  from_port                    = var.port
-  to_port                      = var.port
+  description                  = "Allow HTTP from ALB to service ${local.name}"
+  from_port                    = local.port
+  to_port                      = local.port
   ip_protocol                  = "tcp"
   referenced_security_group_id = var.alb_sg_id
 

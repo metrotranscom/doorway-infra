@@ -45,7 +45,6 @@ public_sites = [
     domains = [ "doorway.test" ]
 
     health_check = {
-      enabled = false
       interval = 10
       valid_status = ["200", "202"]
       path = "/"

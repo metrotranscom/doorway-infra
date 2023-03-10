@@ -1,36 +1,37 @@
 
 resource "aws_ecs_cluster" "service" {
-  name = "${var.name_prefix}-${var.service_name}"
+  name = local.default_name
   tags = var.additional_tags
 }
 
 resource "aws_ecs_task_definition" "task" {
   # This must be unique
   # Only alphanumeric characters, hyphens, and underscores
-  family                   = "${var.name_prefix}-${var.service_name}"
+  family                   = local.default_name
   requires_compatibilities = ["FARGATE"]
   task_role_arn            = var.task_role_arn
 
   # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
-  cpu    = var.cpu
-  memory = var.ram
+  cpu    = local.cpu
+  memory = local.ram
 
   network_mode = "awsvpc"
 
   container_definitions = jsonencode([
     {
-      name      = var.service_name
-      image     = var.image
-      cpu       = var.cpu
-      memory    = var.ram
+      name      = local.name
+      image     = local.image
+      cpu       = local.cpu
+      memory    = local.ram
       essential = true
       portMappings = [
         {
-          containerPort = var.port
-          hostPort      = var.port
+          # Host port and container port must be the same with the awsvpc network type
+          containerPort = local.port
+          hostPort      = local.port
         }
       ]
-      environment = [for n, val in var.env_vars : { name = n, value = val }]
+      environment = [for n, val in local.env_vars : { name = n, value = val }]
     }
   ])
 
@@ -39,7 +40,7 @@ resource "aws_ecs_task_definition" "task" {
 
 resource "aws_ecs_service" "service" {
   # Only alphanumeric characters, hyphens, and underscores
-  name            = "${var.name_prefix}-${var.service_name}"
+  name            = local.default_name
   cluster         = aws_ecs_cluster.service.id
   task_definition = aws_ecs_task_definition.task.id
 
@@ -48,8 +49,8 @@ resource "aws_ecs_service" "service" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.service.arn
-    container_name   = var.service_name
-    container_port   = var.port
+    container_name   = local.name
+    container_port   = local.port
   }
 
   network_configuration {
@@ -66,4 +67,3 @@ resource "aws_ecs_service" "service" {
 
   tags = var.additional_tags
 }
-

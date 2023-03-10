@@ -10,27 +10,8 @@ variable "name_prefix" {
 }
 
 variable "service_definition" {
-  type = object({
-    name    = string
-    cpu     = optional(number)
-    ram     = optional(number)
-    image   = string
-    port    = optional(number)
-    domains = list(string)
-    health_check = object({
-      enabled      = optional(bool, true)
-      interval     = optional(number, 10)
-      valid_status = optional(list(string), ["200"])
-      path         = optional(string, "/")
-      protocol     = optional(string, "HTTP")
-      timeout      = optional(number, 5)
-
-      healthy_threshold   = optional(number, 3)
-      unhealthy_threshold = optional(number, 3)
-    })
-    env_vars = map(string)
-  })
-
+  # See services/base-service/inputs.tf for object structure
+  type        = any
   description = "A public portal service definition object"
 }
 

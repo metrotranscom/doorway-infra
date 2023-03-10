@@ -90,7 +90,7 @@ variable "use_ngw" {
 }
 
 variable "public_sites" {
-  # See services/public-service/inputs.tf for object structure
+  # See services/base-service/inputs.tf for object structure
   type        = any
   description = "A list of public portal service definitions"
 }
