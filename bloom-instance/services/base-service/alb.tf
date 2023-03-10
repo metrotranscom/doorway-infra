@@ -7,6 +7,8 @@ resource "aws_lb_target_group" "service" {
   vpc_id      = local.vpc_id
   target_type = "ip"
 
+  load_balancing_algorithm_type = "least_outstanding_requests"
+
   tags = var.additional_tags
 }
 
