@@ -20,13 +20,6 @@ variable "name_prefix" {
   }
 }
 
-/*
-variable "sdlc_stage" {
-  type        = string
-  description = "The stage of the software development lifecycle this service is in"
-}
-*/
-
 variable "env_vars" {
   type        = map(string)
   description = "The environment variables to pass to your container"
@@ -95,28 +88,10 @@ variable "service_protocol" {
   description = "The protocol for the ALB to use when communicating with the service"
 }
 
-/*
-variable "alb_id" {
-  type        = string
-  description = "The ID of the ALB to accept requests from"
-}
-*/
-
 variable "alb_listener_arn" {
   type        = string
   description = "The ARN of the ALB Listener to add this service to"
 }
-
-/*
-variable "alb" {
-  type = object({
-    id = string
-    listener_id = string
-  })
-
-  description = "Attributes" 
-}
-*/
 
 variable "alb_sg_id" {
   type        = string
@@ -149,6 +124,6 @@ variable "additional_tags" {
 }
 
 variable "task_role_arn" {
-  type = string
+  type        = string
   description = "The IAM role for the task to assume"
 }
