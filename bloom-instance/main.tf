@@ -76,8 +76,8 @@ module "public_sites" {
   alb_sg_id        = module.public_alb.security_group.id
   subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
 
-  public_upload_bucket_name = aws_s3_bucket.user_upload_bucket.name
-  secure_upload_bucket_name = aws_s3_bucket.user_upload_bucket.name
+  public_upload_bucket_name = aws_s3_bucket.user_upload_bucket.bucket
+  secure_upload_bucket_name = aws_s3_bucket.user_upload_bucket.bucket
 
   # Just a placeholder for now
   backend_api_base = "http://localhost:3100"
