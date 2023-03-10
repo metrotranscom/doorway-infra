@@ -51,3 +51,8 @@ variable "additional_tags" {
   default     = null
   description = "Additional tags to apply to our network resources"
 }
+
+variable "use_ngw" {
+  type        = bool
+  description = "Whether to set up a NAT Gateway in the VPC"
+}

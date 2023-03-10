@@ -84,6 +84,11 @@ variable "vpc_cidr" {
   description = "The IP addresses to allocate to our VPC, e.g. 10.0.0.0/16"
 }
 
+variable "use_ngw" {
+  type        = bool
+  description = "Whether to set up a NAT Gateway in the VPC"
+}
+
 variable "public_sites" {
   type = list(object({
     name     = string

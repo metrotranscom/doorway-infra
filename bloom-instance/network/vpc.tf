@@ -9,19 +9,18 @@ resource "aws_internet_gateway" "igw" {
   tags   = local.tags_with_name
 }
 
-# Skip NGW for now
-/*
 resource "aws_eip" "ngw_eip" {
-  vpc  = true
-  tags = local.tags_with_name
+  count = local.ngw_count
+  vpc   = true
+  tags  = local.tags_with_name
 }
 
 resource "aws_nat_gateway" "ngw" {
-  allocation_id = aws_eip.ngw_eip.id
+  count         = local.ngw_count
+  allocation_id = aws_eip.ngw_eip[count.index].id
 
-  subnet_id     = aws_subnet.public[0].id
-  tags          = local.tags_with_name
+  subnet_id = module.public.subnets[count.index].id
+  tags      = local.tags_with_name
 
   depends_on = [aws_internet_gateway.igw]
 }
-*/

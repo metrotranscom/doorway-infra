@@ -39,6 +39,7 @@ module "network" {
   name_prefix = local.default_name
   vpc_cidr    = var.vpc_cidr
   subnet_map  = var.subnet_map
+  use_ngw = var.use_ngw
 }
 
 module "public_alb" {
@@ -76,8 +77,8 @@ module "public_sites" {
   alb_sg_id        = module.public_alb.security_group.id
   subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
 
-  public_upload_bucket_name = aws_s3_bucket.user_upload_bucket.bucket
-  secure_upload_bucket_name = aws_s3_bucket.user_upload_bucket.bucket
+  public_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
+  secure_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
 
   # Just a placeholder for now
   backend_api_base = "http://localhost:3100"
