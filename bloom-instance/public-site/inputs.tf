@@ -43,12 +43,12 @@ variable "backend_api_base" {
   description = "The base URL for the backend API"
 }
 
-variable "public_upload_bucket_name" {
+variable "public_upload_bucket" {
   type        = string
   description = "The name of the bucket to use for publicly available file uploads"
 }
 
-variable "secure_upload_bucket_name" {
+variable "secure_upload_bucket" {
   type        = string
   description = "The name of the bucket to use for secure file uploads"
 }
