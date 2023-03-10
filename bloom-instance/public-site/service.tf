@@ -12,7 +12,7 @@ module "service" {
   alb_listener_arn = var.alb_listener_arn
   alb_sg_id        = var.alb_sg_id
   subnet_ids       = var.subnet_ids
-  #subnet_ids       = [for subnet in module.network.private_subnets : subnet.id]
+  task_role_arn    = aws_iam_role.public_site_role.arn
 
   env_vars = merge(
     tomap({

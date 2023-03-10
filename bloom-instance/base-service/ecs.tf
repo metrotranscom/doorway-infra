@@ -9,6 +9,7 @@ resource "aws_ecs_task_definition" "task" {
   # Only alphanumeric characters, hyphens, and underscores
   family                   = "${var.name_prefix}-${var.service_name}"
   requires_compatibilities = ["FARGATE"]
+  task_role_arn            = var.task_role_arn
 
   # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
   cpu    = var.cpu

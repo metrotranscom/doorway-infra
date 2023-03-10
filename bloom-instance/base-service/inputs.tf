@@ -147,3 +147,8 @@ variable "additional_tags" {
   default     = null
   description = "Additional tags to apply to service resources"
 }
+
+variable "task_role_arn" {
+  type = string
+  description = "The IAM role for the task to assume"
+}
