@@ -23,13 +23,29 @@ resource "aws_iam_policy" "service_s3_access" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+      /* Probably not needed at this time
       {
-        Sid = "ListObjects"
+        Sid = "ListBucketObjects"
         Action = [
           "s3:ListBucket",
         ]
         Effect   = "Allow"
-        Resource = local.s3_access_policy_resource,
+        Resource = local.s3_access_policy_bucket_resource,
+      },
+      */
+      {
+        Sid = "ReadWriteObjects"
+        Action = [
+          "s3:GetObject",
+          "s3:GetObjectAttributes",
+          "s3:GetObjectTagging",
+          "s3:GetObjectVersion",
+          "s3:GetObjectVersionAttributes",
+          "s3:GetObjectVersionTagging",
+          "s3:PutObject",
+        ]
+        Effect   = "Allow"
+        Resource = local.s3_access_policy_object_resource,
       },
     ]
   })

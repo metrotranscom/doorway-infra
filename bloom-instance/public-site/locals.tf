@@ -10,14 +10,22 @@ locals {
   bucket_prefix = "${var.name_prefix}/${var.service_definition.name}"
 
   # The ARN pattern scoping access to the public upload bucket
-  public_bucket_arn = "arn:aws:s3:::${var.public_upload_bucket}/${local.bucket_prefix}/*"
+  public_bucket_arn = "arn:aws:s3:::${var.public_upload_bucket}"
 
   # The ARN pattern scoping access to the secure upload bucket
-  secure_bucket_arn = "arn:aws:s3:::${var.secure_upload_bucket}/${local.bucket_prefix}/*"
+  secure_bucket_arn = "arn:aws:s3:::${var.secure_upload_bucket}"
 
   # The value to use in IAM policies restricting access to upload buckets
-  s3_access_policy_resource = [
+  /* Probably not needed at this time
+  s3_access_policy_bucket_resource = [
     local.public_bucket_arn,
     local.secure_bucket_arn
+  ]
+  */
+
+  # The value to use in IAM policies restricting access to upload objects
+  s3_access_policy_object_resource = [
+    "${local.public_bucket_arn}/${local.bucket_prefix}/*",
+    "${local.secure_bucket_arn}/${local.bucket_prefix}/*",
   ]
 }
