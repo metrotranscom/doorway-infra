@@ -90,15 +90,7 @@ variable "use_ngw" {
 }
 
 variable "public_sites" {
-  type = list(object({
-    name     = string
-    cpu      = optional(number)
-    ram      = optional(number)
-    image    = string
-    port     = optional(number)
-    domains  = list(string)
-    env_vars = map(string)
-  }))
-
+  # See services/public-service/inputs.tf for object structure
+  type        = any
   description = "A list of public portal service definitions"
 }

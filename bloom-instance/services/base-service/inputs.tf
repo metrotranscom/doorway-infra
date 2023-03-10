@@ -117,6 +117,28 @@ variable "path_patterns" {
 }
 */
 
+/*
+# Values for controlling health check behavior on the target group.
+
+We don't make these optional because child services will want to set their own
+defaults.  Terraform automatically sets values for optional attributes and 
+filters out any attributes that aren't explicitly defined, so none of them will
+ever be empty by the time they hit here.
+*/
+variable "health_check" {
+  type = object({
+    enabled      = optional(bool, true)
+    interval     = optional(number, 10)
+    valid_status = optional(list(string), ["200"])
+    path         = optional(string, "/")
+    protocol     = optional(string, "HTTP")
+    timeout      = optional(number, 5)
+
+    healthy_threshold   = optional(number, 3)
+    unhealthy_threshold = optional(number, 3)
+  })
+}
+
 variable "additional_tags" {
   type        = map(string)
   default     = null

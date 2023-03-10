@@ -9,6 +9,18 @@ resource "aws_lb_target_group" "service" {
 
   load_balancing_algorithm_type = "least_outstanding_requests"
 
+  health_check {
+    enabled  = var.health_check.enabled
+    interval = var.health_check.interval
+    matcher  = join(",", var.health_check.valid_status)
+    path     = var.health_check.path
+    protocol = var.health_check.protocol
+    timeout  = var.health_check.timeout
+
+    healthy_threshold   = var.health_check.healthy_threshold
+    unhealthy_threshold = var.health_check.unhealthy_threshold
+  }
+
   tags = var.additional_tags
 }
 

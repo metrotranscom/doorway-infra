@@ -14,6 +14,9 @@ module "service" {
   subnet_ids       = var.subnet_ids
   task_role_arn    = aws_iam_role.service.arn
 
+  #health_check = var.service_definition.health_check
+  health_check = var.service_definition.health_check
+
   env_vars = merge(
     tomap({
       # Core Bloom vars

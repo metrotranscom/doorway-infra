@@ -44,6 +44,15 @@ public_sites = [
     port = 80
     domains = [ "doorway.test" ]
 
+    health_check = {
+      enabled = false
+      interval = 10
+      valid_status = ["200", "202"]
+      path = "/"
+      protocol = "HTTP"
+      timeout = 5
+    }
+
     env_vars = {
       LISTINGS_QUERY = "/listings"
       LANGUAGES = "en,es,zh,vi,tl"
