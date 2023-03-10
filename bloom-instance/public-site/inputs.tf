@@ -52,3 +52,9 @@ variable "secure_upload_bucket_name" {
   type        = string
   description = "The name of the bucket to use for secure file uploads"
 }
+
+variable "additional_tags" {
+  type        = map(string)
+  default     = null
+  description = "Additional tags to apply to public site resources"
+}
