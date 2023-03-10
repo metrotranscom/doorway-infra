@@ -39,7 +39,7 @@ module "network" {
   name_prefix = local.default_name
   vpc_cidr    = var.vpc_cidr
   subnet_map  = var.subnet_map
-  use_ngw = var.use_ngw
+  use_ngw     = var.use_ngw
 }
 
 module "public_alb" {
@@ -68,7 +68,7 @@ module "public_alb" {
 
 module "public_sites" {
   for_each = { for idx, srv in var.public_sites : idx => srv }
-  source   = "./public-site"
+  source   = "./services/public-site"
 
   name_prefix        = local.default_name
   service_definition = each.value
