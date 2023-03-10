@@ -23,7 +23,7 @@ module "service" {
       # AWS-specific vars
       PUBLIC_BUCKET_NAME = var.public_upload_bucket_name
       SECURE_BUCKET_NAME = var.secure_upload_bucket_name
-      UPLOAD_PREFIX      = "${var.name_prefix}/${service_name}"
+      UPLOAD_PREFIX      = "${var.name_prefix}/${var.service_definition.name}"
     }),
     var.service_definition.env_vars,
   )

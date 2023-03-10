@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "public_site_role" {
-  name = "${var.name_prefix}-${var.service_name}-ecs"
+  name = "${var.name_prefix}-${var.service_definition.name}-ecs"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
