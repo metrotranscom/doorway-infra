@@ -1,4 +1,4 @@
-project_name     = "Doorway Housing Project" # TBD
+project_name     = "Doorway Housing Project"
 application_name = "Bloom Housing Instance"
 name_prefix      = "doorway"
 team_name        = "doorway"
@@ -75,5 +75,18 @@ partner_site = {
     LISTINGS_QUERY  = "/listings"
     SHOW_DUPLICATES = "false"
     SHOW_LM_LINKS   = "true"
+  }
+}
+
+backend_service = {
+  image   = "nginx:latest"
+  port    = 3100
+  domains = ["api.dev.doorway.housingbayarea.org"]
+
+  env_vars = {
+    NODE_ENV       = "development"
+    LISTINGS_QUERY = "/listings"
+    THROTTLE_TTL   = 60
+    THROTTLE_LIMIT = 2
   }
 }
