@@ -54,8 +54,8 @@ variable "environment" {
   }
 }
 
-variable "is_production" {
+variable "scan_images" {
   type        = bool
   default     = false
-  description = "Whether this infrastructure is for a production or non-production environment"
+  description = "Whether to scan images pushed to the ECR repo"
 }
