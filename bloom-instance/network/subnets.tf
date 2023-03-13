@@ -12,6 +12,7 @@ module "public" {
   igw_id       = aws_internet_gateway.igw.id
 }
 
+# TODO: make sure of AZ/NGW alignment if more than one NGW
 module "app" {
   source = "./subnets"
 
@@ -20,6 +21,9 @@ module "app" {
   vpc_id          = aws_vpc.vpc.id
   subnet_mappings = var.subnet_map.app
   additional_tags = var.additional_tags
+
+  gateway_type = "ngw"
+  ngw_id       = aws_nat_gateway.ngw[0].id
 }
 
 module "data" {
