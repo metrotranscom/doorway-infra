@@ -1,6 +1,6 @@
 
 resource "aws_security_group" "alb" {
-  name        = "${var.name_prefix}-${var.name}"
+  name        = "${var.name_prefix}-alb-${var.name}"
   description = "Enable access to ${var.name} ALB"
   vpc_id      = var.vpc_id
 
