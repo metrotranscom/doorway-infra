@@ -18,9 +18,17 @@ provider "aws" {
 
   default_tags {
     tags = {
-      Project    = var.project_name
-      Workspace  = terraform.workspace
-      Production = var.is_production ? "true" : "false"
+      Project     = var.project_name
+      Workspace   = terraform.workspace
+      Environment = local.environment
     }
   }
+}
+
+locals {
+  # environment is set to workspace name if not explicitly set via var
+  environment = var.environment != "default" ? var.environment : terraform.workspace
+
+  # name_prefix is used to namespace resources based on a combination of project_id and scope
+  name_prefix = "${var.project_id}-${local.environment}"
 }

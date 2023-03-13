@@ -1,3 +1,6 @@
 project_name = "Doorway" # TBD
 project_id = "doorway"
 aws_region = "us-west-1"
+owner = "infra_team+setup@your-org.dev"
+#environment = "<only_override_if_needed>"
+scan_images = false
