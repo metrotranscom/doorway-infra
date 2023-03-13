@@ -7,14 +7,15 @@ resource "aws_security_group" "alb" {
   tags = var.additional_tags
 }
 
-# Allow all outbound traffic
-resource "aws_vpc_security_group_egress_rule" "egress" {
+# Allow outbound TCP traffic to anywhere
+# TODO: Change to internal only?
+resource "aws_vpc_security_group_egress_rule" "https" {
   security_group_id = aws_security_group.alb.id
 
   cidr_ipv4   = "0.0.0.0/0"
-  from_port   = 0
-  to_port     = 0
-  ip_protocol = "-1"
+  from_port   = 1
+  to_port     = 65535
+  ip_protocol = "tcp"
 
   tags = var.additional_tags
 }

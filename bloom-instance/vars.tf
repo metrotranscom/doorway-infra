@@ -83,3 +83,14 @@ variable "vpc_cidr" {
   type        = string
   description = "The IP addresses to allocate to our VPC, e.g. 10.0.0.0/16"
 }
+
+variable "use_ngw" {
+  type        = bool
+  description = "Whether to set up a NAT Gateway in the VPC"
+}
+
+variable "public_sites" {
+  # See services/base-service/inputs.tf for object structure
+  type        = any
+  description = "A list of public portal service definitions"
+}

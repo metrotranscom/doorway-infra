@@ -27,21 +27,10 @@ locals {
   default_tags = {
     Team        = var.team_name
     Project     = var.project_name
-    Project     = var.project_name
     Application = var.application_name
     Environment = var.sdlc_stage
     Workspace   = terraform.workspace
   }
-
-  /*
-  /*
-  default_tags_with_name = merge(
-    {
-      Name = local.default_name,
-    },
-    local.default_tags
-  )
-  */
 }
 
 module "network" {
@@ -50,13 +39,14 @@ module "network" {
   name_prefix = local.default_name
   vpc_cidr    = var.vpc_cidr
   subnet_map  = var.subnet_map
+  use_ngw     = var.use_ngw
 }
 
 module "public_alb" {
   source = "./alb"
 
   name_prefix = local.default_name
-  name        = "Public"
+  name        = "public"
   vpc_id      = module.network.vpc.id
   subnet_ids  = [for subnet in module.network.subnets.public : subnet.id]
 
@@ -66,11 +56,35 @@ module "public_alb" {
       use_tls     = false
       allowed_ips = ["0.0.0.0/0"]
     }
+
+    # internal is here just to provide an easy path forward if we want an internal route to services
     internal = {
       port        = 8080
       use_tls     = false
       allowed_ips = [for subnet in module.network.subnets.app : subnet.cidr_block]
     }
   }
+}
 
+module "public_sites" {
+  for_each = { for idx, srv in var.public_sites : idx => srv }
+  source   = "./services/public-site"
+
+  name_prefix        = local.default_name
+  service_definition = each.value
+
+  alb_listener_arn = module.public_alb.listeners.public.arn
+  alb_sg_id        = module.public_alb.security_group.id
+  subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
+
+  public_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
+  secure_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
+
+  # Just a placeholder for now
+  backend_api_base = "http://localhost:3100"
+
+  additional_tags = {
+    ServiceType = "public-site"
+    ServiceName = each.value.name
+  }
 }

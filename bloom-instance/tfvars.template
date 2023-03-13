@@ -33,3 +33,30 @@ subnet_map = {
     ]
   }
 vpc_cidr = "10.0.0.0/16"
+use_ngw = true
+
+public_sites = [
+  {
+    name = "public"
+    cpu = 256
+    ram = 512
+    image = "nginx:latest"
+    port = 80
+    domains = [ "doorway.test" ]
+
+    health_check = {
+      interval = 10
+      valid_status = ["200", "202"]
+      path = "/"
+      protocol = "HTTP"
+      timeout = 5
+    }
+
+    env_vars = {
+      LISTINGS_QUERY = "/listings"
+      LANGUAGES = "en,es,zh,vi,tl"
+      IDLE_TIMEOUT = 5
+      CACHE_REVALIDATE = 60
+    }
+  }
+]
