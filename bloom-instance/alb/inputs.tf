@@ -54,7 +54,7 @@ variable "internal" {
 
 variable "enable_logging" {
   type        = bool
-  description = "Whether to enable logging on this bucket"
+  description = "Whether to enable logging on this ALB"
 }
 
 variable "log_bucket" {
