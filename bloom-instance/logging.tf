@@ -17,7 +17,7 @@ resource "aws_s3_bucket_policy" "log_bucket_policy" {
         Principal = {
           AWS = local.elb_service_account_arn
         }
-        Resource = "arn:aws:s3:::${aws_s3_bucket.logging_bucket.bucket}/${module.public_alb.log_prefix}/AWSLogs/${local.current_account_id}/*",
+        Resource = "arn:aws:s3:${var.aws_region}::${aws_s3_bucket.logging_bucket.bucket}/${module.public_alb.log_prefix}/AWSLogs/${local.current_account_id}/*",
       },
     ]
   })
