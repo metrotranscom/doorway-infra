@@ -57,6 +57,9 @@ public_sites = [
       LANGUAGES        = "en,es,zh,vi,tl"
       IDLE_TIMEOUT     = 5
       CACHE_REVALIDATE = 60
+
+      # Not sure if needed
+      NODE_ENV = "development"
     }
   }
 ]
@@ -75,6 +78,9 @@ partner_site = {
     LISTINGS_QUERY  = "/listings"
     SHOW_DUPLICATES = "false"
     SHOW_LM_LINKS   = "true"
+
+    # Not sure if needed
+    NODE_ENV = "development"
   }
 }
 
@@ -88,5 +94,8 @@ backend_service = {
     LISTINGS_QUERY = "/listings"
     THROTTLE_TTL   = 60
     THROTTLE_LIMIT = 2
+
+    # Not sure if needed
+    NODE_ENV = "development"
   }
 }
