@@ -1,3 +1,24 @@
 resource "aws_s3_bucket" "logging_bucket" {
   bucket_prefix = "${var.name_prefix}-logging"
 }
+
+resource "aws_s3_bucket_policy" "log_bucket_policy" {
+  bucket = aws_s3_bucket.logging_bucket.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid = "AllowWritesToLogBucket"
+        Action = [
+          "s3:PutObject",
+        ]
+        Effect = "Allow"
+        Principal = {
+          AWS = local.elb_service_account_arn
+        }
+        Resource = "arn:aws:s3:${var.aws_region}::${aws_s3_bucket.logging_bucket.bucket}/${module.public_alb.log_prefix}/AWSLogs/${local.current_account_id}/*",
+      },
+    ]
+  })
+}
