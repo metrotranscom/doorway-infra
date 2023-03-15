@@ -10,13 +10,11 @@ resource "aws_lb" "alb" {
 
   enable_deletion_protection = false
 
-  /* TODO
   access_logs {
-    bucket  = aws_s3_bucket.logging_bucket.id
-    prefix  = "public-alb-logs"
-    enabled = true
+    bucket  = var.log_bucket
+    prefix  = local.log_prefix
+    enabled = var.enable_logging
   }
-  */
 
   tags = var.additional_tags
 }
