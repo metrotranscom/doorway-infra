@@ -94,3 +94,9 @@ variable "public_sites" {
   type        = any
   description = "A list of public portal service definitions"
 }
+
+variable "partner_site" {
+  # See services/base-service/inputs.tf for object structure
+  type        = any
+  description = "A service definition for the partner site"
+}
