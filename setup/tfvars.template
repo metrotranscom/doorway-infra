@@ -3,4 +3,20 @@ project_id = "doorway"
 aws_region = "us-west-1"
 owner = "infra_team+setup@your-org.dev"
 #environment = "<only_override_if_needed>"
-scan_images = false
+
+repos = {
+    public = {
+        scan_images = false
+        source_account = null
+    }
+
+    partners = {
+        scan_images = false
+        source_account = null
+    }
+
+    backend = {
+        scan_images = false
+        source_account = null
+    }
+}
