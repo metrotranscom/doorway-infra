@@ -75,8 +75,7 @@ resource "aws_codebuild_project" "default" {
 }
 
 resource "aws_s3_bucket" "default" {
-  bucket = "${var.name_prefix}-bucket"
-  acl    = "private"
+  bucket_prefix = "${var.name_prefix}"
 }
 
 # NOTE: Auth with the GitHub must be completed in the AWS Console.
@@ -88,141 +87,120 @@ resource "aws_codestarconnections_connection" "default" {
 resource "aws_iam_role" "codepipeline_role" {
   name = "${var.name_prefix}-codepipeline_role"
 
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "codepipeline.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "codepipeline.amazonaws.com"
+        },
+        "Action" : "sts:AssumeRole"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy" "codepipeline_role_policy" {
   name = "${var.name_prefix}-codepipeline_role_policy"
   role = aws_iam_role.codepipeline_role.id
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect":"Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:GetObjectVersion",
-        "s3:GetBucketVersioning",
-        "s3:PutObject",
-        "s3:PutObjectAcl"
-      ],
-      "Resource": [
-        "${aws_s3_bucket.default.arn}",
-        "${aws_s3_bucket.default.arn}/*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "codestar-connections:UseConnection"
-      ],
-      "Resource": [
-        "${aws_codestarconnections_connection.default.arn}"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "codebuild:BatchGetBuilds",
-        "codebuild:StartBuild"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "s3:GetObject",
+          "s3:GetObjectVersion",
+          "s3:GetBucketVersioning",
+          "s3:PutObject",
+          "s3:PutObjectAcl"
+        ],
+        "Resource" : [
+          "${aws_s3_bucket.default.arn}",
+          "${aws_s3_bucket.default.arn}/*"
+        ]
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "codestar-connections:UseConnection"
+        ],
+        "Resource" : [
+          "${aws_codestarconnections_connection.default.arn}"
+        ]
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "codebuild:BatchGetBuilds",
+          "codebuild:StartBuild"
+        ],
+        "Resource" : "*"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role" "codebuild_role" {
-  name               = "${var.name_prefix}-codebuild_role"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "codebuild.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
+  name = "${var.name_prefix}-codebuild_role"
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "codebuild.amazonaws.com"
+        },
+        "Action" : "sts:AssumeRole"
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy" "codebuild_role_policy" {
   name = "${var.name_prefix}-codebuild_role_policy"
   role = aws_iam_role.codebuild_role.id
 
-  policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Resource": [
-                "*"
-            ],
-            "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Resource": [
-                "*"
-            ],
-            "Action": [
-                "s3:PutObject",
-                "s3:GetObject",
-                "s3:GetObjectVersion",
-                "s3:GetBucketAcl",
-                "s3:GetBucketLocation"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Resource": [
-                "*"
-            ],
-            "Action": [
-                "s3:PutObject",
-                "s3:GetBucketAcl",
-                "s3:GetBucketLocation"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "codebuild:CreateReportGroup",
-                "codebuild:CreateReport",
-                "codebuild:UpdateReport",
-                "codebuild:BatchPutTestCases",
-                "codebuild:BatchPutCodeCoverages"
-            ],
-            "Resource": [
-                "*"
-            ]
-        }
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Resource" : [
+          "*"
+        ],
+        "Action" : [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+      },
+      {
+        "Effect" : "Allow",
+        "Resource" : [
+          "*"
+        ],
+        "Action" : [
+          "s3:PutObject",
+          "s3:GetObject",
+          "s3:GetObjectVersion",
+        ]
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "codebuild:CreateReportGroup",
+          "codebuild:CreateReport",
+          "codebuild:UpdateReport",
+          "codebuild:BatchPutTestCases",
+          "codebuild:BatchPutCodeCoverages"
+        ],
+        "Resource" : [
+          "*"
+        ]
+      }
     ]
-}
-EOF
+  })
 }
