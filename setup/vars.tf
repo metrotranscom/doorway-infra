@@ -54,8 +54,11 @@ variable "environment" {
   }
 }
 
-variable "scan_images" {
-  type        = bool
-  default     = false
-  description = "Whether to scan images pushed to the ECR repo"
+variable "repos" {
+  type = map(object({
+    scan_images    = bool
+    source_account = optional(string)
+  }))
+
+  description = "A map of objects containing information for creating ECR repos"
 }

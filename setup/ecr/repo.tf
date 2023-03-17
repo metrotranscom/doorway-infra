@@ -1,6 +1,6 @@
 
 resource "aws_ecr_repository" "repo" {
-  name = local.name_prefix
+  name = "${var.name_prefix}/${var.name}"
 
   encryption_configuration {
     encryption_type = "AES256"
