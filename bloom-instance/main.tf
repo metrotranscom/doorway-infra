@@ -65,6 +65,19 @@ module "network" {
   use_ngw     = var.use_ngw
 }
 
+# Create zone references in one place, whether we manage them directly or not
+module "dns_zones" {
+  for_each = { for name, value in var.dns.zones : name => value }
+  source   = "./dns/zone"
+
+  name    = each.key
+  zone_id = each.value.zone_id
+
+  additional_tags = {
+    Test = "yes"
+  }
+}
+
 module "public_alb" {
   source = "./alb"
 
@@ -137,4 +150,8 @@ module "partner_site" {
     ServiceType = "partner-site"
     ServiceName = var.partner_site.name
   }
+}
+
+output "dns_zones" {
+  value = [for k, v in module.dns_zones : v.zone_id ]
 }
