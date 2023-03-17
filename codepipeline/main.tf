@@ -8,7 +8,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket = "doorway-cicd-state"
+    bucket = "doorway-state"
     key    = "state/cicd.tfstate"
     region = "us-west-1"
   }

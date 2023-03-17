@@ -24,9 +24,7 @@ resource "aws_codepipeline" "default" {
         FullRepositoryId = var.repo_name
         BranchName       = var.repo_branch_name
       }
-
     }
-
   }
 
   stage {
@@ -75,7 +73,7 @@ resource "aws_codebuild_project" "default" {
 }
 
 resource "aws_s3_bucket" "default" {
-  bucket_prefix = "${var.name_prefix}"
+  bucket_prefix = var.name_prefix
 }
 
 # NOTE: Auth with the GitHub must be completed in the AWS Console.
@@ -137,7 +135,9 @@ resource "aws_iam_role_policy" "codepipeline_role_policy" {
           "codebuild:BatchGetBuilds",
           "codebuild:StartBuild"
         ],
-        "Resource" : "*"
+        "Resource" : [
+          "${aws_codebuild_project.default.arn}"
+        ]
       }
     ]
   })
@@ -169,18 +169,27 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
       {
         "Effect" : "Allow",
         "Resource" : [
-          "*"
+          "arn:aws:logs:*:*:log-group:/aws/codebuild/*"
         ],
         "Action" : [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
+        ]
+      },
+      {
+        "Effect" : "Allow",
+        "Resource" : [
+          "arn:aws:logs:*:*:log-group:/aws/codebuild/*:log-stream:*"
+        ],
+        "Action" : [
           "logs:PutLogEvents"
         ]
       },
       {
         "Effect" : "Allow",
         "Resource" : [
-          "*"
+          "${aws_s3_bucket.default.arn}",
+          "${aws_s3_bucket.default.arn}/*"
         ],
         "Action" : [
           "s3:PutObject",
@@ -198,7 +207,7 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
           "codebuild:BatchPutCodeCoverages"
         ],
         "Resource" : [
-          "*"
+          "${aws_codebuild_project.default.arn}"
         ]
       }
     ]
