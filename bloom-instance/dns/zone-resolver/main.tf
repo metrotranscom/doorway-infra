@@ -10,10 +10,7 @@ locals {
   # Put the matches into a list of tuples
   # This could be consolidated with the filter step above, but it's kept 
   # separate in case the map above ends up being useful in other ways
-  matches = [for name, id in local.filter : {
-    name = name
-    id   = id
-  }]
+  matches = [for name, id in local.filter : id]
 
   # Return the first (hopefully only) match
   # this should more accurately be the match with the longest zone name 
