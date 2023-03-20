@@ -11,7 +11,7 @@ variable "name_prefix" {
 
 variable "name" {
   type        = string
-  description = "The name to give to resources"
+  description = "The name to give to give to this ALB and its related resources"
 
   validation {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.name))
@@ -50,6 +50,16 @@ variable "internal" {
   type        = bool
   default     = false
   description = "Whether this ALB is public or internal"
+}
+
+variable "enable_logging" {
+  type        = bool
+  description = "Whether to enable logging on this ALB"
+}
+
+variable "log_bucket" {
+  type        = string
+  description = "The S3 bucket to write ALB logs to"
 }
 
 variable "additional_tags" {

@@ -60,3 +60,20 @@ public_sites = [
     }
   }
 ]
+
+partner_site = {
+  name = "partner"
+  cpu = 256
+  ram = 512
+  image = "nginx:latest"
+  port = 80
+  domains = [ "partner.doorway.test" ]
+
+  health_check = { }
+
+  env_vars = {
+    LISTINGS_QUERY = "/listings"
+    SHOW_DUPLICATES = "false"
+    SHOW_LM_LINKS = "true"
+  }
+}
