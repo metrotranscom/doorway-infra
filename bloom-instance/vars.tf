@@ -90,18 +90,18 @@ variable "use_ngw" {
 }
 
 variable "dns" {
+  type = any
+  /*
   type = object({
     zones = map(object({
       # If this zone already exists and shouldn't be created, add the zone ID here
       zone_id = optional(string)
 
-      # Any domains that are used elsewhere (services, certs) that records should be created for in this zone
-      managed_domains = list(string)
-
       # Records that should be added to this zone beyond what are created automatically
       #additional_records = optional(any)
     }))
   })
+  */
   description = "Settings for managing DNS zones and records"
 }
 

@@ -1,31 +1,21 @@
 
-
-# Create zone references in one place, whether we manage them directly or not
-module "dns_zones" {
-  for_each = { for name, value in var.dns.zones : name => value }
-  source   = "./dns/zone"
-
-  name    = each.key
-  zone_id = each.value.zone_id
-
-  additional_tags = {
-    Test = "yes"
-  }
+module "dns" {
+  source = "./dns"
+  dns    = var.dns
 }
 
-# Add zone records specifically defined in zone config
-# module "zone_records" {
-#   for_each = { for name, value in var.dns.zones : name => value }
-#   source   = "./dns/record"
+# Add CNAME records for public site domains to ALB
+module "public_site_records" {
+  source = "./dns/record"
 
-#   zone_id = each.value.zone_id
-# }
+  for_each = merge([for key, site in var.public_sites : {
+    for domain in site.domains : "${key}-${domain}" => {
+      name   = domain
+      type   = "CNAME"
+      values = [module.public_alb.dns_name]
+    }
+  }]...)
 
-# Add zone records specifically defined in zone config
-# resource "aws_route53_record" "records" {
-#   for_each = { for name, value in var.dns.zones : name => value if value.additional_records != null }
-#   zone_id  = local.zone_id
-#   name     = each.value.name
-#   type     = each.value.type
-#   ttl      = each.value.ttl
-# }
+  zones  = module.dns.zone_map
+  record = each.value
+}

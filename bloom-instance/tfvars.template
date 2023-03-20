@@ -36,14 +36,11 @@ vpc_cidr = "10.0.0.0/16"
 use_ngw = true
 
 dns = {
+  default_ttl = 60
+
   zones = {
     "doorway.test" = {
-      #zone_id = "<the-zone-id-if-managed-externally>"
-
-      managed_domains = [
-        "doorway.test",
-        "partner.doorway.test"
-      ]
+      id = "<zone-id>"
 
       additional_records = [
         {
@@ -51,14 +48,6 @@ dns = {
           type = "TXT"
           values = ["some-text-value"]
         }
-      ]
-    },
-    "external.doorway.test" = {
-      zone_id = "<external-zone-id>"
-
-      managed_domains = [
-        "external.doorway.test",
-        "public.external.doorway.test"
       ]
     }
   }
