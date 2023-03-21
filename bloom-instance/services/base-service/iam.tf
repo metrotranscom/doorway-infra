@@ -60,6 +60,7 @@ resource "aws_iam_policy" "ecr_read" {
         Effect = "Allow"
 
         Action = [
+          "ecr:GetAuthorizationToken",
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage",
           "ecr:ListImages",
