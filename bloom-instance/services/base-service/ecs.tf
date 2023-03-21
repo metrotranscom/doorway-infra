@@ -9,7 +9,7 @@ resource "aws_ecs_task_definition" "task" {
   # Only alphanumeric characters, hyphens, and underscores
   family                   = local.default_name
   requires_compatibilities = ["FARGATE"]
-  task_role_arn            = var.task_role.arn
+  task_role_arn            = var.task_role_arn
   execution_role_arn       = aws_iam_role.task_exec.arn
 
   # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
