@@ -68,6 +68,17 @@ resource "aws_iam_policy" "ecr_read" {
 
         Resource = "arn:aws:ecr:${local.ecr_repo.region}:${local.ecr_repo.account}:repository/${local.ecr_repo.repo}"
       },
+      {
+        Sid    = "AllowAuth"
+        Effect = "Allow"
+
+        Action = [
+          "ecr:GetAuthorizationToken",
+        ]
+
+        # This permission cannot be scoped to a specific resource
+        Resource = "*"
+      },
     ]
   })
 }
