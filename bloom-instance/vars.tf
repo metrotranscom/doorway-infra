@@ -100,3 +100,9 @@ variable "partner_site" {
   type        = any
   description = "A service definition for the partner site"
 }
+
+variable "certs" {
+  # See cert/inputs.tf for object structure
+  type        = map(any)
+  description = "The certifcates to use"
+}
