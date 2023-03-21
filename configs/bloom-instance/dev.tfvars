@@ -35,13 +35,23 @@ subnet_map = {
 vpc_cidr = "10.0.0.0/16"
 use_ngw  = true
 
+dns = {
+  default_ttl = 30
+
+  zones = {
+    "doorway.housingbayarea.org" = {
+      id = "Z07765371R2XJ4P3TZMGA"
+    }
+  }
+}
+
 public_sites = [
   {
     name    = "public"
     cpu     = 256
     ram     = 512
-    image   = "nginx:latest"
-    port    = 80
+    image   = "364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway-nonprod/public:run"
+    port    = 3000
     domains = ["dev.doorway.housingbayarea.org"]
 
     health_check = {
@@ -84,8 +94,9 @@ partner_site = {
   }
 }
 
+/*
 backend_service = {
-  image   = "nginx:latest"
+  image   = "364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway-nonprod/backend:run"
   port    = 3100
   domains = ["api.dev.doorway.housingbayarea.org"]
 
@@ -99,3 +110,4 @@ backend_service = {
     NODE_ENV = "development"
   }
 }
+*/
