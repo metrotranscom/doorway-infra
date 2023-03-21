@@ -35,6 +35,24 @@ subnet_map = {
 vpc_cidr = "10.0.0.0/16"
 use_ngw = true
 
+dns = {
+  default_ttl = 60
+
+  zones = {
+    "doorway.test" = {
+      id = "<zone-id>"
+
+      additional_records = [
+        {
+          name = "txt.doorway.test"
+          type = "TXT"
+          values = ["some-text-value"]
+        }
+      ]
+    }
+  }
+}
+
 public_sites = [
   {
     name = "public"

@@ -45,15 +45,6 @@ locals {
 
   # The Account ID for the AWS ELB service in this region
   elb_service_account_arn = data.aws_elb_service_account.current.arn
-
-  /*
-  default_tags_with_name = merge(
-    {
-      Name = local.default_name,
-    },
-    local.default_tags
-  )
-  */
 }
 
 module "network" {
