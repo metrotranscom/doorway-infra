@@ -89,6 +89,22 @@ variable "use_ngw" {
   description = "Whether to set up a NAT Gateway in the VPC"
 }
 
+variable "dns" {
+  type = any
+  /*
+  type = object({
+    zones = map(object({
+      # If this zone already exists and shouldn't be created, add the zone ID here
+      zone_id = optional(string)
+
+      # Records that should be added to this zone beyond what are created automatically
+      #additional_records = optional(any)
+    }))
+  })
+  */
+  description = "Settings for managing DNS zones and records"
+}
+
 variable "public_sites" {
   # See services/base-service/inputs.tf for object structure
   type        = any

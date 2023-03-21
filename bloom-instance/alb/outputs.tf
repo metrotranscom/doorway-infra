@@ -16,3 +16,7 @@ output "listeners" {
 output "log_prefix" {
   value = var.enable_logging ? local.log_prefix : ""
 }
+
+output "dns_name" {
+  value = aws_lb.alb.dns_name
+}
