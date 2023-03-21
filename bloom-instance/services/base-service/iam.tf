@@ -34,6 +34,7 @@ resource "aws_iam_policy" "logs" {
           "logs:PutLogEvents",
         ]
 
+        # TODO: restrict to specific log group/stream
         Resource = "arn:aws:logs:::log-group:*:log-stream:*"
       },
     ]
