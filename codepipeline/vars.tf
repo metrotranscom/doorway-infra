@@ -21,9 +21,20 @@ variable "aws_region" {
 variable "repo_name" {
   type        = string
   description = "Full GitHub repo name in the format of organization/repo"
+  validation {
+    # Not comprehensive. Only checks there's a slash, and there's 1+ character before the slash and after the slash
+    condition     = can(regex("^[^\\/]+\\/[^\\/]+$", var.repo_name))
+    error_message = "Repo name must be in the format of: `organization/repo'. "
+  }
 }
 
 variable "repo_branch_name" {
   type        = string
   description = "The Branch name in the repo that the pipeline shoulde watch"
+  validation {
+    # Not comprehsnsive. Only checks it's non empty.
+    condition     = can(regex("^.+$", var.repo_branch_name))
+    error_message = "Branch name can't be empty."
+  }
+  default = "main"
 }
