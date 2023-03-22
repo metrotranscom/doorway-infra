@@ -33,12 +33,8 @@ locals {
   reverse_lengths = reverse(local.sort_lengths)
 
   # The longest zone/domain name
-  longest = local.by_length[local.reverse_lengths[0]]
+  longest = length(local.reverse_lengths) > 0 ? local.by_length[local.reverse_lengths[0]] : null
 
-  match = length(local.filter) > 0 ? local.matches[local.longest] : null
-
-  # Return the first (hopefully only) match
-  # this should more accurately be the match with the longest zone name 
-  # (higher specificity), but it's unlikely that would be a valid use case.
-  #match = length(local.matches) > 0 ? local.matches[0] : null
+  # The match, if any, is the zone with the longest matching suffix (ie highest specificity)
+  match = local.longest != null ? local.matches[local.longest] : null
 }
