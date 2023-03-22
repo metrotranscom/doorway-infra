@@ -18,6 +18,17 @@ variable "aws_region" {
   }
 }
 
+variable "repo_connection_arn" {
+  type        = string
+  description = "ARN of the AWS codestar connection to use to access the repo."
+  validation {
+    condition     = can(regex("^arn:aws:codestar-connections:\\w+(?:-\\w+)+:\\d{12}:connection\\/[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+$", var.repo_connection_arn))
+    error_message = "Invalid AWS codestar connection ARN"
+  }
+  # "doorway-github-connection" which has been auhtorized for metrotranscom/doorway and metrotranscom/doorway-infra
+  default = "arn:aws:codestar-connections:us-east-2:364076391763:connection/ebc8d365-5968-4497-8d4d-d2a4f06be1c4"
+}
+
 variable "repo_name" {
   type        = string
   description = "Full GitHub repo name in the format of organization/repo"

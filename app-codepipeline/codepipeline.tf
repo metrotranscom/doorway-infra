@@ -20,7 +20,7 @@ resource "aws_codepipeline" "default" {
       output_artifacts = ["source_output"]
 
       configuration = {
-        ConnectionArn    = aws_codestarconnections_connection.default.arn
+        ConnectionArn    = var.repo_connection_arn
         FullRepositoryId = var.repo_name
         BranchName       = var.repo_branch_name
       }
@@ -76,12 +76,6 @@ resource "aws_s3_bucket" "default" {
   bucket_prefix = var.name_prefix
 }
 
-# NOTE: Auth with the GitHub must be completed in the AWS Console.
-resource "aws_codestarconnections_connection" "default" {
-  name          = "${var.name_prefix}-connection"
-  provider_type = "GitHub"
-}
-
 resource "aws_iam_role" "codepipeline_role" {
   name = "${var.name_prefix}-codepipeline_role"
 
@@ -126,7 +120,7 @@ resource "aws_iam_role_policy" "codepipeline_role_policy" {
           "codestar-connections:UseConnection"
         ],
         "Resource" : [
-          "${aws_codestarconnections_connection.default.arn}"
+          "${var.repo_connection_arn}"
         ]
       },
       {
