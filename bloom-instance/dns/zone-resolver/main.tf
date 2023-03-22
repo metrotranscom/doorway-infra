@@ -7,16 +7,38 @@ locals {
   # The match logic could probably be improved
   filter = { for zone_name, zone_id in var.zone_map : zone_name => zone_id if endswith(var.dns_name, zone_name) }
 
-  # Put the matches into a list of tuples
+  # Put the matches into a list of objects
   # This could be consolidated with the filter step above, but it's kept 
   # separate in case the map above ends up being useful in other ways
-  matches = [for name, id in local.filter : {
+  matches = { for name, id in local.filter : name => {
     name = name
     id   = id
-  }]
+  } }
+
+  # Get a list of all zone names
+  domains = keys(local.filter)
+
+  # Create a new map with the lengths of each domain as the key
+  # It isn't possible to have conflicting names with the same length
+  # Pad the length to 3 places for reliable sorting
+  by_length = { for name in local.domains : format("%03d", length(name)) => name }
+
+  # Get the distinct lengths
+  lengths = keys(local.by_length)
+
+  # Sort the lengths from shortest to longest
+  sort_lengths = sort(local.lengths)
+
+  # Reverse so that the first value is the longest length
+  reverse_lengths = reverse(local.sort_lengths)
+
+  # The longest zone/domain name
+  longest = local.by_length[local.reverse_lengths[0]]
+
+  match = length(local.filter) > 0 ? local.matches[local.longest] : null
 
   # Return the first (hopefully only) match
   # this should more accurately be the match with the longest zone name 
   # (higher specificity), but it's unlikely that would be a valid use case.
-  match = local.matches[0]
+  #match = length(local.matches) > 0 ? local.matches[0] : null
 }
