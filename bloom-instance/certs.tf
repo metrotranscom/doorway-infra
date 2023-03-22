@@ -1,7 +1,7 @@
 
 module "certs" {
   source   = "./cert"
-  for_each = { for cert in var.certs : cert.domain => cert }
+  for_each = { for name, cert in var.certs : name => cert }
 
   zones = module.dns.zone_map
   cert  = each.value

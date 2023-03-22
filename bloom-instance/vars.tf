@@ -119,7 +119,7 @@ variable "partner_site" {
 
 variable "certs" {
   # Keep a well-defined type here to avoid input validation issues with "any"
-  type = list(object({
+  type = map(object({
     domain        = string
     auto_validate = optional(bool)
     alt_names     = optional(list(string))
