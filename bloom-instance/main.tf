@@ -56,17 +56,23 @@ module "network" {
   use_ngw     = var.use_ngw
 }
 
-module "public_alb" {
-  source = "./alb"
+module "albs" {
+  source   = "./alb"
+  for_each = { for name, value in var.albs : name => value }
 
   name_prefix = local.default_name
-  name        = "public"
+  name        = each.key
   vpc_id      = module.network.vpc.id
-  subnet_ids  = [for subnet in module.network.subnets.public : subnet.id]
 
-  enable_logging = true
+  # TODO: combine all subnet IDs in list
+  subnet_ids = [for subnet in module.network.subnets[each.value.subnets[0]] : subnet.id]
+
+  enable_logging = each.value.enable_logging
   log_bucket     = aws_s3_bucket.logging_bucket.bucket
 
+  listeners = each.value.listeners
+
+  /*
   listeners = {
     public = {
       port        = 80
@@ -81,6 +87,7 @@ module "public_alb" {
       allowed_ips = [for subnet in module.network.subnets.app : subnet.cidr_block]
     }
   }
+  */
 }
 
 # There may be multiple public sites
@@ -91,8 +98,8 @@ module "public_sites" {
   name_prefix        = local.default_name
   service_definition = each.value
 
-  alb_listener_arn = module.public_alb.listeners.public.arn
-  alb_sg_id        = module.public_alb.security_group.id
+  alb_listener_arn = module.albs[each.value.alb].listeners.public.arn
+  alb_sg_id        = module.albs[each.value.alb].security_group.id
   subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
 
   public_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
@@ -114,8 +121,8 @@ module "partner_site" {
   name_prefix        = local.default_name
   service_definition = var.partner_site
 
-  alb_listener_arn = module.public_alb.listeners.public.arn
-  alb_sg_id        = module.public_alb.security_group.id
+  alb_listener_arn = module.albs[var.partner_site.alb].listeners.public.arn
+  alb_sg_id        = module.albs[var.partner_site.alb].security_group.id
   subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
 
   public_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket

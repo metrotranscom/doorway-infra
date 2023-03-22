@@ -12,7 +12,7 @@ module "public_site_records" {
     for domain in site.domains : "${key}-${domain}" => {
       name   = domain
       type   = "CNAME"
-      values = [module.public_alb.dns_name]
+      values = [module.albs[site.alb].dns_name]
       ttl    = module.dns.default_ttl
     }
   }]...)
@@ -28,7 +28,7 @@ module "partner_site_records" {
   for_each = { for domain in var.partner_site.domains : domain => {
     name   = domain
     type   = "CNAME"
-    values = [module.public_alb.dns_name]
+    values = [module.albs[var.partner_site.alb].dns_name]
     ttl    = module.dns.default_ttl
     }
   }

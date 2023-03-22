@@ -105,6 +105,27 @@ variable "dns" {
   description = "Settings for managing DNS zones and records"
 }
 
+variable "albs" {
+  type = map(object({
+    subnets        = list(string)
+    enable_logging = optional(bool, true)
+    listeners = map(object({
+      # The port to listen on
+      port             = number
+
+      # TLS settings
+      use_tls          = bool
+      default_cert     = optional(string)
+      additional_certs = optional(list(string))
+
+      # Security Group settings
+      allowed_ips      = optional(list(string))
+      allowed_subnets  = optional(list(string))
+    }))
+  }))
+  description = "Settings for managing ALBs"
+}
+
 variable "public_sites" {
   # See services/base-service/inputs.tf for object structure
   type        = any
