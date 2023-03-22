@@ -1,8 +1,13 @@
 
+variable "zones" {
+  type        = map(string)
+  description = "A map of zone names to IDs"
+}
+
 variable "cert" {
   type = object({
-    domain    = string
-    zone      = string
+    domain = string
+    #zone      = string
     alt_names = optional(list(string))
   })
 
