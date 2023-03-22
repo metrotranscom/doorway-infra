@@ -17,6 +17,7 @@ locals {
   unmatched_zones = [for domain, zone in module.zones : domain if zone.id == null]
 
   # The records we're going to create automatically
+  /*
   matched_records = { for domain, zone_id in local.matched_zones : domain => merge(
     {
       zone_id = zone_id
@@ -24,9 +25,12 @@ locals {
     local.validation_records[domain]
     )
   }
+  */
 
   # The records that do not match a known zone and must be created manually elsewhere
   unmatched_records = { for domain in local.unmatched_zones : domain => local.validation_records[domain] }
+
+  auto_validate = var.cert.auto_validate
 }
 
 
@@ -40,7 +44,10 @@ module "zones" {
   source = "../dns/zone-resolver"
 
   for_each = {
-    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => dvo.resource_record_name
+    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name =>
+    # The record names usually begin with a "_" and end in a ".", breaking zone lookups
+    # Remove if found
+    trimsuffix(trimprefix(dvo.resource_record_name, "_"), ".")
   }
 
   zone_map = var.zones
@@ -48,12 +55,6 @@ module "zones" {
 }
 
 resource "aws_route53_record" "cert" {
-  /*
-  for_each = {
-    for dvo in local.matched_records : dvo.domain_name => dvo
-  }
-  */
-
   for_each = {
     for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
       name    = dvo.resource_record_name
@@ -61,7 +62,7 @@ resource "aws_route53_record" "cert" {
       type    = dvo.resource_record_type
       ttl     = 60
       zone_id = module.zones[dvo.domain_name].id
-    } #if module.zones[dvo.domain_name] != null && module.zones[dvo.domain_name].found
+    } if local.auto_validate
   }
 
   allow_overwrite = true
@@ -77,24 +78,8 @@ resource "aws_route53_record" "cert" {
   ]
 }
 
-/*
-module "verification_records" {
-  source = "../dns/record"
-
-  for_each = {
-    for dvo in aws_acm_certificate.cert.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      values = [dvo.resource_record_value]
-      type   = dvo.resource_record_type
-    }
-  }
-
-  zones  = var.zones
-  record = each.value
-}
-*/
-
 resource "aws_acm_certificate_validation" "cert" {
+  count                   = local.auto_validate ? 1 : 0
   certificate_arn         = aws_acm_certificate.cert.arn
   validation_record_fqdns = [for record in aws_route53_record.cert : record.fqdn]
 }
