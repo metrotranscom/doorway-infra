@@ -24,10 +24,24 @@ variable "vpc_id" {
   description = "The ID of the VPC to create ALB resources in"
 }
 
+variable "subnets" {
+  type = map(list(object({
+    id = string
+  })))
+  description = "A map of the available subnets"
+}
+
+variable "subnet_group" {
+  type        = string
+  description = "The identifier for the subnet group to place the ALB into"
+}
+
+/*
 variable "subnet_ids" {
   type        = list(string)
   description = "The IDs of the subnets to create the ALB in"
 }
+*/
 
 variable "listeners" {
   type = map(object({
@@ -35,7 +49,8 @@ variable "listeners" {
     use_tls          = bool
     default_cert     = optional(string)
     additional_certs = optional(list(string))
-    allowed_ips      = list(string)
+    allowed_ips      = optional(list(string), [])
+    allowed_subnets  = optional(list(string))
   }))
   default     = null
   description = "The listeners to create"
@@ -63,6 +78,7 @@ variable "internal" {
 
 variable "enable_logging" {
   type        = bool
+  default     = true
   description = "Whether to enable logging on this ALB"
 }
 

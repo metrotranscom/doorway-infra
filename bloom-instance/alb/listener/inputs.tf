@@ -6,6 +6,19 @@ variable "certs" {
 }
 */
 
+variable "subnets" {
+  type = map(object({
+    id = string
+  }))
+  description = "A map of the available subnets"
+}
+
+variable "subnet_group" {
+  type        = string
+  description = "The identifier for the subnet group to place the ALB into"
+}
+
+
 variable "settings" {
   type = object({
     port             = number
@@ -14,6 +27,7 @@ variable "settings" {
     default_cert     = optional(string)
     additional_certs = optional(list(string))
     allowed_ips      = list(string)
+    allowed_subnets  = list(string)
   })
   default     = null
   description = "The listeners to create"

@@ -56,40 +56,6 @@ module "network" {
   use_ngw     = var.use_ngw
 }
 
-module "albs" {
-  source   = "./alb"
-  for_each = { for name, value in var.albs : name => value }
-
-  name_prefix = local.default_name
-  name        = each.key
-  vpc_id      = module.network.vpc.id
-
-  # TODO: combine all subnet IDs in list
-  subnet_ids = [for subnet in module.network.subnets[each.value.subnets[0]] : subnet.id]
-
-  enable_logging = each.value.enable_logging
-  log_bucket     = aws_s3_bucket.logging_bucket.bucket
-
-  listeners = each.value.listeners
-
-  /*
-  listeners = {
-    public = {
-      port        = 80
-      use_tls     = false
-      allowed_ips = ["0.0.0.0/0"]
-    }
-
-    # internal is here just to provide an easy path forward if we want an internal route to services
-    internal = {
-      port        = 8080
-      use_tls     = false
-      allowed_ips = [for subnet in module.network.subnets.app : subnet.cidr_block]
-    }
-  }
-  */
-}
-
 # There may be multiple public sites
 module "public_sites" {
   for_each = { for idx, srv in var.public_sites : idx => srv }
