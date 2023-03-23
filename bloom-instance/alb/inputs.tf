@@ -26,7 +26,8 @@ variable "vpc_id" {
 
 variable "subnets" {
   type = map(list(object({
-    id = string
+    id   = string
+    cidr = string
   })))
   description = "A map of the available subnets"
 }

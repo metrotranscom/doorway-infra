@@ -20,6 +20,7 @@ resource "aws_vpc_security_group_egress_rule" "https" {
   tags = var.additional_tags
 }
 
+/*
 # Create one ingress rule for each listener/port/ip combination
 resource "aws_vpc_security_group_ingress_rule" "ingress" {
   for_each = { for pm in local.port_mappings : "${pm.name}-${pm.port}-${pm.cidr}" => pm }
@@ -33,3 +34,4 @@ resource "aws_vpc_security_group_ingress_rule" "ingress" {
 
   tags = var.additional_tags
 }
+*/

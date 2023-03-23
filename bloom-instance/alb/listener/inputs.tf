@@ -1,23 +1,21 @@
 
-/*
-variable "certs" {
-  type        = map(string)
-  description = "ARNs for TLS certificates to apply to secure listeners"
-}
-*/
-
 variable "subnets" {
-  type = map(object({
-    id = string
-  }))
-  description = "A map of the available subnets"
+  type = map(list(object({
+    id   = string
+    cidr = string
+  })))
+  description = "A map of available subnets"
 }
 
-variable "subnet_group" {
+variable "alb_arn" {
   type        = string
-  description = "The identifier for the subnet group to place the ALB into"
+  description = "The ALB to attach the listener to"
 }
 
+variable "security_group_id" {
+  type        = string
+  description = "The Security Group to attach ingress rules to"
+}
 
 variable "settings" {
   type = object({
@@ -26,19 +24,18 @@ variable "settings" {
     force_tls        = optional(bool)
     default_cert     = optional(string)
     additional_certs = optional(list(string))
-    allowed_ips      = list(string)
-    allowed_subnets  = list(string)
+    allowed_ips      = optional(list(string), [])
+    allowed_subnets  = optional(list(string), [])
   })
-  default     = null
   description = "The listeners to create"
 
   validation {
-    condition     = var.defintion.port > 0 && var.defintion.port <= 65535
+    condition     = var.settings.port > 0 && var.settings.port <= 65535
     error_message = "Port numbers must be in valid range"
   }
 
   validation {
-    condition     = var.defintion.use_tls && var.defintion.default_cert == null
+    condition     = !(var.settings.use_tls && var.settings.default_cert == null)
     error_message = "default_cert is required if use_tls is true"
   }
 }

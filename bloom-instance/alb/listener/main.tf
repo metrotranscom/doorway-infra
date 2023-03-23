@@ -3,12 +3,21 @@ locals {
   use_tls   = var.settings.use_tls
   force_tls = local.use_tls && var.settings.force_tls
 
-  allowed_ips     = var.settings.allowed_ips
+  port = var.settings.port
+
   allowed_subnets = var.settings.allowed_subnets
+
+  # Combine all allowed_ips and subnets cidrs from allowed_subnets
+  allowed_ips = concat(
+    var.settings.allowed_ips,
+    flatten([for group in local.allowed_subnets : [
+      for subnet in var.subnets[group] : subnet.cidr
+    ]])
+  )
 }
 
 resource "aws_lb_listener" "listener" {
-  load_balancer_arn = aws_lb.alb.arn
+  load_balancer_arn = var.alb_arn
   port              = var.settings.port
   protocol          = local.use_tls ? "HTTPS" : "HTTP"
 
@@ -25,15 +34,15 @@ resource "aws_lb_listener" "listener" {
   tags = var.additional_tags
 }
 
-# Create one ingress rule for each listener/port/ip combination
+# Create ingress rules for each set of allowed CIDR blocks
 resource "aws_vpc_security_group_ingress_rule" "ingress" {
-  for_each = { for pm in local.port_mappings : "${pm.name}-${pm.port}-${pm.cidr}" => pm }
+  for_each = { for cidr in local.allowed_ips : cidr => cidr }
 
-  security_group_id = aws_security_group.alb.id
+  security_group_id = var.security_group_id
 
-  cidr_ipv4   = each.value.cidr
-  from_port   = each.value.port
-  to_port     = each.value.port
+  cidr_ipv4   = each.value
+  from_port   = local.port
+  to_port     = local.port
   ip_protocol = "tcp"
 
   tags = var.additional_tags
