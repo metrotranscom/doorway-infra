@@ -53,9 +53,31 @@ dns = {
   }
 }
 
+albs = {
+  "default" = {
+    subnet_group = "public"
+
+    listeners = {
+      http = {
+        port        = 80
+        use_tls     = false
+        allowed_ips = ["0.0.0.0/0"]
+      }
+
+      # internal is here just to provide an easy path forward if we want an internal route to services
+      internal = {
+        port            = 8080
+        use_tls         = false
+        allowed_subnets = ["app"]
+      }
+    }
+  }
+}
+
 public_sites = [
   {
     name = "public"
+    alb   = "default"
     cpu = 256
     ram = 512
     image = "nginx:latest"
@@ -81,6 +103,7 @@ public_sites = [
 
 partner_site = {
   name = "partner"
+  alb   = "default"
   cpu = 256
   ram = 512
   image = "nginx:latest"
