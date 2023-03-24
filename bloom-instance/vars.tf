@@ -107,22 +107,20 @@ variable "dns" {
 
 variable "albs" {
   type = map(object({
+    # See alb/inputs.tf for more info
     subnet_group   = string
     enable_logging = optional(bool, true)
     internal       = optional(bool)
 
+    # See alb/listeners/inputs.tf for more info
     listeners = map(object({
-      # The port to listen on
-      port = number
+      port           = number
+      default_action = optional(string)
 
-      # TLS settings
-      use_tls          = bool
-      default_cert     = optional(string)
-      additional_certs = optional(list(string))
-
-      # Security Group settings
       allowed_ips     = optional(list(string))
       allowed_subnets = optional(list(string))
+
+      tls = optional(any)
     }))
   }))
   description = "Settings for managing ALBs"
