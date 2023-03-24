@@ -37,38 +37,17 @@ variable "subnet_group" {
   description = "The identifier for the subnet group to place the ALB into"
 }
 
-/*
-variable "subnet_ids" {
-  type        = list(string)
-  description = "The IDs of the subnets to create the ALB in"
-}
-*/
-
 variable "listeners" {
   type = map(object({
-    port             = number
-    use_tls          = bool
-    default_cert     = optional(string)
-    additional_certs = optional(list(string))
-    allowed_ips      = optional(list(string), [])
-    allowed_subnets  = optional(list(string))
+    port           = number
+    default_action = optional(string)
+
+    allowed_ips     = optional(list(string))
+    allowed_subnets = optional(list(string))
+
+    tls = optional(any)
   }))
-  default     = null
   description = "The listeners to create"
-
-  validation {
-    condition = alltrue([
-      for l in var.listeners : l.port > 0 && l.port <= 65535
-    ])
-    error_message = "Port numbers must be in valid range"
-  }
-
-  validation {
-    condition = !alltrue([
-      for l in var.listeners : l.use_tls && l.default_cert == null
-    ])
-    error_message = "default_cert is required if use_tls is true"
-  }
 }
 
 variable "internal" {

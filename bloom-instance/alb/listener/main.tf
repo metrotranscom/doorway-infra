@@ -1,15 +1,27 @@
 
 locals {
-  use_tls   = var.settings.use_tls
-  force_tls = local.use_tls && var.settings.force_tls
 
-  port = var.settings.port
+  # Terraform does not apply variable defaults if a null value is passed
+  # Set the default for var.tls here
+  tls = var.tls != null ? var.tls : {
+    enable       = false
+    default_cert = ""
+    additional_certs = []
+  }
 
-  allowed_subnets = var.settings.allowed_subnets
+  # Same for allowed ips and subnets
+  allowed_ips     = var.allowed_ips != null ? var.allowed_ips : []
+  allowed_subnets = var.allowed_subnets != null ? var.allowed_subnets : []
+
+  # Shortcuts for TLS settings
+  use_tls   = local.tls.enable
+  force_tls = local.use_tls && var.default_action == "force-tls"
+
+  port = var.port
 
   # Combine all allowed_ips and subnets cidrs from allowed_subnets
-  allowed_ips = concat(
-    var.settings.allowed_ips,
+  all_allowed_ips = concat(
+    local.allowed_ips,
     flatten([for group in local.allowed_subnets : [
       for subnet in var.subnets[group] : subnet.cidr
     ]])
@@ -18,7 +30,7 @@ locals {
 
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = var.alb_arn
-  port              = var.settings.port
+  port              = local.port
   protocol          = local.use_tls ? "HTTPS" : "HTTP"
 
   default_action {
@@ -36,7 +48,7 @@ resource "aws_lb_listener" "listener" {
 
 # Create ingress rules for each set of allowed CIDR blocks
 resource "aws_vpc_security_group_ingress_rule" "ingress" {
-  for_each = { for cidr in local.allowed_ips : cidr => cidr }
+  for_each = { for cidr in local.all_allowed_ips : cidr => cidr }
 
   security_group_id = var.security_group_id
 
