@@ -40,7 +40,7 @@ variable "subnet_group" {
 variable "listeners" {
   type = map(object({
     port           = number
-    default_action = optional(string)
+    default_action = string
 
     allowed_ips     = optional(list(string))
     allowed_subnets = optional(list(string))

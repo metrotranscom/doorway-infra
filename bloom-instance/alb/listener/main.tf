@@ -15,7 +15,25 @@ locals {
 
   # Shortcuts for TLS settings
   use_tls   = local.tls.enable
-  force_tls = local.use_tls && var.default_action == "force-tls"
+  force_tls = !local.use_tls && var.default_action == "force-tls"
+
+  # If default_action is "force-tls", the default action should be to redirect to the HTTPS version of the site
+  default_action = local.force_tls ? {
+    type = "redirect"
+    redirect = {
+      proto       = "HTTPS"
+      port        = 443 # TODO: make this configurable
+      status_code = "HTTP_302"
+    }
+    response = null
+    } : { # Otherwise, just return a 404
+    type     = "fixed-response"
+    redirect = null
+    response = {
+      content_type = "text/plain"
+      status_code  = "404"
+    }
+  }
 
   port = var.port
 
@@ -35,14 +53,46 @@ resource "aws_lb_listener" "listener" {
   certificate_arn   = local.tls.default_cert != null ? var.cert_map[local.tls.default_cert] : null
 
   default_action {
-    type = "fixed-response"
+    type = local.default_action.type
 
-    # Return a 404 status code by default
-    fixed_response {
-      content_type = "text/plain"
-      status_code  = "404"
+    dynamic "fixed_response" {
+      for_each = local.default_action.response != null ? [local.default_action.response] : []
+      iterator = response
+
+      content {
+        content_type = response.value.content_type
+        status_code  = response.value.status_code
+      }
     }
+
+    dynamic "redirect" {
+      for_each = local.default_action.redirect != null ? [local.default_action.redirect] : []
+      iterator = redirect
+
+      content {
+        protocol    = redirect.value.proto
+        port        = redirect.value.port
+        status_code = redirect.value.status_code
+      }
+    }
+
+    # # Return a 404 status code by default
+    # fixed_response {
+    #   content_type = "text/plain"
+    #   status_code  = "404"
+    # }
   }
+
+  # default_action {
+  #   type = "redirect"
+
+  #   # Redirect the client to the HTTPS version of the site
+  #   redirect {
+  #     protocol    = "HTTPS"
+  #     port        = 443 # TODO: make this configurable
+  #     status_code = "HTTP_302"
+  #   }
+  # }
 
   tags = var.additional_tags
 }

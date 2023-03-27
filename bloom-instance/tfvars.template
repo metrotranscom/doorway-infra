@@ -77,20 +77,29 @@ certs = {
 }
 
 albs = {
-  "default" = {
+  public = {
     subnet_group = "public"
 
     listeners = {
       http = {
-        port        = 80
-        use_tls     = false
-        allowed_ips = ["0.0.0.0/0"]
+        port           = 80
+        default_action = "force-tls"
+        allowed_ips    = ["0.0.0.0/0"]
       }
 
-      # internal is here just to provide an easy path forward if we want an internal route to services
-      internal = {
-        port            = 8080
-        use_tls         = false
+      https = {
+        port        = 443
+        default_action = "404"
+        allowed_ips = ["0.0.0.0/0"]
+
+        tls = {
+          default_cert     = "doorway"
+          additional_certs = ["doorway-external"]
+        }
+      }
+
+      backend = {
+        port            = 3100
         allowed_subnets = ["app"]
       }
     }

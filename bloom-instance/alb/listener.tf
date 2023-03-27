@@ -17,6 +17,7 @@ module "listeners" {
   tls             = each.value.tls
   allowed_ips     = each.value.allowed_ips
   allowed_subnets = each.value.allowed_subnets
+  default_action = each.value.default_action
 
   additional_tags = var.additional_tags
 }

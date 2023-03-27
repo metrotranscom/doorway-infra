@@ -33,8 +33,7 @@ variable "port" {
 }
 
 variable "default_action" {
-  type    = string
-  default = "404"
+  type = string
 
   validation {
     condition     = contains(["force-tls", "404"], var.default_action)

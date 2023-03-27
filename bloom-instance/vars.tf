@@ -115,7 +115,7 @@ variable "albs" {
     # See alb/listeners/inputs.tf for more info
     listeners = map(object({
       port           = number
-      default_action = optional(string)
+      default_action = optional(string, "404")
 
       allowed_ips     = optional(list(string))
       allowed_subnets = optional(list(string))
