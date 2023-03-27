@@ -116,3 +116,13 @@ variable "partner_site" {
   type        = any
   description = "A service definition for the partner site"
 }
+
+variable "certs" {
+  # Keep a well-defined type here to avoid input validation issues with "any"
+  type = map(object({
+    domain        = string
+    auto_validate = optional(bool)
+    alt_names     = optional(list(string))
+  }))
+  description = "The certifcates to use"
+}

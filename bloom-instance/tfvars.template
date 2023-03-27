@@ -53,6 +53,29 @@ dns = {
   }
 }
 
+certs = {
+  "doorway" = {
+    domain = "doorway.test"
+    alt_names = [
+      # Wildcards are supported
+      "*.doorway.test"
+    ]
+  },
+  "doorway-external" = {
+    # Certs can be created for unmanaged/external domains
+    domain = "doorway.external"
+
+    # Just set auto_validate to false to prevent record creation
+    auto_validate = false
+
+    alt_names = [
+      "public.doorway.external",
+      "partners.doorway.external",
+      "api.doorway.external"
+    ]
+  }
+}
+
 public_sites = [
   {
     name = "public"
