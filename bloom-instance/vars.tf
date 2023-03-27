@@ -105,6 +105,12 @@ variable "dns" {
   description = "Settings for managing DNS zones and records"
 }
 
+variable "database" {
+  # See ./database/inputs.tf for object structure
+  type = any
+  description = "Database settings"
+}
+
 variable "public_sites" {
   # See services/base-service/inputs.tf for object structure
   type        = any

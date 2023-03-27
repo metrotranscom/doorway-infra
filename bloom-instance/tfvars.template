@@ -53,6 +53,27 @@ dns = {
   }
 }
 
+database = {
+  db_name          = "bloom"
+  type             = "rds" # rds, aurora-serverless
+  subnet_group     = "data"
+  engine_version   = "13.8"
+  instance_class   = "db.t3.micro"
+  port             = 5432
+  prevent_deletion = false
+  username = "doorway"
+
+  storage = {
+    min     = 10
+    max     = 50
+  }
+
+  backups = {
+    retention = 30
+    window    = "00:00-01:00"
+  }
+}
+
 public_sites = [
   {
     name = "public"
