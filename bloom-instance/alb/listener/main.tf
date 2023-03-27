@@ -75,24 +75,7 @@ resource "aws_lb_listener" "listener" {
         status_code = redirect.value.status_code
       }
     }
-
-    # # Return a 404 status code by default
-    # fixed_response {
-    #   content_type = "text/plain"
-    #   status_code  = "404"
-    # }
   }
-
-  # default_action {
-  #   type = "redirect"
-
-  #   # Redirect the client to the HTTPS version of the site
-  #   redirect {
-  #     protocol    = "HTTPS"
-  #     port        = 443 # TODO: make this configurable
-  #     status_code = "HTTP_302"
-  #   }
-  # }
 
   tags = var.additional_tags
 }
