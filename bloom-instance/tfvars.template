@@ -77,7 +77,7 @@ certs = {
 }
 
 albs = {
-  public = {
+  default = {
     subnet_group = "public"
 
     listeners = {
