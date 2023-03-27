@@ -32,6 +32,7 @@ resource "aws_security_group" "db" {
   vpc_id      = local.vpc_id
 }
 
+/*
 module "rds" {
   source = "./rds"
   count  = local.is_rds ? 1 : 0
@@ -54,3 +55,4 @@ module "rds" {
   backup_window    = var.settings.backups.window
   prevent_deletion = var.settings.prevent_deletion
 }
+*/
