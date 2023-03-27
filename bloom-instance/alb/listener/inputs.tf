@@ -7,6 +7,11 @@ variable "subnets" {
   description = "A map of available subnets"
 }
 
+variable "cert_map" {
+  type        = map(string)
+  description = "ARNs for TLS certificates to apply to secure listeners"
+}
+
 variable "alb_arn" {
   type        = string
   description = "The ALB to attach the listener to"
@@ -27,31 +32,6 @@ variable "port" {
   }
 }
 
-/*
-variable "settings" {
-  type = object({
-    ///port = number
-    //use_tls          = bool
-    //force_tls        = optional(bool)
-    //default_cert     = optional(string)
-    //additional_certs = optional(list(string))
-    allowed_ips     = optional(list(string), [])
-    allowed_subnets = optional(list(string), [])
-  })
-  description = "The listeners to create"
-
-  validation {
-    condition     = var.settings.port > 0 && var.settings.port <= 65535
-    error_message = "Port numbers must be in valid range"
-  }
-
-  validation {
-    condition     = !(var.settings.use_tls && var.settings.default_cert == null)
-    error_message = "default_cert is required if use_tls is true"
-  }
-}
-*/
-
 variable "default_action" {
   type    = string
   default = "404"
@@ -71,6 +51,11 @@ variable "tls" {
 
   default     = null
   description = "TLS settings"
+
+  validation {
+    condition     = var.tls != null && !(var.tls.enable && var.tls.default_cert == null)
+    error_message = "default_cert is required if tls.enable is true"
+  }
 }
 
 variable "allowed_ips" {

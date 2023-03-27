@@ -120,7 +120,15 @@ variable "albs" {
       allowed_ips     = optional(list(string))
       allowed_subnets = optional(list(string))
 
-      tls = optional(any)
+      tls = optional(object({
+        enable           = optional(bool, true)
+        default_cert     = string
+        additional_certs = optional(list(string))
+        }), {
+        enable           = false
+        default_cert     = null
+        additional_certs = []
+      })
     }))
   }))
   description = "Settings for managing ALBs"

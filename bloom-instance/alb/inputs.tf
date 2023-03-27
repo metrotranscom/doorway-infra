@@ -73,9 +73,7 @@ variable "additional_tags" {
   description = "Additional tags to apply to ALB resources"
 }
 
-/*
-variable "certs" {
+variable "cert_map" {
   type        = map(string)
   description = "ARNs for TLS certificates to apply to secure listeners"
 }
-*/

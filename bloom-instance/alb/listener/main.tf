@@ -4,8 +4,8 @@ locals {
   # Terraform does not apply variable defaults if a null value is passed
   # Set the default for var.tls here
   tls = var.tls != null ? var.tls : {
-    enable       = false
-    default_cert = ""
+    enable           = false
+    default_cert     = null
     additional_certs = []
   }
 
@@ -32,6 +32,7 @@ resource "aws_lb_listener" "listener" {
   load_balancer_arn = var.alb_arn
   port              = local.port
   protocol          = local.use_tls ? "HTTPS" : "HTTP"
+  certificate_arn   = local.tls.default_cert != null ? var.cert_map[local.tls.default_cert] : null
 
   default_action {
     type = "fixed-response"
@@ -44,6 +45,13 @@ resource "aws_lb_listener" "listener" {
   }
 
   tags = var.additional_tags
+}
+
+resource "aws_lb_listener_certificate" "listener" {
+  for_each = { for cert_name in local.tls.additional_certs : cert_name => var.cert_map[cert_name] }
+
+  listener_arn    = aws_lb_listener.listener.arn
+  certificate_arn = each.value
 }
 
 # Create ingress rules for each set of allowed CIDR blocks
