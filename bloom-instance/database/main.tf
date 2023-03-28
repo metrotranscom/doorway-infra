@@ -24,12 +24,19 @@ locals {
 resource "aws_db_subnet_group" "db" {
   name_prefix = local.name_prefix
   subnet_ids  = local.subnet_ids
+
+  depends_on = [aws_iam_service_linked_role.rds]
 }
 
 resource "aws_security_group" "db" {
   name        = "${local.name_prefix}-db"
   description = "Enable access to ${local.name_prefix} database"
   vpc_id      = local.vpc_id
+}
+
+# Subnet Group creation will fail if the RDS service linked role has not been created
+resource "aws_iam_service_linked_role" "rds" {
+  aws_service_name = "rds.amazonaws.com"
 }
 
 /*

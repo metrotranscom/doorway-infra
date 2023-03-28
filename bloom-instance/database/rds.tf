@@ -6,6 +6,10 @@ resource "aws_db_instance" "rds" {
   db_name           = var.settings.db_name
   identifier_prefix = var.name_prefix
 
+  # Modification protection
+  deletion_protection = var.settings.prevent_deletion
+  apply_immediately   = var.settings.apply_changes_immediately
+
   # Engine
   engine         = "postgres" # Intentionally hardcoded
   engine_version = var.settings.engine_version
@@ -16,6 +20,7 @@ resource "aws_db_instance" "rds" {
   max_allocated_storage = local.max_storage
   storage_type          = "gp3" # Intentionally hardcoded
   #storage_encrypted
+  #kms_key_id
 
   # Observability
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"] # Intentionally hardcoded
@@ -23,15 +28,16 @@ resource "aws_db_instance" "rds" {
 
   # Security
   iam_database_authentication_enabled = true # Intentionally hardcoded
+  vpc_security_group_ids              = [aws_security_group.db.id]
   username                            = var.settings.username
-  #password
-  #vpc_security_group_ids
+  password                            = var.settings.password
 
-  # Backup
-  backup_retention_period  = var.settings.backups.retention
-  backup_window            = var.settings.backups.window
-  copy_tags_to_snapshot    = true  # Intentionally hardcoded
-  delete_automated_backups = false # Intentionally hardcoded
+  # Backups
+  backup_retention_period   = var.settings.backups.retention
+  backup_window             = var.settings.backups.window
+  copy_tags_to_snapshot     = true  # Intentionally hardcoded
+  delete_automated_backups  = false # Intentionally hardcoded
+  final_snapshot_identifier = var.name_prefix
 
 
   # Updates
@@ -48,7 +54,4 @@ resource "aws_db_instance" "rds" {
 
   # TLS
   #ca_cert_identifier
-  #kms_key_id
-
-  deletion_protection = var.settings.prevent_deletion
 }
