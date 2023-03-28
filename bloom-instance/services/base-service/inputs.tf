@@ -14,6 +14,10 @@ variable "service_definition" {
     # The name of the service (must be unique)
     name = string
 
+    # The identifier for the ALB to use (ie "default")
+    # This is used elsewhere to look up ALB info
+    alb = string
+
     # The amount of CPU to allocate to the service
     cpu = optional(number, 256)
 

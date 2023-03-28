@@ -107,8 +107,37 @@ variable "dns" {
 
 variable "database" {
   # See ./database/inputs.tf for object structure
-  type = any
+  type        = any
   description = "Database settings"
+}
+
+variable "albs" {
+  type = map(object({
+    # See alb/inputs.tf for more info
+    subnet_group   = string
+    enable_logging = optional(bool, true)
+    internal       = optional(bool)
+
+    # See alb/listeners/inputs.tf for more info
+    listeners = map(object({
+      port           = number
+      default_action = optional(string, "404")
+
+      allowed_ips     = optional(list(string))
+      allowed_subnets = optional(list(string))
+
+      tls = optional(object({
+        enable           = optional(bool, true)
+        default_cert     = string
+        additional_certs = optional(list(string))
+        }), {
+        enable           = false
+        default_cert     = null
+        additional_certs = []
+      })
+    }))
+  }))
+  description = "Settings for managing ALBs"
 }
 
 variable "public_sites" {

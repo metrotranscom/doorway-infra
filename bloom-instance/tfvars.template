@@ -97,9 +97,40 @@ certs = {
   }
 }
 
+albs = {
+  default = {
+    subnet_group = "public"
+
+    listeners = {
+      http = {
+        port           = 80
+        default_action = "force-tls"
+        allowed_ips    = ["0.0.0.0/0"]
+      }
+
+      https = {
+        port        = 443
+        default_action = "404"
+        allowed_ips = ["0.0.0.0/0"]
+
+        tls = {
+          default_cert     = "doorway"
+          additional_certs = ["doorway-external"]
+        }
+      }
+
+      backend = {
+        port            = 3100
+        allowed_subnets = ["app"]
+      }
+    }
+  }
+}
+
 public_sites = [
   {
     name = "public"
+    alb   = "default"
     cpu = 256
     ram = 512
     image = "nginx:latest"
@@ -125,6 +156,7 @@ public_sites = [
 
 partner_site = {
   name = "partner"
+  alb   = "default"
   cpu = 256
   ram = 512
   image = "nginx:latest"
