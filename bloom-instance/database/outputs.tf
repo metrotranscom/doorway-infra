@@ -1,12 +1,20 @@
 
-output "address" {
-  value = local.is_rds ? aws_db_instance.rds[0].address : aws_rds_cluster.aurora[0].address
+output "host" {
+  value = local.db.host
 }
 
 output "port" {
-  value = local.is_rds ? aws_db_instance.rds[0].port : aws_rds_cluster.aurora[0].port
+  value = local.db.port
 }
 
 output "username" {
-  value = local.is_rds ? aws_db_instance.rds[0].username : aws_rds_cluster.aurora[0].username
+  value = local.db.username
+}
+
+output "db_name" {
+  value = local.db.db_name
+}
+
+output "secret_arn" {
+  value = aws_secretsmanager_secret.conn_string.arn
 }

@@ -30,7 +30,7 @@ variable "settings" {
     prevent_deletion          = optional(bool, true)   # We usually want to default to preserving the database
     apply_changes_immediately = optional(bool, false)
     username                  = string
-    password                  = string
+    password                  = optional(string)
 
     maintenance_window = string
 
