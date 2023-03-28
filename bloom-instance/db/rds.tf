@@ -30,7 +30,7 @@ resource "aws_db_instance" "rds" {
   iam_database_authentication_enabled = true # Intentionally hardcoded
   vpc_security_group_ids              = [aws_security_group.db.id]
   username                            = var.settings.username
-  password                            = var.settings.password
+  password                            = local.password
 
   # Backups
   backup_retention_period   = var.settings.backups.retention
