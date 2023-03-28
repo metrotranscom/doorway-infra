@@ -6,7 +6,7 @@ resource "aws_lb" "alb" {
   security_groups    = [aws_security_group.alb.id]
 
   # Note that an ALB requires at least 2 subnets
-  subnets = var.subnet_ids
+  subnets = [for subnet in var.subnets[var.subnet_group] : subnet.id]
 
   enable_deletion_protection = false
 
