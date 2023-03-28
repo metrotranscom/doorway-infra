@@ -1,9 +1,4 @@
 
-# Temporary; copied from base-service
-data "aws_subnet" "first" {
-  id = var.subnet_ids[0]
-}
-
 locals {
   name_prefix = var.name_prefix
 
@@ -12,8 +7,10 @@ locals {
   is_rds        = local.type == "rds"
   is_serverless = local.type == "aurora-serverless"
 
-  vpc_id     = data.aws_subnet.first.vpc_id
-  subnet_ids = var.subnet_ids
+  # Network
+  subnets    = var.subnet_map[var.settings.subnet_group]
+  vpc_id     = local.subnets[0].vpc_id
+  subnet_ids = [for subnet in local.subnets : subnet.id]
 
   # Storage
   min_storage = var.settings.storage.min
@@ -51,11 +48,6 @@ resource "aws_security_group" "db" {
   name        = "${local.name_prefix}-db"
   description = "Enable access to ${local.name_prefix} database"
   vpc_id      = local.vpc_id
-}
-
-# Subnet Group creation will fail if the RDS service linked role has not been created
-resource "aws_iam_service_linked_role" "rds" {
-  aws_service_name = "rds.amazonaws.com"
 }
 
 /*

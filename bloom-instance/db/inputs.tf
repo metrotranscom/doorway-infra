@@ -9,15 +9,19 @@ variable "name_prefix" {
   }
 }
 
-# variable "subnet_groups" {
-#   type        = any
-#   description = "A map of all subnet groups created by the network module"
-# }
-
-variable "subnet_ids" {
-  type        = list(string)
-  description = "The subnets to deploy the database into"
+variable "subnet_map" {
+  type = map(list(object({
+    id     = string
+    vpc_id = string
+  })))
+  description = "A map of the available subnets"
 }
+
+
+# variable "subnet_ids" {
+#   type        = list(string)
+#   description = "The subnets to deploy the database into"
+# }
 
 variable "settings" {
   type = object({
@@ -35,10 +39,13 @@ variable "settings" {
     maintenance_window = string
 
     # Only valid for type "rds"
-    storage = object({
+    storage = optional(object({
       min = number
       max = optional(number, 0)
       #encrypt = optional(bool, false)
+      }), {
+      min = 20
+      max = 0
     })
 
     backups = object({
@@ -61,6 +68,11 @@ variable "settings" {
   validation {
     condition     = !(var.settings.type == "aurora-serverless" && var.settings.serverless_capacity == null)
     error_message = "serverless_capacity is required if type is \"aurora-serverless\""
+  }
+
+  validation {
+    condition     = var.settings.storage.min >= 20
+    error_message = "The minimum amount of database storage that can be allocated is 20 GB"
   }
 
   validation {

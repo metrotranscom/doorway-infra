@@ -18,3 +18,7 @@ output "db_name" {
 output "secret_arn" {
   value = aws_secretsmanager_secret.conn_string.arn
 }
+
+output "security_group_id" {
+  value = aws_security_group.db.id
+}
