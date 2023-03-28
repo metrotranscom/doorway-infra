@@ -54,23 +54,33 @@ dns = {
 }
 
 database = {
-  db_name          = "bloom"
-  type             = "rds" # rds, aurora-serverless
-  subnet_group     = "data"
-  engine_version   = "13.8"
-  instance_class   = "db.t3.micro"
-  port             = 5432
-  prevent_deletion = false
-  username = "doorway"
+  db_name = "bloom"
+  type    = "rds" # rds, aurora-serverless
+  subnet_group             = "data"
+  engine_version           = "13.8"
+  instance_class           = "db.t3.micro" # Only needed if rds
+  port                     = 5432
+  prevent_deletion         = false
+  apply_change_immediately = false
+  username                 = "doorway"
+  #password = "doorway-password"
+
+  maintenance_window = "Sat:23:00-Sun:04:00"
 
   storage = {
-    min     = 10
+    min     = 20
     max     = 50
   }
 
   backups = {
     retention = 30
     window    = "00:00-01:00"
+  }
+
+  # Only required if aurora-serverless
+  serverless_capacity = {
+    min = 0.5
+    max = 3.0
   }
 }
 
