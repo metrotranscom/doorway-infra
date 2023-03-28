@@ -17,12 +17,6 @@ variable "subnet_map" {
   description = "A map of the available subnets"
 }
 
-
-# variable "subnet_ids" {
-#   type        = list(string)
-#   description = "The subnets to deploy the database into"
-# }
-
 variable "settings" {
   type = object({
     db_name                   = string

@@ -1,6 +1,5 @@
-aws_s3_bucket.logging_bucket: Refreshing state... [id=doorway-logging20230321183223840900000002]
-module.certs["chriscasto.doorway.housingbayarea.org"].aws_acm_certificate.cert: Refreshing state... [id=arn:aws:acm:us-west-1:364076391763:certificate/1c06186c-3f55-4ce4-995b-b071aa4d8a1e]
-module.certs["chriscasto.test.doorway.housingbayarea.org"].aws_acm_certificate.cert: Refreshing state... [id=arn:aws:acm:us-west-1:364076391763:certificate/76af482b-daaa-4627-826d-fe3e209fd12f]
+module.db.data.aws_iam_role.rds_service: Reading...
+module.db.data.aws_iam_role.rds_service: Read complete after 0s [id=AWSServiceRoleForRDS]
 
 Terraform used the selected providers to generate the following execution
 plan. Resource actions are indicated with the following symbols:
@@ -8,58 +7,161 @@ plan. Resource actions are indicated with the following symbols:
 
 Terraform will perform the following actions:
 
-  # module.albs["public"].aws_lb.alb will be created
-  + resource "aws_lb" "alb" {
-      + arn                        = (known after apply)
-      + arn_suffix                 = (known after apply)
-      + desync_mitigation_mode     = "defensive"
-      + dns_name                   = (known after apply)
-      + drop_invalid_header_fields = false
-      + enable_deletion_protection = false
-      + enable_http2               = true
-      + enable_waf_fail_open       = false
-      + id                         = (known after apply)
-      + idle_timeout               = 60
-      + internal                   = (known after apply)
-      + ip_address_type            = (known after apply)
-      + load_balancer_type         = "application"
-      + name                       = "doorway-chriscasto-public"
-      + preserve_host_header       = false
-      + security_groups            = (known after apply)
-      + subnets                    = (known after apply)
-      + tags_all                   = {
+  # module.db.aws_db_instance.rds[0] will be created
+  + resource "aws_db_instance" "rds" {
+      + address                               = (known after apply)
+      + allocated_storage                     = 20
+      + apply_immediately                     = false
+      + arn                                   = (known after apply)
+      + auto_minor_version_upgrade            = true
+      + availability_zone                     = (known after apply)
+      + backup_retention_period               = 30
+      + backup_window                         = "00:00-01:00"
+      + ca_cert_identifier                    = (known after apply)
+      + character_set_name                    = (known after apply)
+      + copy_tags_to_snapshot                 = true
+      + db_name                               = "bloom"
+      + db_subnet_group_name                  = (known after apply)
+      + delete_automated_backups              = false
+      + deletion_protection                   = false
+      + enabled_cloudwatch_logs_exports       = [
+          + "postgresql",
+          + "upgrade",
+        ]
+      + endpoint                              = (known after apply)
+      + engine                                = "postgres"
+      + engine_version                        = "13.8"
+      + engine_version_actual                 = (known after apply)
+      + final_snapshot_identifier             = "doorway-chriscasto"
+      + hosted_zone_id                        = (known after apply)
+      + iam_database_authentication_enabled   = true
+      + id                                    = (known after apply)
+      + identifier                            = (known after apply)
+      + identifier_prefix                     = "doorway-chriscasto"
+      + instance_class                        = "db.t3.micro"
+      + iops                                  = (known after apply)
+      + kms_key_id                            = (known after apply)
+      + latest_restorable_time                = (known after apply)
+      + license_model                         = (known after apply)
+      + maintenance_window                    = (known after apply)
+      + max_allocated_storage                 = 50
+      + monitoring_interval                   = 0
+      + monitoring_role_arn                   = (known after apply)
+      + multi_az                              = (known after apply)
+      + name                                  = (known after apply)
+      + nchar_character_set_name              = (known after apply)
+      + network_type                          = "IPV4"
+      + option_group_name                     = (known after apply)
+      + parameter_group_name                  = (known after apply)
+      + password                              = (sensitive value)
+      + performance_insights_enabled          = false
+      + performance_insights_kms_key_id       = (known after apply)
+      + performance_insights_retention_period = (known after apply)
+      + port                                  = 5432
+      + publicly_accessible                   = false
+      + replica_mode                          = (known after apply)
+      + replicas                              = (known after apply)
+      + resource_id                           = (known after apply)
+      + skip_final_snapshot                   = false
+      + snapshot_identifier                   = (known after apply)
+      + status                                = (known after apply)
+      + storage_throughput                    = (known after apply)
+      + storage_type                          = "gp3"
+      + tags_all                              = {
           + "Application" = "Bloom Housing Instance"
           + "Environment" = "dev"
           + "Project"     = "Doorway"
           + "Team"        = "doorway"
           + "Workspace"   = "chriscasto"
         }
-      + vpc_id                     = (known after apply)
-      + zone_id                    = (known after apply)
+      + timezone                              = (known after apply)
+      + username                              = "doorway"
+      + vpc_security_group_ids                = (known after apply)
+    }
 
-      + access_logs {
-          + bucket  = "doorway-logging20230321183223840900000002"
-          + enabled = true
-          + prefix  = "doorway-chriscasto/alb/public"
-        }
-
-      + subnet_mapping {
-          + allocation_id        = (known after apply)
-          + ipv6_address         = (known after apply)
-          + outpost_id           = (known after apply)
-          + private_ipv4_address = (known after apply)
-          + subnet_id            = (known after apply)
+  # module.db.aws_db_subnet_group.db will be created
+  + resource "aws_db_subnet_group" "db" {
+      + arn                     = (known after apply)
+      + description             = "Managed by Terraform"
+      + id                      = (known after apply)
+      + name                    = (known after apply)
+      + name_prefix             = "doorway-chriscasto"
+      + subnet_ids              = (known after apply)
+      + supported_network_types = (known after apply)
+      + tags_all                = {
+          + "Application" = "Bloom Housing Instance"
+          + "Environment" = "dev"
+          + "Project"     = "Doorway"
+          + "Team"        = "doorway"
+          + "Workspace"   = "chriscasto"
         }
     }
 
-  # module.albs["public"].aws_security_group.alb will be created
-  + resource "aws_security_group" "alb" {
+  # module.db.aws_secretsmanager_secret.conn_string will be created
+  + resource "aws_secretsmanager_secret" "conn_string" {
+      + arn                            = (known after apply)
+      + force_overwrite_replica_secret = false
+      + id                             = (known after apply)
+      + name                           = (known after apply)
+      + name_prefix                    = "doorway-chriscasto/db/"
+      + policy                         = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = [
+                          + "secretsmanager:GetSecretValue",
+                        ]
+                      + Effect    = "Allow"
+                      + Principal = "*"
+                      + Resource  = "*"
+                      + Sid       = "EnableSecretRetrieval"
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + recovery_window_in_days        = 30
+      + rotation_enabled               = (known after apply)
+      + rotation_lambda_arn            = (known after apply)
+      + tags_all                       = {
+          + "Application" = "Bloom Housing Instance"
+          + "Environment" = "dev"
+          + "Project"     = "Doorway"
+          + "Team"        = "doorway"
+          + "Workspace"   = "chriscasto"
+        }
+
+      + replica {
+          + kms_key_id         = (known after apply)
+          + last_accessed_date = (known after apply)
+          + region             = (known after apply)
+          + status             = (known after apply)
+          + status_message     = (known after apply)
+        }
+
+      + rotation_rules {
+          + automatically_after_days = (known after apply)
+        }
+    }
+
+  # module.db.aws_secretsmanager_secret_version.conn_string will be created
+  + resource "aws_secretsmanager_secret_version" "conn_string" {
+      + arn            = (known after apply)
+      + id             = (known after apply)
+      + secret_id      = (known after apply)
+      + secret_string  = (sensitive value)
+      + version_id     = (known after apply)
+      + version_stages = (known after apply)
+    }
+
+  # module.db.aws_security_group.db will be created
+  + resource "aws_security_group" "db" {
       + arn                    = (known after apply)
-      + description            = "Enable access to public ALB"
+      + description            = "Enable access to doorway-chriscasto database"
       + egress                 = (known after apply)
       + id                     = (known after apply)
       + ingress                = (known after apply)
-      + name                   = "doorway-chriscasto-alb-public"
+      + name                   = "doorway-chriscasto-db"
       + name_prefix            = (known after apply)
       + owner_id               = (known after apply)
       + revoke_rules_on_delete = false
@@ -73,145 +175,21 @@ Terraform will perform the following actions:
       + vpc_id                 = (known after apply)
     }
 
-  # module.albs["public"].aws_vpc_security_group_egress_rule.https will be created
-  + resource "aws_vpc_security_group_egress_rule" "https" {
-      + arn                    = (known after apply)
-      + cidr_ipv4              = "0.0.0.0/0"
-      + from_port              = 1
-      + id                     = (known after apply)
-      + ip_protocol            = "tcp"
-      + security_group_id      = (known after apply)
-      + security_group_rule_id = (known after apply)
-      + tags_all               = {
-          + "Application" = "Bloom Housing Instance"
-          + "Environment" = "dev"
-          + "Project"     = "Doorway"
-          + "Team"        = "doorway"
-          + "Workspace"   = "chriscasto"
-        }
-      + to_port                = 65535
-    }
-
-  # module.certs["doorway"].aws_acm_certificate.cert will be created
-  + resource "aws_acm_certificate" "cert" {
-      + arn                       = (known after apply)
-      + domain_name               = "chriscasto.doorway.housingbayarea.org"
-      + domain_validation_options = [
-          + {
-              + domain_name           = "*.chriscasto.doorway.housingbayarea.org"
-              + resource_record_name  = (known after apply)
-              + resource_record_type  = (known after apply)
-              + resource_record_value = (known after apply)
-            },
-          + {
-              + domain_name           = "chriscasto.doorway.housingbayarea.org"
-              + resource_record_name  = (known after apply)
-              + resource_record_type  = (known after apply)
-              + resource_record_value = (known after apply)
-            },
-        ]
-      + id                        = (known after apply)
-      + key_algorithm             = (known after apply)
-      + not_after                 = (known after apply)
-      + not_before                = (known after apply)
-      + pending_renewal           = (known after apply)
-      + renewal_eligibility       = (known after apply)
-      + renewal_summary           = (known after apply)
-      + status                    = (known after apply)
-      + subject_alternative_names = [
-          + "*.chriscasto.doorway.housingbayarea.org",
-          + "chriscasto.doorway.housingbayarea.org",
-        ]
-      + tags_all                  = {
-          + "Application" = "Bloom Housing Instance"
-          + "Environment" = "dev"
-          + "Project"     = "Doorway"
-          + "Team"        = "doorway"
-          + "Workspace"   = "chriscasto"
-        }
-      + type                      = (known after apply)
-      + validation_emails         = (known after apply)
-      + validation_method         = "DNS"
-    }
-
-  # module.certs["doorway"].aws_acm_certificate_validation.cert[0] will be created
-  + resource "aws_acm_certificate_validation" "cert" {
-      + certificate_arn         = (known after apply)
-      + id                      = (known after apply)
-      + validation_record_fqdns = (known after apply)
-    }
-
-  # module.certs["doorway"].aws_route53_record.cert["*.chriscasto.doorway.housingbayarea.org"] will be created
-  + resource "aws_route53_record" "cert" {
-      + allow_overwrite = true
-      + fqdn            = (known after apply)
-      + id              = (known after apply)
-      + name            = (known after apply)
-      + records         = (known after apply)
-      + ttl             = 60
-      + type            = (known after apply)
-      + zone_id         = (known after apply)
-    }
-
-  # module.certs["doorway"].aws_route53_record.cert["chriscasto.doorway.housingbayarea.org"] will be created
-  + resource "aws_route53_record" "cert" {
-      + allow_overwrite = true
-      + fqdn            = (known after apply)
-      + id              = (known after apply)
-      + name            = (known after apply)
-      + records         = (known after apply)
-      + ttl             = 60
-      + type            = (known after apply)
-      + zone_id         = (known after apply)
-    }
-
-  # module.certs["doorway-test"].aws_acm_certificate.cert will be created
-  + resource "aws_acm_certificate" "cert" {
-      + arn                       = (known after apply)
-      + domain_name               = "chriscasto.test.doorway.housingbayarea.org"
-      + domain_validation_options = [
-          + {
-              + domain_name           = "chriscasto.test.doorway.housingbayarea.org"
-              + resource_record_name  = (known after apply)
-              + resource_record_type  = (known after apply)
-              + resource_record_value = (known after apply)
-            },
-          + {
-              + domain_name           = "partners.chriscasto.test.doorway.housingbayarea.org"
-              + resource_record_name  = (known after apply)
-              + resource_record_type  = (known after apply)
-              + resource_record_value = (known after apply)
-            },
-          + {
-              + domain_name           = "public.chriscasto.test.doorway.housingbayarea.org"
-              + resource_record_name  = (known after apply)
-              + resource_record_type  = (known after apply)
-              + resource_record_value = (known after apply)
-            },
-        ]
-      + id                        = (known after apply)
-      + key_algorithm             = (known after apply)
-      + not_after                 = (known after apply)
-      + not_before                = (known after apply)
-      + pending_renewal           = (known after apply)
-      + renewal_eligibility       = (known after apply)
-      + renewal_summary           = (known after apply)
-      + status                    = (known after apply)
-      + subject_alternative_names = [
-          + "chriscasto.test.doorway.housingbayarea.org",
-          + "partners.chriscasto.test.doorway.housingbayarea.org",
-          + "public.chriscasto.test.doorway.housingbayarea.org",
-        ]
-      + tags_all                  = {
-          + "Application" = "Bloom Housing Instance"
-          + "Environment" = "dev"
-          + "Project"     = "Doorway"
-          + "Team"        = "doorway"
-          + "Workspace"   = "chriscasto"
-        }
-      + type                      = (known after apply)
-      + validation_emails         = (known after apply)
-      + validation_method         = "DNS"
+  # module.db.random_password.password[0] will be created
+  + resource "random_password" "password" {
+      + bcrypt_hash = (sensitive value)
+      + id          = (known after apply)
+      + length      = 16
+      + lower       = true
+      + min_lower   = 0
+      + min_numeric = 0
+      + min_special = 0
+      + min_upper   = 0
+      + number      = true
+      + numeric     = true
+      + result      = (sensitive value)
+      + special     = false
+      + upper       = true
     }
 
   # module.network.aws_vpc.vpc will be created
@@ -245,175 +223,6 @@ Terraform will perform the following actions:
           + "Team"        = "doorway"
           + "Workspace"   = "chriscasto"
         }
-    }
-
-  # module.albs["public"].module.listeners["backend"].aws_lb_listener.listener will be created
-  + resource "aws_lb_listener" "listener" {
-      + arn               = (known after apply)
-      + id                = (known after apply)
-      + load_balancer_arn = (known after apply)
-      + port              = 3100
-      + protocol          = "HTTP"
-      + ssl_policy        = (known after apply)
-      + tags_all          = {
-          + "Application" = "Bloom Housing Instance"
-          + "Environment" = "dev"
-          + "Project"     = "Doorway"
-          + "Team"        = "doorway"
-          + "Workspace"   = "chriscasto"
-        }
-
-      + default_action {
-          + order = (known after apply)
-          + type  = "fixed-response"
-
-          + fixed_response {
-              + content_type = "text/plain"
-              + status_code  = "404"
-            }
-        }
-    }
-
-  # module.albs["public"].module.listeners["backend"].aws_vpc_security_group_ingress_rule.ingress["10.0.2.0/24"] will be created
-  + resource "aws_vpc_security_group_ingress_rule" "ingress" {
-      + arn                    = (known after apply)
-      + cidr_ipv4              = "10.0.2.0/24"
-      + from_port              = 3100
-      + id                     = (known after apply)
-      + ip_protocol            = "tcp"
-      + security_group_id      = (known after apply)
-      + security_group_rule_id = (known after apply)
-      + tags_all               = {
-          + "Application" = "Bloom Housing Instance"
-          + "Environment" = "dev"
-          + "Project"     = "Doorway"
-          + "Team"        = "doorway"
-          + "Workspace"   = "chriscasto"
-        }
-      + to_port                = 3100
-    }
-
-  # module.albs["public"].module.listeners["backend"].aws_vpc_security_group_ingress_rule.ingress["10.0.3.0/24"] will be created
-  + resource "aws_vpc_security_group_ingress_rule" "ingress" {
-      + arn                    = (known after apply)
-      + cidr_ipv4              = "10.0.3.0/24"
-      + from_port              = 3100
-      + id                     = (known after apply)
-      + ip_protocol            = "tcp"
-      + security_group_id      = (known after apply)
-      + security_group_rule_id = (known after apply)
-      + tags_all               = {
-          + "Application" = "Bloom Housing Instance"
-          + "Environment" = "dev"
-          + "Project"     = "Doorway"
-          + "Team"        = "doorway"
-          + "Workspace"   = "chriscasto"
-        }
-      + to_port                = 3100
-    }
-
-  # module.albs["public"].module.listeners["http"].aws_lb_listener.listener will be created
-  + resource "aws_lb_listener" "listener" {
-      + arn               = (known after apply)
-      + id                = (known after apply)
-      + load_balancer_arn = (known after apply)
-      + port              = 80
-      + protocol          = "HTTP"
-      + ssl_policy        = (known after apply)
-      + tags_all          = {
-          + "Application" = "Bloom Housing Instance"
-          + "Environment" = "dev"
-          + "Project"     = "Doorway"
-          + "Team"        = "doorway"
-          + "Workspace"   = "chriscasto"
-        }
-
-      + default_action {
-          + order = (known after apply)
-          + type  = "redirect"
-
-          + redirect {
-              + host        = "#{host}"
-              + path        = "/#{path}"
-              + port        = "443"
-              + protocol    = "HTTPS"
-              + query       = "#{query}"
-              + status_code = "HTTP_302"
-            }
-        }
-    }
-
-  # module.albs["public"].module.listeners["http"].aws_vpc_security_group_ingress_rule.ingress["0.0.0.0/0"] will be created
-  + resource "aws_vpc_security_group_ingress_rule" "ingress" {
-      + arn                    = (known after apply)
-      + cidr_ipv4              = "0.0.0.0/0"
-      + from_port              = 80
-      + id                     = (known after apply)
-      + ip_protocol            = "tcp"
-      + security_group_id      = (known after apply)
-      + security_group_rule_id = (known after apply)
-      + tags_all               = {
-          + "Application" = "Bloom Housing Instance"
-          + "Environment" = "dev"
-          + "Project"     = "Doorway"
-          + "Team"        = "doorway"
-          + "Workspace"   = "chriscasto"
-        }
-      + to_port                = 80
-    }
-
-  # module.albs["public"].module.listeners["https"].aws_lb_listener.listener will be created
-  + resource "aws_lb_listener" "listener" {
-      + arn               = (known after apply)
-      + certificate_arn   = (known after apply)
-      + id                = (known after apply)
-      + load_balancer_arn = (known after apply)
-      + port              = 443
-      + protocol          = "HTTPS"
-      + ssl_policy        = (known after apply)
-      + tags_all          = {
-          + "Application" = "Bloom Housing Instance"
-          + "Environment" = "dev"
-          + "Project"     = "Doorway"
-          + "Team"        = "doorway"
-          + "Workspace"   = "chriscasto"
-        }
-
-      + default_action {
-          + order = (known after apply)
-          + type  = "fixed-response"
-
-          + fixed_response {
-              + content_type = "text/plain"
-              + status_code  = "404"
-            }
-        }
-    }
-
-  # module.albs["public"].module.listeners["https"].aws_lb_listener_certificate.listener["doorway-test"] will be created
-  + resource "aws_lb_listener_certificate" "listener" {
-      + certificate_arn = (known after apply)
-      + id              = (known after apply)
-      + listener_arn    = (known after apply)
-    }
-
-  # module.albs["public"].module.listeners["https"].aws_vpc_security_group_ingress_rule.ingress["0.0.0.0/0"] will be created
-  + resource "aws_vpc_security_group_ingress_rule" "ingress" {
-      + arn                    = (known after apply)
-      + cidr_ipv4              = "0.0.0.0/0"
-      + from_port              = 443
-      + id                     = (known after apply)
-      + ip_protocol            = "tcp"
-      + security_group_id      = (known after apply)
-      + security_group_rule_id = (known after apply)
-      + tags_all               = {
-          + "Application" = "Bloom Housing Instance"
-          + "Environment" = "dev"
-          + "Project"     = "Doorway"
-          + "Team"        = "doorway"
-          + "Workspace"   = "chriscasto"
-        }
-      + to_port                = 443
     }
 
   # module.network.module.app.aws_subnet.subnets["0"] will be created
@@ -506,6 +315,36 @@ Terraform will perform the following actions:
       + vpc_id                                         = (known after apply)
     }
 
+  # module.network.module.data.aws_subnet.subnets["1"] will be created
+  + resource "aws_subnet" "subnets" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "us-west-1c"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.5.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Name" = "doorway-chriscasto:Data 1"
+        }
+      + tags_all                                       = {
+          + "Application" = "Bloom Housing Instance"
+          + "Environment" = "dev"
+          + "Name"        = "doorway-chriscasto:Data 1"
+          + "Project"     = "Doorway"
+          + "Team"        = "doorway"
+          + "Workspace"   = "chriscasto"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
   # module.network.module.public.aws_subnet.subnets["0"] will be created
   + resource "aws_subnet" "subnets" {
       + arn                                            = (known after apply)
@@ -566,19 +405,7 @@ Terraform will perform the following actions:
       + vpc_id                                         = (known after apply)
     }
 
-Plan: 22 to add, 0 to change, 0 to destroy.
-
-Changes to Outputs:
-  + cert_validation_records_not_created = {
-      + doorway      = (known after apply)
-      + doorway-test = (known after apply)
-    }
-
-Warning: Value for undeclared variable
-
-The root module does not declare a variable named "database" but a value was found in file "chriscasto.tfvars". If you meant to use this value, add a "variable" block to the configuration.
-
-To silence these warnings, use TF_VAR_... environment variables to provide certain "global" settings to all configurations in your organization. To reduce the verbosity of these warnings, use the -compact-warnings option.
+Plan: 13 to add, 0 to change, 0 to destroy.
 
 Warning: Resource targeting is in effect
 

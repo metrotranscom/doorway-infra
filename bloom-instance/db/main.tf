@@ -49,28 +49,3 @@ resource "aws_security_group" "db" {
   description = "Enable access to ${local.name_prefix} database"
   vpc_id      = local.vpc_id
 }
-
-/*
-module "rds" {
-  source = "./rds"
-  count  = local.is_rds ? 1 : 0
-
-  name_prefix = local.name_prefix
-
-  # Generated resources
-  security_group_id  = aws_security_group.db.id
-  db_subnet_group_id = aws_db_subnet_group.db.id
-
-  # From settings var
-  db_name          = var.settings.db_name
-  username         = var.settings.username
-  engine_version   = var.settings.engine_version
-  instance_class   = var.settings.instance_class
-  port             = var.settings.port
-  min_storage      = local.min_storage
-  max_storage      = local.max_storage
-  backup_retention = var.settings.backups.retention
-  backup_window    = var.settings.backups.window
-  prevent_deletion = var.settings.prevent_deletion
-}
-*/
