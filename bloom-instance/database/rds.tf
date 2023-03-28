@@ -6,9 +6,6 @@ resource "aws_db_instance" "rds" {
   db_name           = var.settings.db_name
   identifier_prefix = var.name_prefix
 
-  # username         = var.settings.username
-
-
   # Engine
   engine         = "postgres" # Intentionally hardcoded
   engine_version = var.settings.engine_version
@@ -26,7 +23,7 @@ resource "aws_db_instance" "rds" {
 
   # Security
   iam_database_authentication_enabled = true # Intentionally hardcoded
-  #username
+  username                            = var.settings.username
   #password
   #vpc_security_group_ids
 
