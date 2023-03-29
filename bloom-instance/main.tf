@@ -64,9 +64,12 @@ module "public_sites" {
   name_prefix        = local.default_name
   service_definition = each.value
 
-  alb_listener_arn = module.albs[each.value.alb].listeners.public.arn
-  alb_sg_id        = module.albs[each.value.alb].security_group.id
-  subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
+  # alb_listener_arn = module.albs[each.value.alb].listeners.public.arn
+  # alb_sg_id        = module.albs[each.value.alb].security_group.id
+  # subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
+
+  alb_map    = module.albs
+  subnet_map = module.network.subnets
 
   public_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
   secure_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
@@ -87,9 +90,12 @@ module "partner_site" {
   name_prefix        = local.default_name
   service_definition = var.partner_site
 
-  alb_listener_arn = module.albs[var.partner_site.alb].listeners.public.arn
-  alb_sg_id        = module.albs[var.partner_site.alb].security_group.id
-  subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
+  # alb_listener_arn = module.albs[var.partner_site.alb].listeners.public.arn
+  # alb_sg_id        = module.albs[var.partner_site.alb].security_group.id
+  # subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
+
+  alb_map    = module.albs
+  subnet_map = module.network.subnets
 
   public_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
   secure_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
