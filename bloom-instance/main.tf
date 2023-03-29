@@ -64,7 +64,7 @@ module "public_sites" {
   name_prefix        = local.default_name
   service_definition = each.value
 
-  alb_listener_arn = module.albs[each.value.alb].listeners.public.arn
+  alb_listener_arn = module.albs[each.value.alb].listeners.http.arn
   alb_sg_id        = module.albs[each.value.alb].security_group.id
   subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
 
@@ -87,7 +87,7 @@ module "partner_site" {
   name_prefix        = local.default_name
   service_definition = var.partner_site
 
-  alb_listener_arn = module.albs[var.partner_site.alb].listeners.public.arn
+  alb_listener_arn = module.albs[var.partner_site.alb].listeners.http.arn
   alb_sg_id        = module.albs[var.partner_site.alb].security_group.id
   subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
 
