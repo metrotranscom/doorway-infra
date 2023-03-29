@@ -109,44 +109,74 @@ albs = {
 public_sites = [
   {
     name = "public"
-    alb   = "default"
-    cpu = 256
-    ram = 512
-    image = "nginx:latest"
     port = 80
-    domains = [ "doorway.test" ]
 
-    health_check = {
-      interval = 10
-      valid_status = ["200", "202"]
-      path = "/"
-      protocol = "HTTP"
-      timeout = 5
+    task = {
+      cpu   = 256
+      ram   = 512
+      image = "nginx:latest"
+
+      env_vars = {
+        LISTINGS_QUERY   = "/listings"
+        LANGUAGES        = "en,es,zh,vi,tl"
+        IDLE_TIMEOUT     = 5
+        CACHE_REVALIDATE = 60
+      }
     }
 
-    env_vars = {
-      LISTINGS_QUERY = "/listings"
-      LANGUAGES = "en,es,zh,vi,tl"
-      IDLE_TIMEOUT = 5
-      CACHE_REVALIDATE = 60
+    service = {
+      subnet_group = "app"
+
+      albs = {
+        "default" = {
+          listeners = {
+            "https" = {
+              domains = [ "doorway.test" ]
+            }
+          }
+        }
+      }
+
+      health_check = {
+        interval     = 10
+        valid_status = ["200", "202"]
+        path         = "/"
+        protocol     = "HTTP"
+        timeout      = 5
+      }
     }
   }
 ]
 
 partner_site = {
   name = "partner"
-  alb   = "default"
-  cpu = 256
-  ram = 512
-  image = "nginx:latest"
   port = 80
-  domains = [ "partner.doorway.test" ]
 
-  health_check = { }
+  task = {
+    cpu   = 256
+    ram   = 512
+    image = "nginx:latest"
 
-  env_vars = {
-    LISTINGS_QUERY = "/listings"
-    SHOW_DUPLICATES = "false"
-    SHOW_LM_LINKS = "true"
+    env_vars = {
+      LISTINGS_QUERY  = "/listings"
+      SHOW_DUPLICATES = "false"
+      SHOW_LM_LINKS   = "true"
+    }
+  }
+
+  service = {
+    subnet_group = "app"
+
+    albs = {
+      "public" = {
+        listeners = {
+          "https" = {
+            domains = [ "partner.doorway.test" ]
+          }
+        }
+      }
+    }
+
+    health_check = {}
   }
 }
