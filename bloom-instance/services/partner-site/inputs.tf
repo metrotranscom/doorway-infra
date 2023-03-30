@@ -9,25 +9,27 @@ variable "name_prefix" {
   }
 }
 
-variable "service_definition" {
-  # See services/base-service/inputs.tf for object structure
+variable "alb_map" {
+  # See ecs/service/inputs.tf for type structure
   type        = any
-  description = "A public portal service definition object"
+  description = "A map of available ALBs"
 }
 
-variable "alb_listener_arn" {
-  type        = string
-  description = "The ARN of the ALB Listener to add this service to"
+variable "subnet_map" {
+  # See ecs/service/inputs.tf for type structure
+  type        = any
+  description = "A map of available subnets"
 }
 
-variable "alb_sg_id" {
-  type        = string
-  description = "The ID of the ALB Security Group to permit access from"
-}
-
-variable "subnet_ids" {
-  type        = list(string)
-  description = "The ID(s) of the subnet(s) to run this service in"
+variable "service_definition" {
+  # See services/inputs.tf for type structure
+  type = object({
+    name    = string
+    port    = optional(number)
+    task    = any
+    service = any
+  })
+  description = "A partner portal service definition object"
 }
 
 variable "backend_api_base" {
