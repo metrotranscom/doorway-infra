@@ -27,12 +27,6 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_listener_rule" "service" {
-  # for_each = merge([for alb_name, alb in local.merged_albs : {
-  #   for listener_name, listener in alb.listeners : "${alb_name}-${listener_name}" => {
-  #     arn     = listener.arn
-  #     domains = listener.domains
-  #   }
-  # }]...)
   for_each = local.rule_map
 
   listener_arn = each.value.arn
