@@ -43,3 +43,21 @@ module "partner_site" {
     ServiceName = var.partner_site.name
   }
 }
+
+module "backend_api" {
+  source = "./service/backend"
+
+  name_prefix        = local.default_name
+  service_definition = var.backend_api
+
+  alb_map    = module.albs
+  subnet_map = module.network.subnets
+  db         = module.db
+
+  partners_portal_url = "https://partners.demo.doorway.housingbayarea.org/" # Placeholder
+
+  additional_tags = {
+    ServiceType = "backend-api"
+    ServiceName = var.backend_api.name
+  }
+}
