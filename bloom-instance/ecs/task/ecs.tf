@@ -20,6 +20,7 @@ resource "aws_ecs_task_definition" "task" {
       cpu       = local.cpu
       memory    = local.ram
       essential = true
+
       portMappings = [
         {
           # Host port and container port must be the same with the awsvpc network type
@@ -27,7 +28,18 @@ resource "aws_ecs_task_definition" "task" {
           hostPort      = local.port
         }
       ]
+
       environment = [for n, val in local.env_vars : { name = n, value = val }]
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = local.log.group
+          awslogs-region        = local.log.region
+          awslogs-create-group  = "true"
+          awslogs-stream-prefix = local.log.stream_prefix
+        }
+      }
     }
   ])
 

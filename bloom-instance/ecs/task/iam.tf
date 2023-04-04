@@ -26,18 +26,29 @@ resource "aws_iam_policy" "logs" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "AllowWriteLogsToCloudWatch"
+        Sid    = "AllowCreateLogResources"
         Effect = "Allow"
 
         Action = [
+          "logs:CreateLogGroup",
           "logs:CreateLogStream",
+        ]
+
+        #Resource = "arn:aws:logs:${local.log.region}:*:log-group:${local.log.group}"
+        Resource = "arn:aws:logs:${local.log.region}:*:log-group:*"
+      },
+      {
+        Sid    = "AllowPutLogEventsToStream"
+        Effect = "Allow"
+
+        Action = [
           "logs:PutLogEvents",
         ]
 
-        # TODO: restrict to specific log group/stream
-        Resource = "arn:aws:logs:::log-group:*:log-stream:*"
+        #Resource = "arn:aws:logs:${local.log.region}:*:log-group:${local.log.group}:log-stream:${local.log.stream_prefix}*"
+        Resource = "arn:aws:logs:${local.log.region}:*:log-group:*:log-stream:*"
       },
-    ]
+    ],
   })
 }
 
