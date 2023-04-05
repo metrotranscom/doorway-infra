@@ -34,9 +34,7 @@ resource "aws_iam_policy" "logs" {
           "logs:CreateLogStream",
         ]
 
-        # This doesn't work, so keeping it generic for now
-        #Resource = "arn:aws:logs:${local.log.region}:*:log-group:${local.log.group}"
-        Resource = "arn:aws:logs:${local.log.region}:*:log-group:*"
+        Resource = "arn:aws:logs:${local.log.region}:*:log-group:${local.log.group}*"
       },
       {
         Sid    = "AllowPutLogEventsToStream"
