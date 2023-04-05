@@ -34,6 +34,7 @@ resource "aws_iam_policy" "logs" {
           "logs:CreateLogStream",
         ]
 
+        # This doesn't work, so keeping it generic for now
         #Resource = "arn:aws:logs:${local.log.region}:*:log-group:${local.log.group}"
         Resource = "arn:aws:logs:${local.log.region}:*:log-group:*"
       },
@@ -45,8 +46,7 @@ resource "aws_iam_policy" "logs" {
           "logs:PutLogEvents",
         ]
 
-        #Resource = "arn:aws:logs:${local.log.region}:*:log-group:${local.log.group}:log-stream:${local.log.stream_prefix}*"
-        Resource = "arn:aws:logs:${local.log.region}:*:log-group:*:log-stream:*"
+        Resource = "arn:aws:logs:${local.log.region}:*:log-group:${local.log.group}:log-stream:${local.log.stream_prefix}*"
       },
     ],
   })
