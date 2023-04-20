@@ -44,3 +44,23 @@ module "partner_site_records" {
   zones  = module.dns.zone_map
   record = each.value
 }
+
+# Add CNAME records for backend api domains pointing to ALB
+module "backend_api_records" {
+  source = "./dns/record"
+
+  for_each = merge([for alb_name, alb in var.backend_api.service.albs : merge([
+    for listener_name, listener in alb.listeners : {
+      for domain in listener.domains : "backend-${alb_name}-${listener_name}-${domain}" => {
+        name   = domain
+        type   = "CNAME"
+        values = [module.albs[alb_name].dns_name]
+        ttl    = module.dns.default_ttl
+      }
+    }
+    ]...)
+  ]...)
+
+  zones  = module.dns.zone_map
+  record = each.value
+}

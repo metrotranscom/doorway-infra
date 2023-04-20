@@ -140,12 +140,12 @@ albs = {
 public_sites = [
   {
     name = "public"
-    port = 80
+    port = 3000
 
     task = {
       cpu   = 256
       ram   = 512
-      image = "nginx:latest"
+      image = "<repo>/public:run"
 
       env_vars = {
         LISTINGS_QUERY   = "/listings"
@@ -181,12 +181,12 @@ public_sites = [
 
 partner_site = {
   name = "partner"
-  port = 80
+  port = 3001
 
   task = {
     cpu   = 256
     ram   = 512
-    image = "nginx:latest"
+    image = "<repo>/partners:run"
 
     env_vars = {
       LISTINGS_QUERY  = "/listings"
@@ -209,5 +209,46 @@ partner_site = {
     }
 
     health_check = {}
+  }
+}
+
+backend_api = {
+  name = "backend"
+  port = 3100
+
+  task = {
+    cpu   = 256
+    ram   = 512
+    image = "<repo>/backend:run"
+
+    env_vars = {
+      LISTINGS_QUERY  = "/listings"
+      SHOW_DUPLICATES = "false"
+      SHOW_LM_LINKS   = "true"
+    }
+  }
+
+  service = {
+    subnet_group = "app"
+
+    albs = {
+      "public" = {
+        listeners = {
+          "https" = {
+            domains = [
+              "backend.doorway.test"
+            ]
+          }
+        }
+      }
+    }
+
+    health_check = {
+      interval     = 30
+      valid_status = ["200", "202"]
+      path         = "/jurisdictions"
+      protocol     = "HTTP"
+      timeout      = 5
+    }
   }
 }

@@ -8,7 +8,7 @@ module "task" {
   task = merge(
     var.task,
     {
-      name = "srv-${var.name}"
+      name = var.name
       port = var.port
     }
   )
