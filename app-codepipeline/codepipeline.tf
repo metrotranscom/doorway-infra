@@ -1,3 +1,10 @@
+# Needed to resolve current AWS Account ID
+data "aws_caller_identity" "current" {}
+locals {
+  ecr_account_id = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
+  ecr_namespace = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo_branch_name}" : var.ecr_namespace
+}
+
 resource "aws_codepipeline" "default" {
   name     = "${var.name_prefix}-codepipeline"
   role_arn = aws_iam_role.codepipeline_role.arn
@@ -9,7 +16,6 @@ resource "aws_codepipeline" "default" {
 
   stage {
     name = "Source"
-
     action {
       category = "Source"
       name     = "Source"
@@ -20,7 +26,7 @@ resource "aws_codepipeline" "default" {
       output_artifacts = ["source_output"]
 
       configuration = {
-        ConnectionArn    = aws_codestarconnections_connection.default.arn
+        ConnectionArn    = data.aws_codestarconnections_connection.default.arn
         FullRepositoryId = var.repo_name
         BranchName       = var.repo_branch_name
       }
@@ -56,9 +62,25 @@ resource "aws_codebuild_project" "default" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/amazonlinux2-x86_64-standard:2.0"
+    image                       = "aws/codebuild/standard:6.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
+    privileged_mode = true
+
+    environment_variable {
+      name = "ECR_REGION"
+      value = "${var.aws_region}"
+    }
+
+    environment_variable {
+      name = "ECR_ACCOUNT_ID"
+      value = "${local.ecr_account_id}"
+    }
+
+    environment_variable {
+      name = "ECR_NAMESPACE"
+      value = "${local.ecr_namespace}"
+    }
   }
 
   logs_config {
@@ -69,6 +91,7 @@ resource "aws_codebuild_project" "default" {
 
   source {
     type = "CODEPIPELINE"
+    buildspec = "ci/buildspec_${var.repo_branch_name}.yml"
   }
 }
 
@@ -77,9 +100,8 @@ resource "aws_s3_bucket" "default" {
 }
 
 # NOTE: Auth with the GitHub must be completed in the AWS Console.
-resource "aws_codestarconnections_connection" "default" {
-  name          = "${var.name_prefix}-connection"
-  provider_type = "GitHub"
+data "aws_codestarconnections_connection" "default" {
+  name = var.gh_codestar_conn_name
 }
 
 resource "aws_iam_role" "codepipeline_role" {
@@ -126,11 +148,11 @@ resource "aws_iam_role_policy" "codepipeline_role_policy" {
           "codestar-connections:UseConnection"
         ],
         "Resource" : [
-          "${aws_codestarconnections_connection.default.arn}"
+          "${data.aws_codestarconnections_connection.default.arn}"
         ]
       },
       {
-        "Effect" : "Allow",
+       "Effect" : "Allow",
         "Action" : [
           "codebuild:BatchGetBuilds",
           "codebuild:StartBuild"
@@ -209,6 +231,18 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
         "Resource" : [
           "${aws_codebuild_project.default.arn}"
         ]
+      },
+      {
+	"Action": [
+	  "ecr:BatchCheckLayerAvailability",
+	  "ecr:CompleteLayerUpload",
+	  "ecr:GetAuthorizationToken",
+	  "ecr:InitiateLayerUpload",
+	  "ecr:PutImage",
+	  "ecr:UploadLayerPart"
+	],
+	"Resource": "*",
+	"Effect": "Allow"
       }
     ]
   })
