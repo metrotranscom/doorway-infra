@@ -29,6 +29,10 @@ subnet_map = {
     {
       az   = "us-west-1a",
       cidr = "10.0.4.0/24"
+    },
+    {
+      az   = "us-west-1c",
+      cidr = "10.0.5.0/24"
     }
   ]
 }
@@ -41,73 +45,197 @@ dns = {
   zones = {
     "doorway.housingbayarea.org" = {
       id = "Z07765371R2XJ4P3TZMGA"
+
+      additional_records = []
     }
+  }
+}
+
+certs = {
+  "doorway" = {
+    domain = "dev.doorway.housingbayarea.org"
+    alt_names = [
+      "*.dev.doorway.housingbayarea.org"
+    ]
+  }
+}
+
+albs = {
+  public = {
+    subnet_group   = "public"
+    enable_logging = false
+
+    listeners = {
+      "http" = {
+        port           = 80
+        default_action = "force-tls"
+        allowed_ips    = ["0.0.0.0/0"]
+      }
+
+      "https" = {
+        port        = 443
+        allowed_ips = ["0.0.0.0/0"]
+
+        tls = {
+          default_cert     = "doorway"
+          additional_certs = []
+        }
+      }
+    }
+  }
+}
+
+database = {
+  db_name = "bloom"
+  type    = "rds" # rds, aurora-serverless
+  #type                     = "aurora-serverless"
+  subnet_group             = "data"
+  engine_version           = "13.8"
+  instance_class           = "db.t3.micro"
+  port                     = 5432
+  prevent_deletion         = false
+  apply_change_immediately = false
+  username                 = "doorway"
+  #password = "doorway-pass"
+
+  maintenance_window = "Sat:23:00-Sun:04:00"
+
+  storage = {
+    min     = 20
+    max     = 50
+    encrypt = true
+  }
+
+  backups = {
+    retention = 30
+    window    = "00:00-01:00"
+  }
+
+  serverless_capacity = {
+    min = 0.5
+    max = 3.0
   }
 }
 
 public_sites = [
   {
-    name    = "public"
-    cpu     = 256
-    ram     = 512
-    image   = "364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway-nonprod/public:run"
-    port    = 3000
-    domains = ["dev.doorway.housingbayarea.org"]
+    name = "public"
+    port = 3000
 
-    health_check = {
-      interval     = 10
-      valid_status = ["200", "202"]
-      path         = "/"
-      protocol     = "HTTP"
-      timeout      = 5
+    task = {
+      cpu   = 256
+      ram   = 512
+      image = "364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway-dev/public:run"
+
+      env_vars = {
+        JURISDICTION_NAME = "Bay Area"
+        LISTINGS_QUERY    = "/listings"
+        LANGUAGES         = "en,es,zh,vi,tl"
+        IDLE_TIMEOUT      = 5
+        CACHE_REVALIDATE  = 60
+      }
     }
 
-    env_vars = {
-      LISTINGS_QUERY   = "/listings"
-      LANGUAGES        = "en,es,zh,vi,tl"
-      IDLE_TIMEOUT     = 5
-      CACHE_REVALIDATE = 60
+    service = {
+      subnet_group = "app"
 
-      # Not sure if needed
-      NODE_ENV = "development"
+      albs = {
+        "public" = {
+          listeners = {
+            "https" = {
+              domains = [
+                "dev.doorway.housingbayarea.org"
+              ]
+            }
+          }
+        }
+      }
+
+      health_check = {
+        interval     = 10
+        valid_status = ["200", "202"]
+        path         = "/"
+        protocol     = "HTTP"
+        timeout      = 5
+      }
     }
   }
 ]
 
 partner_site = {
-  name    = "partner"
-  cpu     = 256
-  ram     = 512
-  image   = "nginx:latest"
-  port    = 80
-  domains = ["partners.dev.doorway.housingbayarea.org"]
+  name = "partner"
+  port = 3001
 
-  health_check = {}
+  task = {
+    cpu   = 256
+    ram   = 512
+    image = "364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway-dev/partners:run"
 
-  env_vars = {
-    LISTINGS_QUERY  = "/listings"
-    SHOW_DUPLICATES = "false"
-    SHOW_LM_LINKS   = "true"
+    env_vars = {
+      LISTINGS_QUERY  = "/listings"
+      SHOW_DUPLICATES = "false"
+      SHOW_LM_LINKS   = "true"
+    }
+  }
 
-    # Not sure if needed
-    NODE_ENV = "development"
+  service = {
+    subnet_group = "app"
+
+    albs = {
+      "public" = {
+        listeners = {
+          "https" = {
+            domains = [
+              "partners.dev.doorway.housingbayarea.org"
+            ]
+          }
+        }
+      }
+    }
+
+    health_check = {}
   }
 }
 
-/*
-backend_service = {
-  image   = "364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway-nonprod/backend:run"
-  port    = 3100
-  domains = ["api.dev.doorway.housingbayarea.org"]
+backend_api = {
+  name = "backend"
+  port = 3100
 
-  env_vars = {
-    NODE_ENV       = "development"
-    LISTINGS_QUERY = "/listings"
-    THROTTLE_TTL   = 60
-    THROTTLE_LIMIT = 2
+  task = {
+    cpu = 256
+    # more ram is needed for yarn db:migrations:run
+    # can reduce when separate task is avaiable
+    ram   = 2048
+    image = "364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway-dev/backend:run"
 
-    # Not sure if needed
-    NODE_ENV = "development"
+    env_vars = {
+      LISTINGS_QUERY  = "/listings"
+      SHOW_DUPLICATES = "false"
+      SHOW_LM_LINKS   = "true"
+    }
+  }
+
+  service = {
+    subnet_group = "app"
+
+    albs = {
+      "public" = {
+        listeners = {
+          "https" = {
+            domains = [
+              "backend.dev.doorway.housingbayarea.org"
+            ]
+          }
+        }
+      }
+    }
+
+    health_check = {
+      interval     = 30
+      valid_status = ["200", "202"]
+      path         = "/jurisdictions"
+      protocol     = "HTTP"
+      timeout      = 5
+    }
   }
 }
-*/
