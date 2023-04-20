@@ -24,26 +24,30 @@ variable "vpc_id" {
   description = "The ID of the VPC to create ALB resources in"
 }
 
-variable "subnet_ids" {
-  type        = list(string)
-  description = "The IDs of the subnets to create the ALB in"
+variable "subnets" {
+  type = map(list(object({
+    id   = string
+    cidr = string
+  })))
+  description = "A map of the available subnets"
+}
+
+variable "subnet_group" {
+  type        = string
+  description = "The identifier for the subnet group to place the ALB into"
 }
 
 variable "listeners" {
   type = map(object({
-    port        = number
-    use_tls     = bool
-    allowed_ips = list(string)
-  }))
-  default     = null
-  description = "The listeners to create"
+    port           = number
+    default_action = string
 
-  validation {
-    condition = alltrue([
-      for l in var.listeners : l.port > 0 && l.port <= 65535
-    ])
-    error_message = "Port numbers must be in valid range"
-  }
+    allowed_ips     = optional(list(string))
+    allowed_subnets = optional(list(string))
+
+    tls = optional(any)
+  }))
+  description = "The listeners to create"
 }
 
 variable "internal" {
@@ -54,6 +58,7 @@ variable "internal" {
 
 variable "enable_logging" {
   type        = bool
+  default     = true
   description = "Whether to enable logging on this ALB"
 }
 
@@ -66,4 +71,9 @@ variable "additional_tags" {
   type        = map(string)
   default     = null
   description = "Additional tags to apply to ALB resources"
+}
+
+variable "cert_map" {
+  type        = map(string)
+  description = "ARNs for TLS certificates to apply to secure listeners"
 }

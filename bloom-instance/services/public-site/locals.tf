@@ -2,10 +2,14 @@
 locals {
   # The port for this service to listen on
   port = var.service_definition.port != null ? var.service_definition.port : 3000
+  name = var.service_definition.name
+
+  base_task = var.service_definition.task
+  service   = var.service_definition.service
 
   # Add service-specific env vars
   env_vars = merge(
-    var.service_definition.env_vars,
+    local.base_task.env_vars,
     tomap({
       # Core Bloom vars
       NEXTJS_PORT      = local.port,
@@ -18,8 +22,8 @@ locals {
     })
   )
 
-  service_definition = merge(
-    var.service_definition,
+  task = merge(
+    local.base_task,
     {
       env_vars = local.env_vars
     }

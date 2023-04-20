@@ -30,15 +30,18 @@ resource "aws_vpc_security_group_egress_rule" "https" {
   tags = var.additional_tags
 }
 
-# Allow the ALB to reach this service
+# Allow the ALB(s) to reach this service
 resource "aws_vpc_security_group_ingress_rule" "from_alb" {
+  # for_each = [for id in local.security_group_ids : id]
+  for_each = { for name, alb in local.filtered_albs : name => alb.security_group.id }
+
   security_group_id = aws_security_group.service.id
 
   description                  = "Allow HTTP from ALB to service ${local.name}"
   from_port                    = local.port
   to_port                      = local.port
   ip_protocol                  = "tcp"
-  referenced_security_group_id = var.alb_sg_id
+  referenced_security_group_id = each.value
 
   tags = var.additional_tags
 }

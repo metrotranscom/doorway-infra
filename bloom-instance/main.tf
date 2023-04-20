@@ -45,15 +45,6 @@ locals {
 
   # The Account ID for the AWS ELB service in this region
   elb_service_account_arn = data.aws_elb_service_account.current.arn
-
-  /*
-  default_tags_with_name = merge(
-    {
-      Name = local.default_name,
-    },
-    local.default_tags
-  )
-  */
 }
 
 module "network" {
@@ -65,33 +56,6 @@ module "network" {
   use_ngw     = var.use_ngw
 }
 
-module "public_alb" {
-  source = "./alb"
-
-  name_prefix = local.default_name
-  name        = "public"
-  vpc_id      = module.network.vpc.id
-  subnet_ids  = [for subnet in module.network.subnets.public : subnet.id]
-
-  enable_logging = true
-  log_bucket     = aws_s3_bucket.logging_bucket.bucket
-
-  listeners = {
-    public = {
-      port        = 80
-      use_tls     = false
-      allowed_ips = ["0.0.0.0/0"]
-    }
-
-    # internal is here just to provide an easy path forward if we want an internal route to services
-    internal = {
-      port        = 8080
-      use_tls     = false
-      allowed_ips = [for subnet in module.network.subnets.app : subnet.cidr_block]
-    }
-  }
-}
-
 # There may be multiple public sites
 module "public_sites" {
   for_each = { for idx, srv in var.public_sites : idx => srv }
@@ -100,9 +64,8 @@ module "public_sites" {
   name_prefix        = local.default_name
   service_definition = each.value
 
-  alb_listener_arn = module.public_alb.listeners.public.arn
-  alb_sg_id        = module.public_alb.security_group.id
-  subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
+  alb_map    = module.albs
+  subnet_map = module.network.subnets
 
   public_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
   secure_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
@@ -123,9 +86,8 @@ module "partner_site" {
   name_prefix        = local.default_name
   service_definition = var.partner_site
 
-  alb_listener_arn = module.public_alb.listeners.public.arn
-  alb_sg_id        = module.public_alb.security_group.id
-  subnet_ids       = [for subnet in module.network.subnets.app : subnet.id]
+  alb_map    = module.albs
+  subnet_map = module.network.subnets
 
   public_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket
   secure_upload_bucket = aws_s3_bucket.user_upload_bucket.bucket

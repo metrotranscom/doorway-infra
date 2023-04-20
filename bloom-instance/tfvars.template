@@ -35,45 +35,179 @@ subnet_map = {
 vpc_cidr = "10.0.0.0/16"
 use_ngw = true
 
+dns = {
+  default_ttl = 60
+
+  zones = {
+    "doorway.test" = {
+      id = "<zone-id>"
+
+      additional_records = [
+        {
+          name = "txt.doorway.test"
+          type = "TXT"
+          values = ["some-text-value"]
+        }
+      ]
+    }
+  }
+}
+
+database = {
+  db_name = "bloom"
+  type    = "rds" # rds, aurora-serverless
+  subnet_group             = "data"
+  engine_version           = "13.8"
+  instance_class           = "db.t3.micro" # Only needed if rds
+  port                     = 5432
+  prevent_deletion         = false
+  apply_change_immediately = false
+  username                 = "doorway"
+  #password = "doorway-password"
+
+  maintenance_window = "Sat:23:00-Sun:04:00"
+
+  storage = {
+    min     = 20
+    max     = 50
+  }
+
+  backups = {
+    retention = 30
+    window    = "00:00-01:00"
+  }
+
+  # Only required if aurora-serverless
+  serverless_capacity = {
+    min = 0.5
+    max = 3.0
+  }
+}
+
+certs = {
+  "doorway" = {
+    domain = "doorway.test"
+    alt_names = [
+      # Wildcards are supported
+      "*.doorway.test"
+    ]
+  },
+  "doorway-external" = {
+    # Certs can be created for unmanaged/external domains
+    domain = "doorway.external"
+
+    # Just set auto_validate to false to prevent DNS record creation
+    auto_validate = false
+
+    alt_names = [
+      "public.doorway.external",
+      "partners.doorway.external",
+      "api.doorway.external"
+    ]
+  }
+}
+
+albs = {
+  "public" = {
+    subnet_group = "public"
+
+    listeners = {
+      http = {
+        port           = 80
+        default_action = "force-tls"
+        allowed_ips    = ["0.0.0.0/0"]
+      }
+
+      https = {
+        port        = 443
+        default_action = "404"
+        allowed_ips = ["0.0.0.0/0"]
+
+        tls = {
+          default_cert     = "doorway"
+          additional_certs = ["doorway-external"]
+        }
+      }
+
+      backend = {
+        port            = 3100
+        allowed_subnets = ["app"]
+      }
+    }
+  }
+}
+
 public_sites = [
   {
     name = "public"
-    cpu = 256
-    ram = 512
-    image = "nginx:latest"
     port = 80
-    domains = [ "doorway.test" ]
 
-    health_check = {
-      interval = 10
-      valid_status = ["200", "202"]
-      path = "/"
-      protocol = "HTTP"
-      timeout = 5
+    task = {
+      cpu   = 256
+      ram   = 512
+      image = "nginx:latest"
+
+      env_vars = {
+        LISTINGS_QUERY   = "/listings"
+        LANGUAGES        = "en,es,zh,vi,tl"
+        IDLE_TIMEOUT     = 5
+        CACHE_REVALIDATE = 60
+      }
     }
 
-    env_vars = {
-      LISTINGS_QUERY = "/listings"
-      LANGUAGES = "en,es,zh,vi,tl"
-      IDLE_TIMEOUT = 5
-      CACHE_REVALIDATE = 60
+    service = {
+      subnet_group = "app"
+
+      albs = {
+        "public" = {
+          listeners = {
+            "https" = {
+              domains = [ "doorway.test" ]
+            }
+          }
+        }
+      }
+
+      health_check = {
+        interval     = 10
+        valid_status = ["200", "202"]
+        path         = "/"
+        protocol     = "HTTP"
+        timeout      = 5
+      }
     }
   }
 ]
 
 partner_site = {
   name = "partner"
-  cpu = 256
-  ram = 512
-  image = "nginx:latest"
   port = 80
-  domains = [ "partner.doorway.test" ]
 
-  health_check = { }
+  task = {
+    cpu   = 256
+    ram   = 512
+    image = "nginx:latest"
 
-  env_vars = {
-    LISTINGS_QUERY = "/listings"
-    SHOW_DUPLICATES = "false"
-    SHOW_LM_LINKS = "true"
+    env_vars = {
+      LISTINGS_QUERY  = "/listings"
+      SHOW_DUPLICATES = "false"
+      SHOW_LM_LINKS   = "true"
+    }
+  }
+
+  service = {
+    subnet_group = "app"
+
+    albs = {
+      "public" = {
+        listeners = {
+          "https" = {
+            domains = [ "partner.doorway.test" ]
+          }
+        }
+      }
+    }
+
+    health_check = {}
   }
 }

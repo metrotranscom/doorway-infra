@@ -89,6 +89,57 @@ variable "use_ngw" {
   description = "Whether to set up a NAT Gateway in the VPC"
 }
 
+variable "dns" {
+  type = any
+  /*
+  type = object({
+    zones = map(object({
+      # If this zone already exists and shouldn't be created, add the zone ID here
+      zone_id = optional(string)
+
+      # Records that should be added to this zone beyond what are created automatically
+      #additional_records = optional(any)
+    }))
+  })
+  */
+  description = "Settings for managing DNS zones and records"
+}
+
+variable "database" {
+  # See ./database/inputs.tf for object structure
+  type        = any
+  description = "Database settings"
+}
+
+variable "albs" {
+  type = map(object({
+    # See alb/inputs.tf for more info
+    subnet_group   = string
+    enable_logging = optional(bool, true)
+    internal       = optional(bool)
+
+    # See alb/listeners/inputs.tf for more info
+    listeners = map(object({
+      port           = number
+      default_action = optional(string, "404")
+
+      allowed_ips     = optional(list(string))
+      allowed_subnets = optional(list(string))
+
+      tls = optional(object({
+        enable           = optional(bool, true)
+        default_cert     = string
+        additional_certs = optional(list(string))
+        }), {
+        enable           = false
+        default_cert     = null
+        additional_certs = []
+      })
+    }))
+  }))
+  description = "Settings for managing ALBs"
+}
+
 variable "public_sites" {
   # See services/base-service/inputs.tf for object structure
   type        = any
@@ -99,4 +150,14 @@ variable "partner_site" {
   # See services/base-service/inputs.tf for object structure
   type        = any
   description = "A service definition for the partner site"
+}
+
+variable "certs" {
+  # Keep a well-defined type here to avoid input validation issues with "any"
+  type = map(object({
+    domain        = string
+    auto_validate = optional(bool)
+    alt_names     = optional(list(string))
+  }))
+  description = "The certifcates to use"
 }
