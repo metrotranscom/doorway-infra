@@ -1,11 +1,15 @@
 
 locals {
   # The port for this service to listen on
-  port = var.service_definition.port != null ? var.service_definition.port : 3000
+  port = var.service_definition.port != null ? var.service_definition.port : 3001
+  name = var.service_definition.name
+
+  base_task = var.service_definition.task
+  service   = var.service_definition.service
 
   # Add service-specific env vars
   env_vars = merge(
-    var.service_definition.env_vars,
+    local.base_task.env_vars,
     tomap({
       # Core Bloom vars
       NEXTJS_PORT      = local.port,
@@ -18,8 +22,9 @@ locals {
     })
   )
 
-  service_definition = merge(
-    var.service_definition,
+  # Set modified env_vars on task object
+  task = merge(
+    local.base_task,
     {
       env_vars = local.env_vars
     }
@@ -36,14 +41,6 @@ locals {
 
   # The ARN pattern scoping access to the secure upload bucket
   secure_bucket_arn = "arn:aws:s3:::${var.secure_upload_bucket}"
-
-  # The value to use in IAM policies restricting access to upload buckets
-  /* Probably not needed at this time
-  s3_access_policy_bucket_resource = [
-    local.public_bucket_arn,
-    local.secure_bucket_arn
-  ]
-  */
 
   # The value to use in IAM policies restricting access to upload objects
   s3_access_policy_object_resource = [

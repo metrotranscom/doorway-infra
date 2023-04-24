@@ -6,17 +6,15 @@ resource "aws_lb" "alb" {
   security_groups    = [aws_security_group.alb.id]
 
   # Note that an ALB requires at least 2 subnets
-  subnets = var.subnet_ids
+  subnets = [for subnet in var.subnets[var.subnet_group] : subnet.id]
 
   enable_deletion_protection = false
 
-  /* TODO
   access_logs {
-    bucket  = aws_s3_bucket.logging_bucket.id
-    prefix  = "public-alb-logs"
-    enabled = true
+    bucket  = var.log_bucket
+    prefix  = local.log_prefix
+    enabled = var.enable_logging
   }
-  */
 
   tags = var.additional_tags
 }

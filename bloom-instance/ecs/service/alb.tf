@@ -27,7 +27,9 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_listener_rule" "service" {
-  listener_arn = var.alb_listener_arn
+  for_each = local.rule_map
+
+  listener_arn = each.value.arn
 
   action {
     type             = "forward"
@@ -36,7 +38,7 @@ resource "aws_lb_listener_rule" "service" {
 
   condition {
     host_header {
-      values = local.domains
+      values = each.value.domains
     }
   }
 
