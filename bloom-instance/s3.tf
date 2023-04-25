@@ -12,7 +12,7 @@ resource "aws_s3_bucket" "static_content" {
 
 # Allow anyone to read from the public uploads bucket
 resource "aws_s3_bucket_policy" "public_uploads" {
-  bucket = aws_s3_bucket.bucket.id
+  bucket = aws_s3_bucket.public_uploads.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
