@@ -26,33 +26,50 @@ variable "vpc_cidr" {
   description = "The IP addresses to allocate to our VPC"
 }
 
-variable "subnet_map" {
-  type = object({
-    public = list(object({
-      az   = string
-      cidr = string
-    }))
+variable "subnet_groups" {
+  type = map(
+    object({
+      # The name to give to subnets in this group
+      name = string
 
-    app = list(object({
-      az   = string
-      cidr = string
-    }))
+      # Whether this subnet group is public
+      # Highlander rules: there can be only one
+      is_public = optional(bool, false)
 
-    data = list(object({
-      az   = string
-      cidr = string
-    }))
-  })
+      # Whether this group of subnets needs an NGW
+      # Mutually exclusive with is_public
+      use_ngw = optional(bool, false)
+
+      # The AZ/CIDR mappings for each subnet in this group
+      subnets = list(
+        object({
+          az   = string
+          cidr = string
+        })
+      )
+    })
+  )
+
   description = "The subnets to create in our VPC"
+
+  validation {
+    condition = alltrue(
+      [
+        for group in var.subnet_groups :
+        !group.use_ngw || (group.use_ngw && !group.is_public)
+      ]
+    )
+    error_message = "Subnet groups using NGWs (use_ngw=true) cannot be marked as public (is_public=true)"
+  }
+
+  validation {
+    condition     = sum([for group in var.subnet_groups : group.is_public ? 1 : 0]) == 1
+    error_message = "There must be exactly one public subnet group (is_public=true)"
+  }
 }
 
 variable "additional_tags" {
   type        = map(string)
   default     = null
   description = "Additional tags to apply to our network resources"
-}
-
-variable "use_ngw" {
-  type        = bool
-  description = "Whether to set up a NAT Gateway in the VPC"
 }

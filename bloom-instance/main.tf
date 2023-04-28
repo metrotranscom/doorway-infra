@@ -46,12 +46,3 @@ locals {
   # The Account ID for the AWS ELB service in this region
   elb_service_account_arn = data.aws_elb_service_account.current.arn
 }
-
-module "network" {
-  source = "./network"
-
-  name_prefix = local.default_name
-  vpc_cidr    = var.vpc_cidr
-  subnet_map  = var.subnet_map
-  use_ngw     = var.use_ngw
-}

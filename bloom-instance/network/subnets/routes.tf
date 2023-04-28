@@ -10,7 +10,7 @@ resource "aws_route_table" "route_table" {
   )
 }
 
-# Only set if var.ngw_id is not null
+# Only set if gateway_type == "ngw"
 resource "aws_route" "ngw_route" {
   count                  = local.add_ngw ? 1 : 0
   route_table_id         = aws_route_table.route_table.id
@@ -18,7 +18,7 @@ resource "aws_route" "ngw_route" {
   nat_gateway_id         = var.ngw_id
 }
 
-# Only set if var.igw_id is not null
+# Only set if gateway_type == "igw"
 resource "aws_route" "igw_route" {
   count                  = local.add_igw ? 1 : 0
   route_table_id         = aws_route_table.route_table.id

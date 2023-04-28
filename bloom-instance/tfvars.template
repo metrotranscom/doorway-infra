@@ -4,36 +4,56 @@ name_prefix = "doorway"
 team_name = "doorway"
 aws_region = "us-west-1"
 sdlc_stage = "dev"
-subnet_map = {
-    "public" = [
-      {
-        az   = "us-west-1a",
-        cidr = "10.0.0.0/24"
-      },
-      {
-        az   = "us-west-1c",
-        cidr = "10.0.1.0/24"
-      }
-    ]
-    "app" = [
-      {
-        az   = "us-west-1a",
-        cidr = "10.0.2.0/24"
-      },
-      {
-        az   = "us-west-1c",
-        cidr = "10.0.3.0/24"
-      }
-    ]
-    "data" = [
-      {
-        az   = "us-west-1a",
-        cidr = "10.0.4.0/24"
-      }
-    ]
+
+network = {
+  vpc_cidr = "10.0.0.0/16"
+
+  subnet_groups = {
+    "public" = {
+      name      = "Public"
+      is_public = true
+      subnets = [
+        {
+          az   = "us-west-1a",
+          cidr = "10.0.0.0/24"
+        },
+        {
+          az   = "us-west-1c",
+          cidr = "10.0.1.0/24"
+        }
+      ]
+    }
+
+    "app" = {
+      name    = "App"
+      use_ngw = true
+      subnets = [
+        {
+          az   = "us-west-1a",
+          cidr = "10.0.2.0/24"
+        },
+        {
+          az   = "us-west-1c",
+          cidr = "10.0.3.0/24"
+        }
+      ]
+    }
+
+    "data" = {
+      name = "Data"
+      subnets = [
+        {
+          az   = "us-west-1a",
+          cidr = "10.0.4.0/24"
+        },
+        {
+          az   = "us-west-1c",
+          cidr = "10.0.5.0/24"
+        }
+      ]
+    }
   }
-vpc_cidr = "10.0.0.0/16"
-use_ngw = true
+}
 
 dns = {
   default_ttl = 60
