@@ -59,49 +59,17 @@ variable "sdlc_stage" {
   }
 }
 
-variable "subnet_map" {
+variable "network" {
   type = object({
-    public = list(object({
-      az   = string
-      cidr = string
-    }))
+    vpc_cidr = string
 
-    app = list(object({
-      az   = string
-      cidr = string
-    }))
-
-    data = list(object({
-      az   = string
-      cidr = string
-    }))
+    # See ./network/inputs.tf for object structure
+    subnet_groups = any
   })
-  description = "The subnets to create in our VPC"
-}
-
-variable "vpc_cidr" {
-  type        = string
-  description = "The IP addresses to allocate to our VPC, e.g. 10.0.0.0/16"
-}
-
-variable "use_ngw" {
-  type        = bool
-  description = "Whether to set up a NAT Gateway in the VPC"
 }
 
 variable "dns" {
-  type = any
-  /*
-  type = object({
-    zones = map(object({
-      # If this zone already exists and shouldn't be created, add the zone ID here
-      zone_id = optional(string)
-
-      # Records that should be added to this zone beyond what are created automatically
-      #additional_records = optional(any)
-    }))
-  })
-  */
+  type        = any
   description = "Settings for managing DNS zones and records"
 }
 
