@@ -8,6 +8,17 @@ variable "name_prefix" {
   }
 }
 
+variable "sdlc_stage" {
+  type        = string
+  default     = "dev"
+  description = "The stage of the software development lifecycle this deployement represents"
+
+  validation {
+    condition     = contains(["dev", "test", "qa", "staging", "prod"], var.sdlc_stage)
+    error_message = "Valid values for var: sdlc_stage are (dev, test, qa, staging, prod)."
+  }
+}
+
 variable "ecr_namespace" {
   type        = string
   description = "A project name used as a namespace for the ECR registry. Example <host>/<ecr_namespace>/<image_name>"
@@ -39,25 +50,16 @@ variable "aws_region" {
   }
 }
 
-variable "repo_name" {
-  type        = string
-  description = "Full GitHub repo name in the format of organization/repo"
+variable "repo" {
+  type = object({
+    name=string,
+    branch=string
+  })
+  description = "Full GitHub repo name in the format of organization/repo and the branch the pipeline will watch"
   validation {
-    # Not comprehensive. Only checks there's a slash, and there's 1+ character before the slash and after the slash
-    condition     = can(regex("^[^\\/]+\\/[^\\/]+$", var.repo_name))
-    error_message = "Repo name must be in the format of: `organization/repo'. "
+    condition     = can(regex("^[^\\/]+\\/[^\\/]+$", var.repo.name)) && can(regex("^.+$", var.repo.branch))
+    error_message = "Repo name must be in the format of: `organization/repo' and branch name can't be empty."
   }
-}
-
-variable "repo_branch_name" {
-  type        = string
-  description = "The Branch name in the repo that the pipeline will watch"
-  validation {
-    # Not comprehsnsive. Only checks it's non empty.
-    condition     = can(regex("^.+$", var.repo_branch_name))
-    error_message = "Branch name can't be empty."
-  }
-  default = "main"
 }
 
 variable "gh_codestar_conn_name" {
@@ -68,4 +70,26 @@ variable "gh_codestar_conn_name" {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.gh_codestar_conn_name))
     error_message = "Branch name can't be empty."
   }
+}
+
+variable "cloudinary_name" {
+  type        = string
+  description = "The Cloudinary cloud name"
+  validation {
+    # Not comprehsnsive. Only checks it's non empty.
+    condition     = can(regex("^.+$", var.cloudinary_name))
+    error_message = "Cloudinary name can't be empty."
+  }
+  default = ""
+}
+
+variable "file_service" {
+  type        = string
+  description = "The Cloudinary cloud name"
+  validation {
+    # Not comprehsnsive. Only checks it's non empty.
+    condition     = can(regex("^.+$", var.file_service))
+    error_message = "File service can't be empty."
+  }
+  default = ""
 }
