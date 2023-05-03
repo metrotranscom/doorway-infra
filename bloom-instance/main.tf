@@ -46,3 +46,19 @@ locals {
   # The Account ID for the AWS ELB service in this region
   elb_service_account_arn = data.aws_elb_service_account.current.arn
 }
+
+# inform terraform about renamed network resources
+moved {
+  from = module.network.module.public
+  to   = module.network.module.public_subnet_group
+}
+
+moved {
+  from = module.network.module.app
+  to   = module.network.module.private_subnet_groups["app"]
+}
+
+moved {
+  from = module.network.module.data
+  to   = module.network.module.private_subnet_groups["data"]
+}
