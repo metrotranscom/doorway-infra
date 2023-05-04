@@ -72,24 +72,7 @@ variable "gh_codestar_conn_name" {
   }
 }
 
-variable "cloudinary_name" {
-  type        = string
-  description = "The Cloudinary cloud name"
-  validation {
-    # Not comprehsnsive. Only checks it's non empty.
-    condition     = can(regex("^.+$", var.cloudinary_name))
-    error_message = "Cloudinary name can't be empty."
-  }
-  default = ""
-}
-
-variable "file_service" {
-  type        = string
-  description = "The Cloudinary cloud name"
-  validation {
-    # Not comprehsnsive. Only checks it's non empty.
-    condition     = can(regex("^.+$", var.file_service))
-    error_message = "File service can't be empty."
-  }
-  default = ""
+variable "build_env_vars" {
+  type = map(string)
+  description = "Map of <env name>: <env value> that is injected as environment variables when building the image"
 }
