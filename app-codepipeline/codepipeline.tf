@@ -2,18 +2,18 @@
 data "aws_caller_identity" "current" {}
 locals {
   ecr_account_id = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
-  ecr_namespace  = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo.branch}" : var.ecr_namespace
-  # build_env_vars = list(object({"name"=string, "value"=string}))
+  ecr_namespace  = var.ecr_namespace == "" ? "${var.name_prefix}-${var.sdlc_stage}-${var.repo.branch}" : var.ecr_namespace
   build_env_vars = concat([
     { "name" : "ECR_REGION", "value" : "${var.aws_region}" },
     { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
     { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" }
   ], [for n, val in var.build_env_vars : { name = n, value = val }])
+  name_prefix = "${var.name_prefix}-${var.sdlc_stage}"
 }
 
 
 resource "aws_codepipeline" "default" {
-  name     = "${var.name_prefix}-codepipeline"
+  name     = "${local.name_prefix}-codepipeline"
   role_arn = aws_iam_role.codepipeline_role.arn
 
   artifact_store {
@@ -79,7 +79,7 @@ resource "aws_codepipeline" "default" {
 }
 
 resource "aws_codebuild_project" "default" {
-  name         = "${var.name_prefix}-codebuild"
+  name         = "${local.name_prefix}-codebuild"
   service_role = aws_iam_role.codebuild_role.arn
 
   artifacts {
@@ -116,7 +116,7 @@ resource "aws_codebuild_project" "default" {
 }
 
 resource "aws_codebuild_project" "deploy_ecs" {
-  name         = "${var.name_prefix}-codebuild-deploy"
+  name         = "${local.name_prefix}-codebuild-deploy"
   service_role = aws_iam_role.codebuild_deploy_role.arn
 
   artifacts {
@@ -150,7 +150,7 @@ resource "aws_codebuild_project" "deploy_ecs" {
 }
 
 resource "aws_s3_bucket" "default" {
-  bucket_prefix = var.name_prefix
+  bucket_prefix = local.name_prefix
 }
 
 
@@ -160,7 +160,7 @@ data "aws_codestarconnections_connection" "default" {
 }
 
 resource "aws_iam_role" "codepipeline_role" {
-  name = "${var.name_prefix}-codepipeline_role"
+  name = "${local.name_prefix}-codepipeline_role"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -177,7 +177,7 @@ resource "aws_iam_role" "codepipeline_role" {
 }
 
 resource "aws_iam_role_policy" "codepipeline_role_policy" {
-  name = "${var.name_prefix}-codepipeline_role_policy"
+  name = "${local.name_prefix}-codepipeline_role_policy"
   role = aws_iam_role.codepipeline_role.id
 
   policy = jsonencode({
@@ -222,7 +222,7 @@ resource "aws_iam_role_policy" "codepipeline_role_policy" {
 }
 
 resource "aws_iam_role" "codebuild_role" {
-  name = "${var.name_prefix}-codebuild_role"
+  name = "${local.name_prefix}-codebuild_role"
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -239,7 +239,7 @@ resource "aws_iam_role" "codebuild_role" {
 
 
 resource "aws_iam_role_policy" "codebuild_role_policy" {
-  name = "${var.name_prefix}-codebuild_role_policy"
+  name = "${local.name_prefix}-codebuild_role_policy"
   role = aws_iam_role.codebuild_role.id
 
   policy = jsonencode({
@@ -309,7 +309,7 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
 ## We're punting on using CodeDeploy to deploy to ECS. For now
 ## we have a CodeBuild stage that calls `aws ecs update-service` directly.
 resource "aws_iam_role" "codebuild_deploy_role" {
-  name = "${var.name_prefix}-codebuild_deploy_role"
+  name = "${local.name_prefix}-codebuild_deploy_role"
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [
@@ -325,7 +325,7 @@ resource "aws_iam_role" "codebuild_deploy_role" {
 }
 
 resource "aws_iam_role_policy" "codebuild_deploy_role_policy" {
-  name = "${var.name_prefix}-codebuild_deploy_role_policy"
+  name = "${local.name_prefix}-codebuild_deploy_role_policy"
   role = aws_iam_role.codebuild_deploy_role.id
 
   policy = jsonencode({
