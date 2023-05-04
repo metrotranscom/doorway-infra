@@ -113,6 +113,8 @@ resource "aws_codebuild_project" "default" {
     type      = "CODEPIPELINE"
     buildspec = "ci/buildspec_${var.repo.branch}.yml"
   }
+
+  build_timeout = "120"
 }
 
 resource "aws_codebuild_project" "deploy_ecs" {
