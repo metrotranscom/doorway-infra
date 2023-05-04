@@ -4,13 +4,11 @@ locals {
   ecr_account_id = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
   ecr_namespace  = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo.branch}" : var.ecr_namespace
   # build_env_vars = list(object({"name"=string, "value"=string}))
-  build_env_vars = [
+  build_env_vars = concat([
     { "name" : "ECR_REGION", "value" : "${var.aws_region}" },
     { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
-    { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" },
-    { "name" : "CLOUDINARY_NAME", "value" : "${var.cloudinary_name}" },
-    { "name" : "FILE_SERVICE", "value" : "${var.file_service}" }
-  ]
+    { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" }
+  ], [for n, val in var.build_env_vars : { name = n, value = val }])
 }
 
 
