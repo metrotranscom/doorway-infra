@@ -3,7 +3,6 @@ data "aws_caller_identity" "current" {}
 locals {
   ecr_account_id = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
   ecr_namespace  = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo.branch}" : var.ecr_namespace
-  # build_env_vars = list(object({"name"=string, "value"=string}))
   build_env_vars = concat([
     { "name" : "ECR_REGION", "value" : "${var.aws_region}" },
     { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
@@ -44,16 +43,42 @@ resource "aws_codepipeline" "default" {
     name = "Build"
 
     action {
-      name             = "Build"
+      name             = "BuildBackend"
       category         = "Build"
       owner            = "AWS"
       provider         = "CodeBuild"
       input_artifacts  = ["source_output"]
-      output_artifacts = ["build_output"]
+      output_artifacts = ["build_backend"]
       version          = "1"
 
       configuration = {
-        ProjectName = aws_codebuild_project.default.name
+        ProjectName = aws_codebuild_project.backend.name
+      }
+    }
+    action {
+      name             = "BuildPublic"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["source_output"]
+      output_artifacts = ["build_public"]
+      version          = "1"
+
+      configuration = {
+        ProjectName = aws_codebuild_project.public.name
+      }
+    }
+    action {
+      name             = "BuildPartners"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["source_output"]
+      output_artifacts = ["build_partners"]
+      version          = "1"
+
+      configuration = {
+        ProjectName = aws_codebuild_project.partners.name
       }
     }
   }
@@ -76,43 +101,6 @@ resource "aws_codepipeline" "default" {
       }
     }
   }
-}
-
-resource "aws_codebuild_project" "default" {
-  name         = "${var.name_prefix}-codebuild"
-  service_role = aws_iam_role.codebuild_role.arn
-
-  artifacts {
-    type = "CODEPIPELINE"
-  }
-
-  environment {
-    compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:6.0"
-    type                        = "LINUX_CONTAINER"
-    image_pull_credentials_type = "CODEBUILD"
-    privileged_mode             = true
-
-    dynamic "environment_variable" {
-      for_each = local.build_env_vars
-      content {
-        name  = environment_variable.value["name"]
-        value = environment_variable.value["value"]
-      }
-    }
-  }
-  logs_config {
-    cloudwatch_logs {
-      status = "ENABLED"
-    }
-  }
-
-  source {
-    type      = "CODEPIPELINE"
-    buildspec = "ci/buildspec_${var.repo.branch}.yml"
-  }
-
-  build_timeout = "120"
 }
 
 resource "aws_codebuild_project" "deploy_ecs" {
@@ -213,7 +201,9 @@ resource "aws_iam_role_policy" "codepipeline_role_policy" {
           "codebuild:StartBuild"
         ],
         "Resource" : [
-          aws_codebuild_project.default.arn,
+	  aws_codebuild_project.backend.arn,
+	  aws_codebuild_project.public.arn,
+	  aws_codebuild_project.partners.arn,
           aws_codebuild_project.deploy_ecs.arn
         ]
       }
@@ -286,7 +276,9 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
           "codebuild:BatchPutCodeCoverages"
         ],
         "Resource" : [
-          "${aws_codebuild_project.default.arn}"
+	  "${aws_codebuild_project.backend.arn}",
+	  "${aws_codebuild_project.public.arn}",
+	  "${aws_codebuild_project.partners.arn}"
         ]
       },
       {
