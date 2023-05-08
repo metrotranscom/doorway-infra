@@ -3,12 +3,20 @@ data "aws_caller_identity" "current" {}
 locals {
   ecr_account_id = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
   ecr_namespace  = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo.branch}" : var.ecr_namespace
-  build_env_vars = concat([
+  common_env_vars = [
     { "name" : "ECR_REGION", "value" : "${var.aws_region}" },
     { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
     { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" }
-  ], [for n, val in var.build_env_vars : { name = n, value = val }])
-  deploy_env_vars = [for n, val in var.deploy_env_vars : { name = n, value = val }]
+  ]
+  deploy_secrets_env_vars = [
+    { "name": "PGPASS_ARN", "value": var.pgpass_arn_key.arn}, # , "type": "SECRETS_MANAGER" },
+    { "name": "PGPASS_JSON_KEY", "value": var.pgpass_arn_key.key} # "type": "SECRETS_MANAGER" }
+  ]
+  build_env_vars = concat(local.common_env_vars, [for n, val in var.build_env_vars : { name = n, value = val }])
+  deploy_env_vars = concat(
+    local.common_env_vars,
+    [for n, val in var.deploy_env_vars : { name = n, value = val }],
+    local.deploy_secrets_env_vars)
 }
 
 resource "aws_codepipeline" "default" {
@@ -327,7 +335,10 @@ resource "aws_iam_role_policy" "codebuild_deploy_role_policy" {
     "Version" : "2012-10-17",
     "Statement" : [
       {
-        "Action" : "ecs:UpdateService",
+	"Action" : [
+	  "ecs:UpdateService",
+	  "ecs:DescribeServices"
+	]
         "Effect" : "Allow",
         "Resource" : "*"
       },
@@ -375,7 +386,26 @@ resource "aws_iam_role_policy" "codebuild_deploy_role_policy" {
           "${aws_codebuild_project.deploy_ecs.arn}"
         ]
       },
-
+      {
+	"Action" : [
+	  "ecr:BatchCheckLayerAvailability",
+	  "ecr:CompleteLayerUpload",
+	  "ecr:GetAuthorizationToken",
+	  "ecr:InitiateLayerUpload",
+	  "ecr:PutImage",
+	  "ecr:UploadLayerPart",
+	  # We're downloading images for re-tagging.
+	  "ecr:BatchGetImage",
+	  "ecr:GetDownloadUrlForLayer"
+	],
+	"Resource" : "*",
+	"Effect" : "Allow"
+      },
+      {
+	  "Effect" : "Allow",
+	  "Action" : "secretsmanager:GetSecretValue",
+	  "Resource" : var.pgpass_arn_key.arn
+      }
     ]
   })
 }

@@ -69,3 +69,8 @@ variable "deploy_env_vars" {
   type        = map(string)
   description = "Map of <env name>: <env value> that is injected as environment variables when deploying the services"
 }
+
+variable "pgpass_arn_key" {
+  type = map(string)
+  description = "Map that includes the ARN and JSON key for the pgpass secret in secret manager for the backend db"
+}
