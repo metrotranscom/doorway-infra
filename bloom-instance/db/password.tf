@@ -27,6 +27,9 @@ resource "aws_secretsmanager_secret" "conn_string" {
 
 # Store the password and the full connection string in a secret
 resource "aws_secretsmanager_secret_version" "conn_string" {
-  secret_id     = aws_secretsmanager_secret.conn_string.id
-  secret_string = local.conn_string
+  secret_id = aws_secretsmanager_secret.conn_string.id
+  secret_string = jsonencode({
+    "jdbc_uri" : local.conn_string,
+    "pgpass" : local.pgpass_string
+  })
 }
