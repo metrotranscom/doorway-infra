@@ -3,14 +3,13 @@ data "aws_caller_identity" "current" {}
 locals {
   ecr_account_id = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
   ecr_namespace  = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo.branch}" : var.ecr_namespace
-  # build_env_vars = list(object({"name"=string, "value"=string}))
   build_env_vars = concat([
     { "name" : "ECR_REGION", "value" : "${var.aws_region}" },
     { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
     { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" }
   ], [for n, val in var.build_env_vars : { name = n, value = val }])
+  deploy_env_vars = [for n, val in var.deploy_env_vars : { name = n, value = val }]
 }
-
 
 resource "aws_codepipeline" "default" {
   name     = "${var.name_prefix}-codepipeline"
@@ -98,6 +97,7 @@ resource "aws_codebuild_project" "default" {
       content {
         name  = environment_variable.value["name"]
         value = environment_variable.value["value"]
+        type  = can(environment_variable.value["type"]) ? environment_variable.value["type"] : "PLAINTEXT"
       }
     }
   }
@@ -129,13 +129,16 @@ resource "aws_codebuild_project" "deploy_ecs" {
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
     privileged_mode             = true
-    environment_variable {
-      name  = "SDLC_STAGE"
-      value = var.sdlc_stage
+
+    dynamic "environment_variable" {
+      for_each = local.deploy_env_vars
+      content {
+        name  = environment_variable.value["name"]
+        value = environment_variable.value["value"]
+        type  = can(environment_variable.value["type"]) ? environment_variable.value["type"] : "PLAINTEXT"
+      }
     }
-
   }
-
 
   logs_config {
     cloudwatch_logs {
