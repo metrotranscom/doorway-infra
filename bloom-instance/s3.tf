@@ -1,13 +1,13 @@
 resource "aws_s3_bucket" "public_uploads" {
-  bucket_prefix = "${local.name_prefix}-public-uploads"
+  bucket_prefix = "${local.qualified_name_prefix}-public-uploads"
 }
 
 resource "aws_s3_bucket" "secure_uploads" {
-  bucket_prefix = "${local.name_prefix}-secure-uploads"
+  bucket_prefix = "${local.qualified_name_prefix}-secure-uploads"
 }
 
 resource "aws_s3_bucket" "static_content" {
-  bucket_prefix = "${local.name_prefix}-static-content"
+  bucket_prefix = "${local.qualified_name_prefix}-static-content"
 }
 
 resource "aws_s3_bucket_public_access_block" "public_uploads" {
