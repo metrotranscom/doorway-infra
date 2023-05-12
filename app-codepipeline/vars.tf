@@ -74,3 +74,20 @@ variable "pgpass_arn_key" {
   type = map(string)
   description = "Map that includes the ARN and JSON key for the pgpass secret in secret manager for the backend db"
 }
+
+variable "codebuild_vpc_id" {
+  type = string
+  description = "VPC id where codebuild projects can access the database"
+}
+variable "codebuild_vpc_subnets" {
+  type = list(string)
+  description = "VPC subnets where codebuild projects can access the database"
+}
+variable "codebuild_vpc_sgs" {
+  type = list(string)
+  description = "VPC security groupswhere codebuild projects can access the database"
+}
+variable "codebuild_vpc_region" {
+  type = string
+  description = "VPC region where codebuild projects live"
+}

@@ -3,6 +3,7 @@ data "aws_caller_identity" "current" {}
 locals {
   ecr_account_id = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
   ecr_namespace  = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo.branch}" : var.ecr_namespace
+  codebuild_aws_acct_id = data.aws_caller_identity.current.account_id
   common_env_vars = [
     { "name" : "ECR_REGION", "value" : "${var.aws_region}" },
     { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
@@ -135,7 +136,11 @@ resource "aws_codebuild_project" "deploy_ecs" {
       }
     }
   }
-
+  vpc_config {
+    vpc_id = var.codebuild_vpc_id
+    subnets = var.codebuild_vpc_subnets
+    security_group_ids = var.codebuild_vpc_sgs
+  }
   logs_config {
     cloudwatch_logs {
       status = "ENABLED"
@@ -144,12 +149,15 @@ resource "aws_codebuild_project" "deploy_ecs" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = "ci/buildspec_deploy_${var.repo.branch}.yml"
+    buildspec = "ci/buildspec_deploy.yml"
   }
+  depends_on = [aws_iam_role_policy.codebuild_deploy_role_policy_vpc]
 }
 
 resource "aws_s3_bucket" "default" {
   bucket_prefix = var.name_prefix
+  ## TODO: remove before code review
+  force_destroy = true
 }
 
 
@@ -238,6 +246,45 @@ resource "aws_iam_role" "codebuild_role" {
   })
 }
 
+resource "aws_iam_role_policy" "codebuild_role_policy_vpc" {
+  name = "${var.name_prefix}-codebuild_role_policy_after"
+  role = aws_iam_role.codebuild_role.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+	"Action" : [
+	  "ec2:CreateNetworkInterface",
+	  "ec2:DescribeNetworkInterfaces",
+	  "ec2:DeleteNetworkInterface",
+	  "ec2:DescribeSubnets",
+	  "ec2:DescribeSecurityGroups",
+	  "ec2:DescribeDhcpOptions",
+	  "ec2:DescribeVpcs",
+	  "ec2:DescribeSecurityGroups"
+	],
+	"Resource" : "*",
+	"Effect" : "Allow"
+      },
+      {
+	"Effect": "Allow",
+	"Action": [
+	  "ec2:CreateNetworkInterfacePermission"
+	],
+	"Resource": "arn:aws:ec2:${var.codebuild_vpc_region}:${local.codebuild_aws_acct_id}:network-interface/*",
+	"Condition": {
+	  "StringEquals": {
+	    "ec2:AuthorizedService": "codebuild.amazonaws.com"
+	  },
+	  "ArnEquals": {
+	    "ec2:Subnet": [for subnet in data.aws_subnet.codebuild_vpc_subnets: subnet.arn]
+	  }
+	}
+      }
+    ]
+  })
+}
+
 
 resource "aws_iam_role_policy" "codebuild_role_policy" {
   name = "${var.name_prefix}-codebuild_role_policy"
@@ -304,10 +351,10 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
         "Resource" : "*",
         "Effect" : "Allow"
       }
+
     ]
   })
 }
-
 
 ## We're punting on using CodeDeploy to deploy to ECS. For now
 ## we have a CodeBuild stage that calls `aws ecs update-service` directly.
@@ -326,6 +373,51 @@ resource "aws_iam_role" "codebuild_deploy_role" {
     ]
   })
 }
+
+resource "aws_iam_role_policy" "codebuild_deploy_role_policy_vpc" {
+  name = "${var.name_prefix}-codebuild_deploy_role_policy_vpc"
+  role = aws_iam_role.codebuild_deploy_role.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+	"Action" : [
+	  "ec2:CreateNetworkInterface",
+	  "ec2:DescribeNetworkInterfaces",
+	  "ec2:DeleteNetworkInterface",
+	  "ec2:DescribeSubnets",
+	  "ec2:DescribeSecurityGroups",
+	  "ec2:DescribeDhcpOptions",
+	  "ec2:DescribeVpcs",
+	  "ec2:DescribeSecurityGroups"
+	],
+	"Resource" : "*",
+	"Effect" : "Allow"
+      },
+      {
+	"Effect": "Allow",
+	"Action": [
+	  "ec2:CreateNetworkInterfacePermission"
+	],
+	"Resource": "arn:aws:ec2:${var.codebuild_vpc_region}:${local.codebuild_aws_acct_id}:network-interface/*",
+	"Condition": {
+	  "StringEquals": {
+	    "ec2:AuthorizedService": "codebuild.amazonaws.com"
+	  },
+	  "ArnEquals": {
+	    "ec2:Subnet": [for subnet in data.aws_subnet.codebuild_vpc_subnets: subnet.arn]
+	  }
+	}
+      }
+    ]
+  })
+}
+
+data "aws_subnet" "codebuild_vpc_subnets" {
+  for_each = toset(var.codebuild_vpc_subnets)
+  id = each.value
+}
+
 
 resource "aws_iam_role_policy" "codebuild_deploy_role_policy" {
   name = "${var.name_prefix}-codebuild_deploy_role_policy"

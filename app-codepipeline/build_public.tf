@@ -21,6 +21,13 @@ resource "aws_codebuild_project" "public" {
       }
     }
   }
+
+  vpc_config {
+    vpc_id = var.codebuild_vpc_id
+    subnets = var.codebuild_vpc_subnets
+    security_group_ids = var.codebuild_vpc_sgs
+  }
+
   logs_config {
     cloudwatch_logs {
       status = "ENABLED"
@@ -29,7 +36,7 @@ resource "aws_codebuild_project" "public" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = "ci/buildspec_${var.repo.branch}_public.yml"
+    buildspec = "ci/buildspec_public.yml"
   }
 
   build_timeout = "120"
