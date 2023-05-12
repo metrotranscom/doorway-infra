@@ -91,3 +91,9 @@ variable "codebuild_vpc_region" {
   type = string
   description = "VPC region where codebuild projects live"
 }
+
+variable "s3_force_delete" {
+  type = bool
+  description = "If true, we'll be able to force delete the S3 bucket that holds the codepipline logs"
+  default = false
+}

@@ -156,8 +156,7 @@ resource "aws_codebuild_project" "deploy_ecs" {
 
 resource "aws_s3_bucket" "default" {
   bucket_prefix = var.name_prefix
-  ## TODO: remove before code review
-  force_destroy = true
+  force_destroy = var.s3_force_delete
 }
 
 
