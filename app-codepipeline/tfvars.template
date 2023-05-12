@@ -3,3 +3,6 @@ name_prefix="doorway-cicd-dev"
 repo_name="metrotranscom/doorway"
 repo_branch_name="main"
 ecr_namespace="doorway-staging"
+pgpass_arn_key={"arn": "arn:etc", "key": "pgpass"}
+deploy_env_vars={"BUILD_VAR": "blank"}
+build_env_vars={"DEPLOY_VAR": "blank"}

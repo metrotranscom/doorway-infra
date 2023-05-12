@@ -7,22 +7,10 @@ variable "name_prefix" {
     error_message = "name_prefix can only contain letters, numbers, and hyphens"
   }
 }
-
-variable "sdlc_stage" {
-  type        = string
-  default     = "dev"
-  description = "The stage of the software development lifecycle this deployement represents"
-
-  validation {
-    condition     = contains(["dev", "test", "qa", "staging", "prod"], var.sdlc_stage)
-    error_message = "Valid values for var: sdlc_stage are (dev, test, qa, staging, prod)."
-  }
-}
-
 variable "ecr_namespace" {
   type        = string
   description = "A project name used as a namespace for the ECR registry. Example <host>/<ecr_namespace>/<image_name>"
-  default = ""
+  default     = ""
   validation {
     condition     = var.ecr_namespace == "" || can(regex("^[[:alnum:]\\-]+$", var.ecr_namespace))
     error_message = "ecr_namespace can only contain letters, numbers, and hyphens"
@@ -52,8 +40,8 @@ variable "aws_region" {
 
 variable "repo" {
   type = object({
-    name=string,
-    branch=string
+    name   = string,
+    branch = string
   })
   description = "Full GitHub repo name in the format of organization/repo and the branch the pipeline will watch"
   validation {
@@ -73,6 +61,33 @@ variable "gh_codestar_conn_name" {
 }
 
 variable "build_env_vars" {
-  type = map(string)
+  type        = map(string)
   description = "Map of <env name>: <env value> that is injected as environment variables when building the image"
+}
+
+variable "deploy_env_vars" {
+  type        = map(string)
+  description = "Map of <env name>: <env value> that is injected as environment variables when deploying the services"
+}
+
+variable "pgpass_arn_key" {
+  type = map(string)
+  description = "Map that includes the ARN and JSON key for the pgpass secret in secret manager for the backend db"
+}
+
+variable "codebuild_vpc_id" {
+  type = string
+  description = "VPC id where codebuild projects can access the database"
+}
+variable "codebuild_vpc_subnets" {
+  type = list(string)
+  description = "VPC subnets where codebuild projects can access the database"
+}
+variable "codebuild_vpc_sgs" {
+  type = list(string)
+  description = "VPC security groupswhere codebuild projects can access the database"
+}
+variable "codebuild_vpc_region" {
+  type = string
+  description = "VPC region where codebuild projects live"
 }
