@@ -133,5 +133,15 @@ variable "certs" {
     auto_validate = optional(bool)
     alt_names     = optional(list(string))
   }))
-  description = "The certifcates to use"
+  description = "The certificates to use"
+}
+
+variable "listings_import_task" {
+  type = object({
+    # See ecs/task/inputs.tf for object structure
+    task = any
+    # See cronjob/inputs.tf for object structure
+    schedule     = any
+    subnet_group = string
+  })
 }

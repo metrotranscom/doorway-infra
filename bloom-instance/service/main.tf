@@ -2,8 +2,9 @@
 module "task" {
   source = "../ecs/task"
 
-  name_prefix   = var.name_prefix
-  task_role_arn = var.task_role_arn
+  name_prefix    = var.name_prefix
+  task_role_arn  = var.task_role_arn
+  log_group_name = var.log_group_name
 
   task = merge(
     var.task,

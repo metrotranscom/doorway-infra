@@ -9,6 +9,11 @@ variable "name_prefix" {
   }
 }
 
+variable "log_group_name" {
+  type        = string
+  description = "The name of the CloudWatch Logs log group to use"
+}
+
 variable "task" {
   type = object({
     # The name of the service (must be unique)
