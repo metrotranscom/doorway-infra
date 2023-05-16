@@ -9,6 +9,9 @@ locals {
     { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
     { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" }
   ]
+  deploy_secrets_env_vars = [
+    { "name" : "DB_CREDS_ARN", "value" : var.pgpass_arn_key.arn }
+  ]
   build_env_vars = concat(local.common_env_vars, [for n, val in var.build_env_vars : { name = n, value = val }])
 
   deploy_secrets_env_vars = [
