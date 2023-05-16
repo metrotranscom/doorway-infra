@@ -9,9 +9,6 @@ locals {
     { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
     { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" }
   ]
-  deploy_secrets_env_vars = [
-    { "name" : "DB_CREDS_ARN", "value" : var.pgpass_arn_key.arn }
-  ]
   build_env_vars = concat(local.common_env_vars, [for n, val in var.build_env_vars : { name = n, value = val }])
 
   deploy_secrets_env_vars = [
@@ -91,6 +88,19 @@ resource "aws_codepipeline" "default" {
 
       configuration = {
         ProjectName = aws_codebuild_project.partners.name
+      }
+    }
+    action {
+      name             = "BuildImportListings"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["source_output"]
+      output_artifacts = ["build_import"]
+      version          = "1"
+
+      configuration = {
+        ProjectName = aws_codebuild_project.import.name
       }
     }
   }
@@ -225,7 +235,8 @@ resource "aws_iam_role_policy" "codepipeline_role_policy" {
           aws_codebuild_project.backend.arn,
           aws_codebuild_project.public.arn,
           aws_codebuild_project.partners.arn,
-          aws_codebuild_project.deploy_ecs.arn
+          aws_codebuild_project.deploy_ecs.arn,
+          aws_codebuild_project.import.arn
         ]
       }
     ]
