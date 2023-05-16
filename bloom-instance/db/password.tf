@@ -29,7 +29,11 @@ resource "aws_secretsmanager_secret" "conn_string" {
 resource "aws_secretsmanager_secret_version" "conn_string" {
   secret_id = aws_secretsmanager_secret.conn_string.id
   secret_string = jsonencode({
-    "jdbc_uri" : local.conn_string,
-    "pgpass" : local.pgpass_string
+    "uri" : local.conn_string,
+    "user" : local.db.username,
+    "password" : local.password,
+    "host" : local.db.host,
+    "db_name" : local.db.db_name,
+    "port" : local.db.port
   })
 }
