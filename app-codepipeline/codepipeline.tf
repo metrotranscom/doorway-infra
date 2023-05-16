@@ -1,8 +1,8 @@
 # Needed to resolve current AWS Account ID
 data "aws_caller_identity" "current" {}
 locals {
-  ecr_account_id = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
-  ecr_namespace  = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo.branch}" : var.ecr_namespace
+  ecr_account_id        = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
+  ecr_namespace         = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo.branch}" : var.ecr_namespace
   codebuild_aws_acct_id = data.aws_caller_identity.current.account_id
   common_env_vars = [
     { "name" : "ECR_REGION", "value" : "${var.aws_region}" },
@@ -10,14 +10,13 @@ locals {
     { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" }
   ]
   deploy_secrets_env_vars = [
-    { "name": "PGPASS_ARN", "value": var.pgpass_arn_key.arn}, # , "type": "SECRETS_MANAGER" },
-    { "name": "PGPASS_JSON_KEY", "value": var.pgpass_arn_key.key} # "type": "SECRETS_MANAGER" }
+    { "name" : "DB_CREDS_ARN", "value" : var.pgpass_arn_key.arn }
   ]
   build_env_vars = concat(local.common_env_vars, [for n, val in var.build_env_vars : { name = n, value = val }])
   deploy_env_vars = concat(
     local.common_env_vars,
     [for n, val in var.deploy_env_vars : { name = n, value = val }],
-    local.deploy_secrets_env_vars)
+  local.deploy_secrets_env_vars)
 }
 
 resource "aws_codepipeline" "default" {
@@ -137,8 +136,8 @@ resource "aws_codebuild_project" "deploy_ecs" {
     }
   }
   vpc_config {
-    vpc_id = var.codebuild_vpc_id
-    subnets = var.codebuild_vpc_subnets
+    vpc_id             = var.codebuild_vpc_id
+    subnets            = var.codebuild_vpc_subnets
     security_group_ids = var.codebuild_vpc_sgs
   }
   logs_config {
@@ -219,9 +218,9 @@ resource "aws_iam_role_policy" "codepipeline_role_policy" {
           "codebuild:StartBuild"
         ],
         "Resource" : [
-	  aws_codebuild_project.backend.arn,
-	  aws_codebuild_project.public.arn,
-	  aws_codebuild_project.partners.arn,
+          aws_codebuild_project.backend.arn,
+          aws_codebuild_project.public.arn,
+          aws_codebuild_project.partners.arn,
           aws_codebuild_project.deploy_ecs.arn
         ]
       }
@@ -252,33 +251,33 @@ resource "aws_iam_role_policy" "codebuild_role_policy_vpc" {
     "Version" : "2012-10-17",
     "Statement" : [
       {
-	"Action" : [
-	  "ec2:CreateNetworkInterface",
-	  "ec2:DescribeNetworkInterfaces",
-	  "ec2:DeleteNetworkInterface",
-	  "ec2:DescribeSubnets",
-	  "ec2:DescribeSecurityGroups",
-	  "ec2:DescribeDhcpOptions",
-	  "ec2:DescribeVpcs",
-	  "ec2:DescribeSecurityGroups"
-	],
-	"Resource" : "*",
-	"Effect" : "Allow"
+        "Action" : [
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeDhcpOptions",
+          "ec2:DescribeVpcs",
+          "ec2:DescribeSecurityGroups"
+        ],
+        "Resource" : "*",
+        "Effect" : "Allow"
       },
       {
-	"Effect": "Allow",
-	"Action": [
-	  "ec2:CreateNetworkInterfacePermission"
-	],
-	"Resource": "arn:aws:ec2:${var.codebuild_vpc_region}:${local.codebuild_aws_acct_id}:network-interface/*",
-	"Condition": {
-	  "StringEquals": {
-	    "ec2:AuthorizedService": "codebuild.amazonaws.com"
-	  },
-	  "ArnEquals": {
-	    "ec2:Subnet": [for subnet in data.aws_subnet.codebuild_vpc_subnets: subnet.arn]
-	  }
-	}
+        "Effect" : "Allow",
+        "Action" : [
+          "ec2:CreateNetworkInterfacePermission"
+        ],
+        "Resource" : "arn:aws:ec2:${var.codebuild_vpc_region}:${local.codebuild_aws_acct_id}:network-interface/*",
+        "Condition" : {
+          "StringEquals" : {
+            "ec2:AuthorizedService" : "codebuild.amazonaws.com"
+          },
+          "ArnEquals" : {
+            "ec2:Subnet" : [for subnet in data.aws_subnet.codebuild_vpc_subnets : subnet.arn]
+          }
+        }
       }
     ]
   })
@@ -333,9 +332,9 @@ resource "aws_iam_role_policy" "codebuild_role_policy" {
           "codebuild:BatchPutCodeCoverages"
         ],
         "Resource" : [
-	  "${aws_codebuild_project.backend.arn}",
-	  "${aws_codebuild_project.public.arn}",
-	  "${aws_codebuild_project.partners.arn}"
+          "${aws_codebuild_project.backend.arn}",
+          "${aws_codebuild_project.public.arn}",
+          "${aws_codebuild_project.partners.arn}"
         ]
       },
       {
@@ -380,33 +379,33 @@ resource "aws_iam_role_policy" "codebuild_deploy_role_policy_vpc" {
     "Version" : "2012-10-17",
     "Statement" : [
       {
-	"Action" : [
-	  "ec2:CreateNetworkInterface",
-	  "ec2:DescribeNetworkInterfaces",
-	  "ec2:DeleteNetworkInterface",
-	  "ec2:DescribeSubnets",
-	  "ec2:DescribeSecurityGroups",
-	  "ec2:DescribeDhcpOptions",
-	  "ec2:DescribeVpcs",
-	  "ec2:DescribeSecurityGroups"
-	],
-	"Resource" : "*",
-	"Effect" : "Allow"
+        "Action" : [
+          "ec2:CreateNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeDhcpOptions",
+          "ec2:DescribeVpcs",
+          "ec2:DescribeSecurityGroups"
+        ],
+        "Resource" : "*",
+        "Effect" : "Allow"
       },
       {
-	"Effect": "Allow",
-	"Action": [
-	  "ec2:CreateNetworkInterfacePermission"
-	],
-	"Resource": "arn:aws:ec2:${var.codebuild_vpc_region}:${local.codebuild_aws_acct_id}:network-interface/*",
-	"Condition": {
-	  "StringEquals": {
-	    "ec2:AuthorizedService": "codebuild.amazonaws.com"
-	  },
-	  "ArnEquals": {
-	    "ec2:Subnet": [for subnet in data.aws_subnet.codebuild_vpc_subnets: subnet.arn]
-	  }
-	}
+        "Effect" : "Allow",
+        "Action" : [
+          "ec2:CreateNetworkInterfacePermission"
+        ],
+        "Resource" : "arn:aws:ec2:${var.codebuild_vpc_region}:${local.codebuild_aws_acct_id}:network-interface/*",
+        "Condition" : {
+          "StringEquals" : {
+            "ec2:AuthorizedService" : "codebuild.amazonaws.com"
+          },
+          "ArnEquals" : {
+            "ec2:Subnet" : [for subnet in data.aws_subnet.codebuild_vpc_subnets : subnet.arn]
+          }
+        }
       }
     ]
   })
@@ -414,7 +413,7 @@ resource "aws_iam_role_policy" "codebuild_deploy_role_policy_vpc" {
 
 data "aws_subnet" "codebuild_vpc_subnets" {
   for_each = toset(var.codebuild_vpc_subnets)
-  id = each.value
+  id       = each.value
 }
 
 
@@ -426,10 +425,10 @@ resource "aws_iam_role_policy" "codebuild_deploy_role_policy" {
     "Version" : "2012-10-17",
     "Statement" : [
       {
-	"Action" : [
-	  "ecs:UpdateService",
-	  "ecs:DescribeServices"
-	]
+        "Action" : [
+          "ecs:UpdateService",
+          "ecs:DescribeServices"
+        ]
         "Effect" : "Allow",
         "Resource" : "*"
       },
@@ -478,24 +477,24 @@ resource "aws_iam_role_policy" "codebuild_deploy_role_policy" {
         ]
       },
       {
-	"Action" : [
-	  "ecr:BatchCheckLayerAvailability",
-	  "ecr:CompleteLayerUpload",
-	  "ecr:GetAuthorizationToken",
-	  "ecr:InitiateLayerUpload",
-	  "ecr:PutImage",
-	  "ecr:UploadLayerPart",
-	  # We're downloading images for re-tagging.
-	  "ecr:BatchGetImage",
-	  "ecr:GetDownloadUrlForLayer"
-	],
-	"Resource" : "*",
-	"Effect" : "Allow"
+        "Action" : [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:CompleteLayerUpload",
+          "ecr:GetAuthorizationToken",
+          "ecr:InitiateLayerUpload",
+          "ecr:PutImage",
+          "ecr:UploadLayerPart",
+          # We're downloading images for re-tagging.
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer"
+        ],
+        "Resource" : "*",
+        "Effect" : "Allow"
       },
       {
-	  "Effect" : "Allow",
-	  "Action" : "secretsmanager:GetSecretValue",
-	  "Resource" : var.pgpass_arn_key.arn
+        "Effect" : "Allow",
+        "Action" : "secretsmanager:GetSecretValue",
+        "Resource" : var.pgpass_arn_key.arn
       }
     ]
   })
