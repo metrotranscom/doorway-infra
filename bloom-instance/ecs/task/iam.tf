@@ -98,3 +98,36 @@ resource "aws_iam_role_policy_attachment" "ecr_read" {
   role       = aws_iam_role.task_exec.name
   policy_arn = aws_iam_policy.ecr_read[0].arn
 }
+
+resource "aws_iam_policy" "read_secrets" {
+  count = local.has_secrets ? 1 : 0
+
+  name        = "${local.default_name}-read-secrets"
+  description = "Read secrets needed by task ${local.default_name}"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowReadSecrets"
+        Effect = "Allow"
+
+        Action = [
+          "secretsmanager:GetResourcePolicy",
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:ListSecretVersionIds"
+        ]
+
+        Resource = local.unique_secret_arns
+      },
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "read_secrets" {
+  count = local.has_secrets ? 1 : 0
+
+  role       = aws_iam_role.task_exec.name
+  policy_arn = aws_iam_policy.read_secrets[0].arn
+}

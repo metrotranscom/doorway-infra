@@ -36,6 +36,7 @@ variable "db" {
 
     connection_string = string
     security_group_id = string
+    secret_arn        = string
   })
 }
 

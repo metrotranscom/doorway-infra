@@ -31,6 +31,13 @@ resource "aws_ecs_task_definition" "task" {
 
       environment = [for n, val in local.env_vars : { name = n, value = val }]
 
+      secrets = [
+        for n, val in local.secrets : {
+          name      = n,
+          valueFrom = "${val.arn}:${val.key}:${val.version_stage}:${val.version_id}"
+        }
+      ]
+
       logConfiguration = {
         logDriver = "awslogs"
         options = {

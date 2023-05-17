@@ -27,7 +27,14 @@ variable "task" {
     port = optional(number, 80)
 
     # Environment variables to pass to the running containers
-    env_vars = map(string)
+    env_vars = optional(map(string), {})
+
+    secrets = optional(map(object({
+      arn           = string
+      key           = optional(string, "")
+      version_stage = optional(string, "")
+      version_id    = optional(string, "")
+    })), {})
   })
 
   validation {
@@ -51,6 +58,11 @@ variable "task" {
     condition     = var.task.port > 0 && var.task.port <= 65535
     error_message = "port must be a number in the range 1-65535"
   }
+
+  # validation {
+  #   condition     = var.task. > 0 && var.task.port <= 65535
+  #   error_message = "port must be a number in the range 1-65535"
+  # }
 
   description = "An object containing information about the task"
 }
