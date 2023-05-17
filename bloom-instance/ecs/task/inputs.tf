@@ -27,7 +27,14 @@ variable "task" {
     port = optional(number, 80)
 
     # Environment variables to pass to the running containers
-    env_vars = map(string)
+    env_vars = optional(map(string), {})
+
+    secrets = optional(map(object({
+      arn           = string
+      key           = optional(string, "")
+      version_stage = optional(string, "")
+      version_id    = optional(string, "")
+    })), {})
   })
 
   validation {
