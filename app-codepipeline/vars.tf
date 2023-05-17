@@ -76,24 +76,24 @@ variable "db_creds_arn" {
 }
 
 variable "codebuild_vpc_id" {
-  type = string
+  type        = string
   description = "VPC id where codebuild projects can access the database"
 }
 variable "codebuild_vpc_subnets" {
-  type = list(string)
+  type        = list(string)
   description = "VPC subnets where codebuild projects can access the database"
 }
 variable "codebuild_vpc_sgs" {
-  type = list(string)
+  type        = list(string)
   description = "VPC security groupswhere codebuild projects can access the database"
 }
 variable "codebuild_vpc_region" {
-  type = string
+  type        = string
   description = "VPC region where codebuild projects live"
 }
 
 variable "s3_force_delete" {
-  type = bool
+  type        = bool
   description = "If true, we'll be able to force delete the S3 bucket that holds the codepipline logs"
-  default = false
+  default     = false
 }
