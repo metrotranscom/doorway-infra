@@ -19,21 +19,15 @@ locals {
       PARTNERS_BASE_URL   = var.partners_portal_url
       PARTNERS_PORTAL_URL = var.partners_portal_url
 
-      # Temporary until support for secrets is added
-      #DATABASE_URL = var.db.connection_string
-
       # Required to start the server, but not used
       EMAIL_API_KEY     = "SG.<dummy-value>"
       APP_SECRET        = "<dummy-value-that-is-at-least-16-character-long>"
       CLOUDINARY_SECRET = "<dummy-value>"
       CLOUDINARY_KEY    = "<dummy-value>"
 
-      # For running migration tasks
-      #PGHOST     = var.db.host
-      #PGPORT     = var.db.port
-      #PGDATABASE = var.db.db_name
-      #PGUSER     = var.db.username
-      #PGPASSWORD = var.db.password
+      # Disable color in log output
+      # Makes logs more readable in CloudWatch
+      NO_COLOR = "true"
     })
   )
 

@@ -248,6 +248,12 @@ backend_api = {
     }
   }
 
+  migration = {
+    cpu   = 256
+    ram   = 1024
+    image = "<repo>/backend:migrate"
+  }
+
   service = {
     subnet_group = "app"
 
