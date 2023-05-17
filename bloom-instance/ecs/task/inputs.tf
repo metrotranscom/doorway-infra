@@ -59,11 +59,6 @@ variable "task" {
     error_message = "port must be a number in the range 1-65535"
   }
 
-  # validation {
-  #   condition     = var.task. > 0 && var.task.port <= 65535
-  #   error_message = "port must be a number in the range 1-65535"
-  # }
-
   description = "An object containing information about the task"
 }
 
