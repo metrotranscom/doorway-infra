@@ -9,10 +9,11 @@ locals {
     { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
     { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" }
   ]
-  deploy_secrets_env_vars = [
-    { "name" : "DB_CREDS_ARN", "value" : var.pgpass_arn_key.arn }
-  ]
   build_env_vars = concat(local.common_env_vars, [for n, val in var.build_env_vars : { name = n, value = val }])
+
+  deploy_secrets_env_vars = [
+    { "name" : "DB_CREDS_ARN", "value" : var.db_creds_arn }
+  ]
   deploy_env_vars = concat(
     local.common_env_vars,
     [for n, val in var.deploy_env_vars : { name = n, value = val }],
@@ -494,7 +495,7 @@ resource "aws_iam_role_policy" "codebuild_deploy_role_policy" {
       {
         "Effect" : "Allow",
         "Action" : "secretsmanager:GetSecretValue",
-        "Resource" : var.pgpass_arn_key.arn
+        "Resource" : var.db_creds_arn
       }
     ]
   })

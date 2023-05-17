@@ -70,30 +70,30 @@ variable "deploy_env_vars" {
   description = "Map of <env name>: <env value> that is injected as environment variables when deploying the services"
 }
 
-variable "pgpass_arn_key" {
-  type = map(string)
-  description = "Map that includes the ARN and JSON key for the pgpass secret in secret manager for the backend db"
+variable "db_creds_arn" {
+  type        = string
+  description = "The ARN for the backend database secrets in secret manager."
 }
 
 variable "codebuild_vpc_id" {
-  type = string
+  type        = string
   description = "VPC id where codebuild projects can access the database"
 }
 variable "codebuild_vpc_subnets" {
-  type = list(string)
+  type        = list(string)
   description = "VPC subnets where codebuild projects can access the database"
 }
 variable "codebuild_vpc_sgs" {
-  type = list(string)
+  type        = list(string)
   description = "VPC security groupswhere codebuild projects can access the database"
 }
 variable "codebuild_vpc_region" {
-  type = string
+  type        = string
   description = "VPC region where codebuild projects live"
 }
 
 variable "s3_force_delete" {
-  type = bool
+  type        = bool
   description = "If true, we'll be able to force delete the S3 bucket that holds the codepipline logs"
-  default = false
+  default     = false
 }
