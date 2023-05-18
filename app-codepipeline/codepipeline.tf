@@ -90,6 +90,19 @@ resource "aws_codepipeline" "default" {
         ProjectName = aws_codebuild_project.partners.name
       }
     }
+    action {
+      name             = "BuildImportListings"
+      category         = "Build"
+      owner            = "AWS"
+      provider         = "CodeBuild"
+      input_artifacts  = ["source_output"]
+      output_artifacts = ["build_import"]
+      version          = "1"
+
+      configuration = {
+        ProjectName = aws_codebuild_project.import.name
+      }
+    }
   }
 
   stage {
@@ -222,7 +235,8 @@ resource "aws_iam_role_policy" "codepipeline_role_policy" {
           aws_codebuild_project.backend.arn,
           aws_codebuild_project.public.arn,
           aws_codebuild_project.partners.arn,
-          aws_codebuild_project.deploy_ecs.arn
+          aws_codebuild_project.deploy_ecs.arn,
+          aws_codebuild_project.import.arn
         ]
       }
     ]
