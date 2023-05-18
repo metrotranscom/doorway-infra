@@ -12,6 +12,7 @@ locals {
   image    = var.task.image
   port     = var.task.port
   env_vars = var.task.env_vars
+  secrets  = var.task.secrets
 
   # Check the image name to see if it resides in an ECR repo
   # If so, add permssions for our service to access the repo
@@ -25,4 +26,9 @@ locals {
     region        = data.aws_region.current.name
     stream_prefix = local.name
   }
+
+  # Find all unique secrets arns so we can create permissions to access them
+  unique_secret_arns = distinct([for secret in local.secrets : secret.arn])
+
+  has_secrets = length(local.secrets) > 0
 }

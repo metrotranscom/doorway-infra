@@ -3,3 +3,6 @@ name_prefix="doorway-cicd-dev"
 repo_name="metrotranscom/doorway"
 repo_branch_name="main"
 ecr_namespace="doorway-staging"
+db_creds_arn="arn:etc"
+deploy_env_vars={"BUILD_VAR": "blank"}
+build_env_vars={"DEPLOY_VAR": "blank"}

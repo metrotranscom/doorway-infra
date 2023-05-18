@@ -41,6 +41,7 @@ variable "db" {
 
     connection_string = string
     security_group_id = string
+    secret_arn        = string
   })
 }
 
@@ -53,6 +54,17 @@ variable "service_definition" {
     service = any
   })
   description = "A partner portal service definition object"
+}
+
+variable "migration" {
+  # See ecs/task/inputs.tf for type structure
+  type = object({
+    cpu   = number
+    ram   = number
+    image = string
+  })
+
+  description = "A partial representation of the task definition for running migration jobs"
 }
 
 variable "additional_tags" {

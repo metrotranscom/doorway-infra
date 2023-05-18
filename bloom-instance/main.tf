@@ -30,7 +30,10 @@ data "aws_elb_service_account" "current" {}
 locals {
   # We may want to rearrange the order of these in the future based on how easy
   # or hard it is to read at a glance in the console.
-  default_name = "${var.name_prefix}-${terraform.workspace}"
+  qualified_name_prefix = "${var.name_prefix}-${terraform.workspace}"
+
+  # Alias the old name so it can be removed later
+  default_name = local.qualified_name_prefix
 
   default_tags = {
     Team        = var.team_name
@@ -57,4 +60,20 @@ resource "aws_ecs_cluster" "default" {
 # A cloudwatch log group for all tasks
 resource "aws_cloudwatch_log_group" "tasks" {
   name = local.task_log_group_name
+}
+
+# inform terraform about renamed network resources
+moved {
+  from = module.network.module.public
+  to   = module.network.module.public_subnet_group
+}
+
+moved {
+  from = module.network.module.app
+  to   = module.network.module.private_subnet_groups["app"]
+}
+
+moved {
+  from = module.network.module.data
+  to   = module.network.module.private_subnet_groups["data"]
 }

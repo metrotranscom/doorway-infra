@@ -27,6 +27,13 @@ resource "aws_secretsmanager_secret" "conn_string" {
 
 # Store the password and the full connection string in a secret
 resource "aws_secretsmanager_secret_version" "conn_string" {
-  secret_id     = aws_secretsmanager_secret.conn_string.id
-  secret_string = local.conn_string
+  secret_id = aws_secretsmanager_secret.conn_string.id
+  secret_string = jsonencode({
+    "uri" : local.conn_string,
+    "user" : local.db.username,
+    "password" : local.password,
+    "host" : local.db.host,
+    "db_name" : local.db.db_name,
+    "port" : local.db.port
+  })
 }

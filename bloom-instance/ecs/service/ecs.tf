@@ -32,7 +32,7 @@ resource "aws_ecs_service" "service" {
   }
 
   deployment_controller {
-    type = "CODE_DEPLOY"
+    type = "ECS"
   }
 
   tags = var.additional_tags

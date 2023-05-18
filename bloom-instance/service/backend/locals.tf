@@ -19,33 +19,31 @@ locals {
       PARTNERS_BASE_URL   = var.partners_portal_url
       PARTNERS_PORTAL_URL = var.partners_portal_url
 
-      # Temporary until support for secrets is added
-      DATABASE_URL = var.db.connection_string
-
-      # Temporary for fetching from Bloom backend
-      BLOOM_API_BASE       = "https://hba-dev-proxy.herokuapp.com"
-      BLOOM_LISTINGS_QUERY = "/listings"
-
-      # Temporary
+      # Required to start the server, but not used
       EMAIL_API_KEY     = "SG.<dummy-value>"
       APP_SECRET        = "<dummy-value-that-is-at-least-16-character-long>"
       CLOUDINARY_SECRET = "<dummy-value>"
       CLOUDINARY_KEY    = "<dummy-value>"
 
-      # For running migration tasks
-      PGHOST     = var.db.host
-      PGPORT     = var.db.port
-      PGDATABASE = var.db.db_name
-      PGUSER     = var.db.username
-      PGPASSWORD = var.db.password
+      # Disable color in log output
+      # Makes logs more readable in CloudWatch
+      NO_COLOR = "true"
     })
   )
+
+  secrets = {
+    DATABASE_URL = {
+      arn = var.db.secret_arn
+      key = "uri"
+    }
+  }
 
   # Set modified env_vars on task object
   task = merge(
     local.base_task,
     {
       env_vars = local.env_vars
+      secrets  = local.secrets
     }
   )
 }

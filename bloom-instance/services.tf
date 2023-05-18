@@ -57,6 +57,8 @@ module "backend_api" {
   subnet_map = module.network.subnets
   db         = module.db
 
+  migration = var.backend_api.migration
+
   partners_portal_url = "https://partners.demo.doorway.housingbayarea.org/" # Placeholder
 
   additional_tags = {

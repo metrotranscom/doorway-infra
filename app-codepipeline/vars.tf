@@ -7,11 +7,10 @@ variable "name_prefix" {
     error_message = "name_prefix can only contain letters, numbers, and hyphens"
   }
 }
-
 variable "ecr_namespace" {
   type        = string
   description = "A project name used as a namespace for the ECR registry. Example <host>/<ecr_namespace>/<image_name>"
-  default = ""
+  default     = ""
   validation {
     condition     = var.ecr_namespace == "" || can(regex("^[[:alnum:]\\-]+$", var.ecr_namespace))
     error_message = "ecr_namespace can only contain letters, numbers, and hyphens"
@@ -39,25 +38,16 @@ variable "aws_region" {
   }
 }
 
-variable "repo_name" {
-  type        = string
-  description = "Full GitHub repo name in the format of organization/repo"
+variable "repo" {
+  type = object({
+    name   = string,
+    branch = string
+  })
+  description = "Full GitHub repo name in the format of organization/repo and the branch the pipeline will watch"
   validation {
-    # Not comprehensive. Only checks there's a slash, and there's 1+ character before the slash and after the slash
-    condition     = can(regex("^[^\\/]+\\/[^\\/]+$", var.repo_name))
-    error_message = "Repo name must be in the format of: `organization/repo'. "
+    condition     = can(regex("^[^\\/]+\\/[^\\/]+$", var.repo.name)) && can(regex("^.+$", var.repo.branch))
+    error_message = "Repo name must be in the format of: `organization/repo' and branch name can't be empty."
   }
-}
-
-variable "repo_branch_name" {
-  type        = string
-  description = "The Branch name in the repo that the pipeline will watch"
-  validation {
-    # Not comprehsnsive. Only checks it's non empty.
-    condition     = can(regex("^.+$", var.repo_branch_name))
-    error_message = "Branch name can't be empty."
-  }
-  default = "main"
 }
 
 variable "gh_codestar_conn_name" {
@@ -68,4 +58,42 @@ variable "gh_codestar_conn_name" {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.gh_codestar_conn_name))
     error_message = "Branch name can't be empty."
   }
+}
+
+variable "build_env_vars" {
+  type        = map(string)
+  description = "Map of <env name>: <env value> that is injected as environment variables when building the image"
+}
+
+variable "deploy_env_vars" {
+  type        = map(string)
+  description = "Map of <env name>: <env value> that is injected as environment variables when deploying the services"
+}
+
+variable "db_creds_arn" {
+  type        = string
+  description = "The ARN for the backend database secrets in secret manager."
+}
+
+variable "codebuild_vpc_id" {
+  type        = string
+  description = "VPC id where codebuild projects can access the database"
+}
+variable "codebuild_vpc_subnets" {
+  type        = list(string)
+  description = "VPC subnets where codebuild projects can access the database"
+}
+variable "codebuild_vpc_sgs" {
+  type        = list(string)
+  description = "VPC security groupswhere codebuild projects can access the database"
+}
+variable "codebuild_vpc_region" {
+  type        = string
+  description = "VPC region where codebuild projects live"
+}
+
+variable "s3_force_delete" {
+  type        = bool
+  description = "If true, we'll be able to force delete the S3 bucket that holds the codepipline logs"
+  default     = false
 }

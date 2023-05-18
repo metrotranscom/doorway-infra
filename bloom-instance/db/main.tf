@@ -34,7 +34,8 @@ locals {
     db_name  = aws_rds_cluster.aurora[0].database_name
   }
 
-  conn_string = "postgres://${local.db.username}:${local.password}@${local.db.host}:${local.db.port}/${local.db.db_name}"
+  conn_string   = "postgres://${local.db.username}:${local.password}@${local.db.host}:${local.db.port}/${local.db.db_name}"
+  pgpass_string = "${local.db.host}:${local.db.port}:${local.db.db_name}:${local.db.username}:${local.password}"
 }
 
 resource "aws_db_subnet_group" "db" {
