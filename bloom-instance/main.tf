@@ -49,17 +49,13 @@ locals {
   # The Account ID for the AWS ELB service in this region
   elb_service_account_arn = data.aws_elb_service_account.current.arn
 
+  # Defining this here ensures that all of our task logs get grouped together
   task_log_group_name = "${local.default_name}-tasks"
 }
 
 # The default cluster for all ECS tasks and services
 resource "aws_ecs_cluster" "default" {
   name = "${local.default_name}-default"
-}
-
-# A cloudwatch log group for all tasks
-resource "aws_cloudwatch_log_group" "tasks" {
-  name = local.task_log_group_name
 }
 
 # inform terraform about renamed network resources

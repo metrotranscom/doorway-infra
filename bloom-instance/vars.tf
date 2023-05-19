@@ -137,11 +137,7 @@ variable "certs" {
 }
 
 variable "listings_import_task" {
-  type = object({
-    # See ecs/task/inputs.tf for object structure
-    task = any
-    # See cronjob/inputs.tf for object structure
-    schedule     = any
-    subnet_group = string
-  })
+  # See cronjobs/import-listings/inputs.tf for object structure
+  type        = any
+  description = "Setting for the \"Import Listings\" scheduled task"
 }

@@ -39,8 +39,8 @@ variable "network" {
 # This should match the outputs needed from the db module
 variable "db" {
   type = object({
+    secret_arn        = string
     security_group_id = string
-    connection_string = string
     port              = number
   })
 
