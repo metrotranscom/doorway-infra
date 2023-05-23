@@ -16,7 +16,7 @@ variable "task_arn" {
 
 variable "alb_map" {
   type = map(object({
-    arn = string
+    arn      = string
     dns_name = string
     listeners = map(object({
       arn       = string
@@ -50,7 +50,8 @@ variable "service" {
     # This object tells the service which ALB listeners to add forwarding rules for
     albs = map(object({
       listeners = map(object({
-        domains = list(string)
+        listen_on_alb_dns_name = optional(bool, false)
+        domains                = list(string)
       }))
     }))
 

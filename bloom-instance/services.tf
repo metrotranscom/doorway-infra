@@ -15,7 +15,7 @@ module "public_sites" {
   secure_upload_bucket = aws_s3_bucket.secure_uploads.bucket
 
   # Just a placeholder for now
-  backend_api_base = ""
+  backend_api_base = module.backend_api.internal_url
 
   additional_tags = {
     ServiceType = "public-site"
@@ -38,7 +38,7 @@ module "partner_site" {
   secure_upload_bucket = aws_s3_bucket.secure_uploads.bucket
 
   # Just a placeholder for now
-  backend_api_base = ""
+  backend_api_base = module.backend_api.internal_url
 
   additional_tags = {
     ServiceType = "partner-site"
@@ -60,6 +60,8 @@ module "backend_api" {
   migration = var.backend_api.migration
 
   partners_portal_url = "" # Placeholder
+
+  internal_url_path = var.backend_api.internal_url_path
 
   additional_tags = {
     ServiceType = "backend-api"
