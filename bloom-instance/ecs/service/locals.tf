@@ -21,8 +21,10 @@ locals {
 
   filtered_albs = { for alb_name, alb in var.alb_map : alb_name => alb if try(local.requested_albs[alb_name] != null, false) }
 
+  # Sort out domains by listener
   domains_by_listener = { for alb_name, alb in local.requested_albs : alb_name => {
     for listener_name, listener in alb.listeners :
+    # If listener.listen_on_alb_dns_name is true, add the ALB DNS name to the list of domains
     listener_name => listener.listen_on_alb_dns_name ?
     concat(listener.domains, [var.alb_map[alb_name].dns_name]) :
     listener.domains
@@ -30,7 +32,8 @@ locals {
 
   rule_map = merge([for alb_name, alb in local.requested_albs : {
     for listener_name, listener in alb.listeners : "${alb_name}-${listener_name}" => {
-      arn     = var.alb_map[alb_name].listeners[listener_name].arn
+      arn = var.alb_map[alb_name].listeners[listener_name].arn
+      # Use domains_by_listener so we make sure to include ALB DNS name if needed
       domains = local.domains_by_listener[alb_name][listener_name]
     }
   }]...)
@@ -40,6 +43,7 @@ locals {
     for listener_name, listener in local.requested_albs[alb_name].listeners : listener_name => [
       for domain in local.domains_by_listener[alb_name][listener_name] : join("", [
         # We need to look up info about the listener to determine how to put together our URL
+        # If is_secure is true, use the https proto, otherwise use http
         alb.listeners[listener_name].is_secure ? "https" : "http",
         "://",
         domain,
