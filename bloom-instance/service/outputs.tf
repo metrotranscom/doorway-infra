@@ -10,3 +10,7 @@ output "security_group" {
 output "urls_by_listener" {
   value = module.service.urls_by_listener
 }
+
+output "url_list" {
+  value = module.service.url_list
+}
