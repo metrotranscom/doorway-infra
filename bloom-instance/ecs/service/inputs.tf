@@ -18,7 +18,9 @@ variable "alb_map" {
   type = map(object({
     arn = string
     listeners = map(object({
-      arn = string
+      arn       = string
+      port      = number
+      is_secure = bool
     }))
     security_group = object({
       id = string

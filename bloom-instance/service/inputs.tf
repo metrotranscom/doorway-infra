@@ -35,7 +35,9 @@ variable "alb_map" {
       id = string
     })
     listeners = map(object({
-      arn = string
+      arn       = string
+      port      = number
+      is_secure = bool
     }))
   }))
 

@@ -28,6 +28,19 @@ locals {
     }
   }]...)
 
+  # Generate URLs that can be used to access this service
+  urls_by_listener = { for alb_name, alb in local.requested_albs : alb_name => {
+    for listener_name, listener in alb.listeners : listener_name => [
+      for domain in listener.domains : join("", [
+        # We need to look up info about the listener to determine how to put together our URL
+        var.alb_map[alb_name].listeners[listener_name].is_secure ? "https" : "http",
+        "://",
+        domain,
+        ":${var.alb_map[alb_name].listeners[listener_name].port}"
+      ])
+    ]
+  } }
+
   security_group_ids = toset([for alb in local.filtered_albs : alb.security_group.id])
 
   subnet_ids = [for subnet in var.subnet_map[var.service.subnet_group] : subnet.id]
