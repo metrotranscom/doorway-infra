@@ -278,3 +278,19 @@ backend_api = {
     }
   }
 }
+
+listings_import_task = {
+  image        = "<repo>/import-listings:run"
+  schedule     = "rate(30 minutes)"
+  enabled      = true
+  subnet_group = "app"
+
+  env_vars = {
+    # DATABASE_URL is added automatically via secret
+    EXTERNAL_API_BASE          = "https://api.housingbayarea.bloom.exygy.dev"
+    LISTINGS_ENDPOINT_PATH     = "/listings"
+    JURISDICTION_ENDPOINT_PATH = "/jurisdictions"
+    JURISDICTION_INCLUDE_LIST  = "San Jose,San Mateo,Alameda"
+    LISTING_VIEW               = "base"
+  }
+}

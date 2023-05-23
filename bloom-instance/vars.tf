@@ -133,5 +133,11 @@ variable "certs" {
     auto_validate = optional(bool)
     alt_names     = optional(list(string))
   }))
-  description = "The certifcates to use"
+  description = "The certificates to use"
+}
+
+variable "listings_import_task" {
+  # See cronjobs/import-listings/inputs.tf for object structure
+  type        = any
+  description = "Setting for the \"Import Listings\" scheduled task"
 }

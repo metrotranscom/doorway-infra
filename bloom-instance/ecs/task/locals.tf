@@ -2,7 +2,8 @@
 data "aws_region" "current" {}
 
 locals {
-  default_name = "${var.name_prefix}-task-${local.name}"
+  default_name   = "${var.name_prefix}-task-${local.name}"
+  log_group_name = var.log_group_name != "" ? var.log_group_name : "${var.name_prefix}-tasks"
 
   # Extract definition vars to simplify naming throughout
   name     = var.task.name
@@ -21,7 +22,7 @@ locals {
   ecr_repo       = local.is_ecr ? local.ecr_regex_test[0] : null
 
   log = {
-    group         = "${var.name_prefix}-tasks"
+    group         = local.log_group_name
     region        = data.aws_region.current.name
     stream_prefix = local.name
   }

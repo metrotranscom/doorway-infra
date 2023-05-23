@@ -23,6 +23,11 @@ variable "port" {
   description = "The port to run this service on"
 }
 
+variable "log_group_name" {
+  type        = string
+  description = "The name of the CloudWatch Logs log group to use"
+}
+
 variable "alb_map" {
   type = map(object({
     arn = string

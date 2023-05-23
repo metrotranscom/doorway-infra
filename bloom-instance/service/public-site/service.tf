@@ -11,7 +11,8 @@ module "service" {
   task        = local.task
   service     = local.service
 
-  task_role_arn = aws_iam_role.service.arn
+  task_role_arn  = aws_iam_role.service.arn
+  log_group_name = var.log_group_name
 
   additional_tags = var.additional_tags
 }

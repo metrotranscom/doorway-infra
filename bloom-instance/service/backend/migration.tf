@@ -4,7 +4,8 @@ module "task" {
 
   name_prefix = var.name_prefix
   # The migration job needs the same permissions as the main service
-  task_role_arn = aws_iam_role.service.arn
+  task_role_arn  = aws_iam_role.service.arn
+  log_group_name = var.log_group_name
 
   task = {
     name  = "${local.name}-migration"

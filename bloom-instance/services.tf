@@ -6,6 +6,7 @@ module "public_sites" {
 
   name_prefix        = local.default_name
   service_definition = each.value
+  log_group_name     = local.task_log_group_name
 
   alb_map    = module.albs
   subnet_map = module.network.subnets
@@ -28,6 +29,7 @@ module "partner_site" {
 
   name_prefix        = local.default_name
   service_definition = var.partner_site
+  log_group_name     = local.task_log_group_name
 
   alb_map    = module.albs
   subnet_map = module.network.subnets
@@ -49,6 +51,7 @@ module "backend_api" {
 
   name_prefix        = local.default_name
   service_definition = var.backend_api
+  log_group_name     = local.task_log_group_name
 
   alb_map    = module.albs
   subnet_map = module.network.subnets
