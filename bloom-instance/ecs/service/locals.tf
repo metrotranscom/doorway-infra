@@ -31,7 +31,8 @@ locals {
   # Generate URLs that can be used to access this service
   urls_by_listener = { for alb_name, alb in local.requested_albs : alb_name => {
     for listener_name, listener in alb.listeners : listener_name => [
-      for domain in listener.domains : join("", [
+      # Add ALB DNS name to list of domains and format them into URLs
+      for domain in concat(listener.domains, [var.alb_map[alb_name].dns_name]) : join("", [
         # We need to look up info about the listener to determine how to put together our URL
         var.alb_map[alb_name].listeners[listener_name].is_secure ? "https" : "http",
         "://",

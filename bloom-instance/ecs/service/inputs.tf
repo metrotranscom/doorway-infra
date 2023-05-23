@@ -17,6 +17,7 @@ variable "task_arn" {
 variable "alb_map" {
   type = map(object({
     arn = string
+    dns_name = string
     listeners = map(object({
       arn       = string
       port      = number

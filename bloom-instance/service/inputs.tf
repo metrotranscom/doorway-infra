@@ -30,7 +30,8 @@ variable "log_group_name" {
 
 variable "alb_map" {
   type = map(object({
-    arn = string
+    arn      = string
+    dns_name = string
     security_group = object({
       id = string
     })
