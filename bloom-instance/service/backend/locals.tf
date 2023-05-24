@@ -10,6 +10,18 @@ locals {
   base_task = var.service_definition.task
   service   = var.service_definition.service
 
+  # The prefix to use when saving files to upload buckets
+  bucket_prefix = "${var.name_prefix}/${var.service_definition.name}"
+
+  # The ARN pattern scoping access to the public upload bucket
+  public_bucket_arn = "arn:aws:s3:::${var.public_upload_bucket}"
+
+  # The value to use in IAM policies restricting access to upload objects
+  s3_access_policy_object_resource = [
+    "${local.public_bucket_arn}/${local.bucket_prefix}/*",
+    // Another can be added here in the future if files need to be uploaded to non-public bucket(s)
+  ]
+
   # Add service-specific env vars
   env_vars = merge(
     local.base_task.env_vars,
@@ -28,6 +40,12 @@ locals {
       # Disable color in log output
       # Makes logs more readable in CloudWatch
       NO_COLOR = "true"
+
+      # For uploading public assets to S3
+      ASSET_FS_CONFIG_s3_REGION      = "us-west-1"
+      ASSET_FS_CONFIG_s3_BUCKET      = var.public_upload_bucket
+      ASSET_FS_CONFIG_s3_PATH_PREFIX = local.bucket_prefix
+      ASSET_FS_CONFIG_s3_URL_FORMAT  = "public"
     })
   )
 

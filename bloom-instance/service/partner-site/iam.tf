@@ -16,32 +16,3 @@ resource "aws_iam_role" "service" {
     ]
   })
 }
-
-resource "aws_iam_policy" "service_s3_access" {
-  name = "${local.resource_namespace}-s3"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid = "ReadWriteObjects"
-        Action = [
-          "s3:GetObject",
-          "s3:GetObjectAttributes",
-          "s3:GetObjectTagging",
-          "s3:GetObjectVersion",
-          "s3:GetObjectVersionAttributes",
-          "s3:GetObjectVersionTagging",
-          "s3:PutObject",
-        ]
-        Effect   = "Allow"
-        Resource = local.s3_access_policy_object_resource,
-      },
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "service_s3_access" {
-  role       = aws_iam_role.service.name
-  policy_arn = aws_iam_policy.service_s3_access.arn
-}

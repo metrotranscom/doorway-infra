@@ -11,9 +11,6 @@ module "public_sites" {
   alb_map    = module.albs
   subnet_map = module.network.subnets
 
-  public_upload_bucket = aws_s3_bucket.public_uploads.bucket
-  secure_upload_bucket = aws_s3_bucket.secure_uploads.bucket
-
   # Just a placeholder for now
   backend_api_base = "http://localhost:3100"
 
@@ -34,9 +31,6 @@ module "partner_site" {
   alb_map    = module.albs
   subnet_map = module.network.subnets
 
-  public_upload_bucket = aws_s3_bucket.public_uploads.bucket
-  secure_upload_bucket = aws_s3_bucket.secure_uploads.bucket
-
   # Just a placeholder for now
   backend_api_base = "http://localhost:3100"
 
@@ -56,6 +50,8 @@ module "backend_api" {
   alb_map    = module.albs
   subnet_map = module.network.subnets
   db         = module.db
+
+  public_upload_bucket = aws_s3_bucket.public_uploads.bucket
 
   migration = var.backend_api.migration
 
