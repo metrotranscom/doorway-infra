@@ -59,7 +59,7 @@ module "backend_api" {
 
   migration = var.backend_api.migration
 
-  partners_portal_url = "" # Placeholder
+  partners_portal_url = var.backend_api.partners_portal_url
 
   internal_url_path = var.backend_api.internal_url_path
 
