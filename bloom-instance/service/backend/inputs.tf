@@ -26,6 +26,15 @@ variable "subnet_map" {
   description = "A map of available subnets"
 }
 
+variable "internal_url_path" {
+  type = tuple([
+    string, # ALB name
+    string, # listener name
+    number  # index of domain/url
+  ])
+  description = "Which URL to provide to other services in the format [alb_name, listener_name, url_index]"
+}
+
 variable "partners_portal_url" {
   type        = string
   description = "The URL to the partners portal, for injecting into email templates"

@@ -12,7 +12,7 @@ module "public_sites" {
   subnet_map = module.network.subnets
 
   # Just a placeholder for now
-  backend_api_base = "http://localhost:3100"
+  backend_api_base = module.backend_api.internal_url
 
   additional_tags = {
     ServiceType = "public-site"
@@ -32,7 +32,7 @@ module "partner_site" {
   subnet_map = module.network.subnets
 
   # Just a placeholder for now
-  backend_api_base = "http://localhost:3100"
+  backend_api_base = module.backend_api.internal_url
 
   additional_tags = {
     ServiceType = "partner-site"
@@ -55,7 +55,9 @@ module "backend_api" {
 
   migration = var.backend_api.migration
 
-  partners_portal_url = "https://partners.demo.doorway.housingbayarea.org/" # Placeholder
+  partners_portal_url = var.backend_api.partners_portal_url
+
+  internal_url_path = var.backend_api.internal_url_path
 
   additional_tags = {
     ServiceType = "backend-api"

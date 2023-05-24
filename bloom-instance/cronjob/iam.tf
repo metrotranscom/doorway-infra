@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "scheduler_exec" {
-  name = "${local.qualified_name_prefix}-schecduler-exec"
+  name = "${local.qualified_name_prefix}-scheduler-exec"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
