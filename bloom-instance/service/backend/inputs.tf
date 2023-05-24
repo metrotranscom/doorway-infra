@@ -46,7 +46,6 @@ variable "db" {
     port     = number
     username = string
     db_name  = string
-    password = string
 
     connection_string = string
     security_group_id = string

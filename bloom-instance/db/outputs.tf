@@ -23,11 +23,6 @@ output "security_group_id" {
   value = aws_security_group.db.id
 }
 
-# These two are temporary until support for secrets is added to tasks 
-output "password" {
-  value = local.password
-}
-
 output "connection_string" {
   value = local.conn_string
 }
