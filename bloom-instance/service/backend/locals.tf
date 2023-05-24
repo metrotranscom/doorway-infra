@@ -11,7 +11,9 @@ locals {
   service   = var.service_definition.service
 
   # The prefix to use when saving files to upload buckets
-  bucket_prefix = "${var.name_prefix}/${var.service_definition.name}"
+  # Worth implmenting in the future, but requires backend changes to add prefix env var
+  #bucket_prefix = "${var.name_prefix}/${var.service_definition.name}"
+  bucket_prefix = ""
 
   # The ARN pattern scoping access to the public upload bucket
   public_bucket_arn = "arn:aws:s3:::${var.public_upload_bucket}"
@@ -42,10 +44,11 @@ locals {
       NO_COLOR = "true"
 
       # For uploading public assets to S3
-      ASSET_FS_CONFIG_s3_REGION      = "us-west-1"
-      ASSET_FS_CONFIG_s3_BUCKET      = var.public_upload_bucket
+      ASSET_FS_CONFIG_s3_REGION     = "us-west-1"
+      ASSET_FS_CONFIG_s3_BUCKET     = var.public_upload_bucket
+      ASSET_FS_CONFIG_s3_URL_FORMAT = "public"
+      # This var is not implemented yet but is included for illustration
       ASSET_FS_CONFIG_s3_PATH_PREFIX = local.bucket_prefix
-      ASSET_FS_CONFIG_s3_URL_FORMAT  = "public"
     })
   )
 
