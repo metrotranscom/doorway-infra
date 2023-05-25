@@ -57,6 +57,16 @@ resource "aws_iam_policy" "pipeline" {
 
         Resource = ["*"]
       },
+      {
+        Sid    = "AllowPublishNotifications"
+        Effect = "Allow"
+
+        Action = [
+          "sns:Publish"
+        ]
+
+        Resource = local.notification_topic_arns
+      },
     ],
   })
 }

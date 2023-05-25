@@ -4,6 +4,8 @@ locals {
   name_prefix             = var.name_prefix
 
   source_artifacts = keys(var.sources)
+
+  notification_topic_arns = [for approval in module.approvals : approval.topic_arn]
 }
 
 module "codebuild" {
@@ -69,14 +71,13 @@ resource "aws_codepipeline" "pipeline" {
     for_each = var.environments
 
     content {
-      name = "Approve-${stage.value.name}"
+      name = "Deploy-${stage.value.name}-bloom-infra"
 
       dynamic "action" {
-        #for_each = try(stage.value.approval.required, false) ? [module.approvals[stage.value.name].topic_arn] : []
         for_each = [module.approvals[stage.value.name].topic_arn]
 
         content {
-          name      = "Approval"
+          name      = "Approve-Deployment"
           category  = "Approval"
           owner     = "AWS"
           provider  = "Manual"
