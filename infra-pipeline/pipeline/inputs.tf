@@ -43,7 +43,7 @@ variable "environments" {
     policy_arns = list(string)
     approval = optional(object({
       required  = optional(bool, true)
-      approvers = list(string)
+      approvers = set(string)
       }), {
       required  = false
       approvers = []

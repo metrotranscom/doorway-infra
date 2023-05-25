@@ -22,6 +22,17 @@ module "codebuild" {
   depends_on = [aws_iam_policy.codebuild_artifacts]
 }
 
+module "approvals" {
+  source = "./approval"
+
+  # Only create approval topics for stages that need it
+  for_each = { for env in var.environments : env.name => env.approval if try(env.approval.required, false) }
+
+  name_prefix = local.name_prefix
+  name        = each.key
+  emails      = each.value.approvers
+}
+
 resource "aws_codepipeline" "pipeline" {
   name     = var.name
   role_arn = aws_iam_role.pipeline.arn
@@ -58,7 +69,25 @@ resource "aws_codepipeline" "pipeline" {
     for_each = var.environments
 
     content {
-      name = "Deploy-${stage.value.name}"
+      name = "Approve-${stage.value.name}"
+
+      dynamic "action" {
+        #for_each = try(stage.value.approval.required, false) ? [module.approvals[stage.value.name].topic_arn] : []
+        for_each = [module.approvals[stage.value.name].topic_arn]
+
+        content {
+          name      = "Approval"
+          category  = "Approval"
+          owner     = "AWS"
+          provider  = "Manual"
+          version   = "1"
+          run_order = 1
+
+          configuration = {
+            NotificationArn = action.value
+          }
+        }
+      }
 
       action {
         name            = "Plan"
@@ -67,7 +96,7 @@ resource "aws_codepipeline" "pipeline" {
         provider        = "CodeBuild"
         version         = "1"
         input_artifacts = local.source_artifacts
-        run_order       = 1
+        run_order       = 2
 
         configuration = {
           ProjectName = module.codebuild[stage.value.name].name
