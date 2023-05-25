@@ -1,0 +1,12 @@
+
+version: 0.2
+env:
+  shell: bash
+  variables:
+    FOO: bar
+phases:
+  build:
+    commands:
+      - pwd
+      - ls -la
+      - ls -la ../

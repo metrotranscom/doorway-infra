@@ -1,0 +1,47 @@
+project_name = "Doorway" # TBD
+project_id = "doorway"
+aws_region = "us-west-1"
+owner = "infra_team+setup@your-org.dev"
+codestar_connection_arn = ""
+
+pipeline = {
+  name = "Deploy Bloom Infra"
+
+  source = {
+    "templates" : {
+      repo: {
+        name = "doorway-infra"
+        branch = "main"
+      }
+    }
+
+    "configs" : {
+      repo: {
+        name = "doorway-config"
+        branch = "main"
+      }
+    }
+  }
+
+  source = {
+    repo = {
+        name = "doorway-infra"
+        branch = "main"
+    }
+    path = "bloom-instance"
+  }
+
+  config_repo = {
+    name = "doorway-config"
+    branch = "main"
+  }
+
+  environments = [
+    {
+      name = "dev"
+      workspace = "dev"
+      config_path = "bloom-instance/dev.tf"
+      role_arn = ""
+    }
+  ]
+}
