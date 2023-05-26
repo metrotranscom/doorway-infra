@@ -26,7 +26,7 @@ variable "codestar_connection_arn" {
 
 variable "sources" {
   type = map(object({
-    name = string
+    name       = string
     is_primary = optional(bool, false)
     repo = object({
       name   = string
@@ -42,6 +42,7 @@ variable "environments" {
     workspace   = string
     config_path = string
     policy_arns = list(string)
+    env_vars    = map(string)
     approval = optional(object({
       required  = optional(bool, true)
       approvers = set(string)
