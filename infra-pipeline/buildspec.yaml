@@ -10,3 +10,12 @@ phases:
       - pwd
       - ls -la
       - ls -la ../
+      #- env
+      - echo "${TF_WORKSPACE}"
+      - echo "${TF_VAR_FILE_SOURCE}"
+      - echo "${TF_VAR_FILE_PATH}"
+      # The paths to non-primary sources are in vars named CODEBUILD_SRC_DIR_$artifact_name}
+      - CONFIG_SOURCE_VAR_NAME="CONFIG_SRC_DIR_${TF_VAR_FILE_SOURCE}"
+      - TFVAR_FILE_FULL_PATH="${!CONFIG_SOURCE_VAR_NAME}"
+      - echo "${TFVAR_FILE_FULL_PATH}"
+      - echo "${TFVAR_FILE_FULL_PATH}/${TF_VAR_FILE_PATH}"
