@@ -57,6 +57,17 @@ resource "aws_iam_policy" "pipeline" {
 
         Resource = ["*"]
       },
+    ],
+  })
+}
+
+resource "aws_iam_policy" "approvals" {
+  count = length(local.notification_topic_arns) > 0 ? 1 : 0
+  name  = "${var.name_prefix}-approvals"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
       {
         Sid    = "AllowPublishNotifications"
         Effect = "Allow"
@@ -74,6 +85,12 @@ resource "aws_iam_policy" "pipeline" {
 resource "aws_iam_role_policy_attachment" "pipeline" {
   role       = aws_iam_role.pipeline.name
   policy_arn = aws_iam_policy.pipeline.arn
+}
+
+resource "aws_iam_role_policy_attachment" "approvals" {
+  count      = length(local.notification_topic_arns) > 0 ? 1 : 0
+  role       = aws_iam_role.pipeline.name
+  policy_arn = aws_iam_policy.approvals[0].arn
 }
 
 resource "aws_iam_policy" "codebuild_artifacts" {
