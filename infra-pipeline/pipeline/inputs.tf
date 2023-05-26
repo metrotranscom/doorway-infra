@@ -27,6 +27,7 @@ variable "codestar_connection_arn" {
 variable "sources" {
   type = map(object({
     name = string
+    is_primary = optional(bool, false)
     repo = object({
       name   = string
       branch = string

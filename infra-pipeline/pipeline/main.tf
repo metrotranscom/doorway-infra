@@ -5,6 +5,11 @@ locals {
 
   source_artifacts = keys(var.sources)
 
+  primary_sources = [for name, source in var.sources : name if source.is_primary]
+
+  # The primary source is the first one in the list
+  primary_source = local.primary_sources[0]
+
   notification_topic_arns = [for approval in module.approvals : approval.topic_arn]
 }
 
@@ -71,10 +76,10 @@ resource "aws_codepipeline" "pipeline" {
     for_each = var.environments
 
     content {
-      name = "Deploy-${stage.value.name}-bloom-infra"
+      name = "Deploy-${stage.value.name}"
 
       dynamic "action" {
-        for_each = [module.approvals[stage.value.name].topic_arn]
+        for_each = [try(module.approvals[stage.value.name].topic_arn, null)]
 
         content {
           name      = "Approve-Deployment"
@@ -100,7 +105,8 @@ resource "aws_codepipeline" "pipeline" {
         run_order       = 2
 
         configuration = {
-          ProjectName = module.codebuild[stage.value.name].name
+          ProjectName   = module.codebuild[stage.value.name].name
+          PrimarySource = local.primary_source
         }
       }
     }
