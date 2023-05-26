@@ -30,7 +30,11 @@ module "codebuild" {
     each.value.env_vars,
     {
       # Pass in the Terraform workspace to use for this stage
-      TF_WORKSPACE = each.value.workspace
+      TF_WORKSPACE       = each.value.workspace
+      # Which source contains the var file
+      TF_VAR_FILE_SOURCE = each.value.var_file.source
+      # The path to the var file in that source
+      TF_VAR_FILE_PATH   = each.value.var_file.path
     }
   )
 

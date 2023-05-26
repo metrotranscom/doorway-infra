@@ -38,11 +38,27 @@ variable "sources" {
 
 variable "environments" {
   type = list(object({
-    name        = string
-    workspace   = string
-    config_path = string
+    # The name of this environment
+    name      = string
+
+    # Which terraform workspace to use when deploying
+    workspace = string
+
+    # The location of the tvfars file
+    var_file = object({
+      # Source name
+      source = string
+      # Path
+      path   = string
+    })
+
+    # ARNs of IAM policies to attach to the CodeBuild role
     policy_arns = list(string)
+
+    # Environment variables to pass to the build project
     env_vars    = map(string)
+
+    # Whether this stage requires approval prior to deployment
     approval = optional(object({
       required  = optional(bool, true)
       approvers = set(string)
