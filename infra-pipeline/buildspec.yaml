@@ -7,10 +7,10 @@ env:
 phases:
   build:
     commands:
-      - pwd
-      - ls -la
-      - ls -la ../
-      #- env
+      #- pwd
+      #- ls -la
+      #- ls -la ../
+      - env
       - echo "${TF_WORKSPACE}"
       - echo "${TF_VAR_FILE_SOURCE}"
       - echo "${TF_VAR_FILE_PATH}"
