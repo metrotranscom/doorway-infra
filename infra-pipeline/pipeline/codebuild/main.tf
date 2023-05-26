@@ -14,6 +14,16 @@ resource "aws_codebuild_project" "project" {
     image                       = "aws/codebuild/standard:6.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
+
+    dynamic "environment_variable" {
+      for_each = var.env_vars
+      iterator = env_var
+
+      content {
+        name  = env_var.key
+        value = env_var.value
+      }
+    }
   }
 
   source {

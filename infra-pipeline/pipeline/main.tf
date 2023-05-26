@@ -26,6 +26,14 @@ module "codebuild" {
     [aws_iam_policy.codebuild_artifacts.arn]
   ))
 
+  env_vars = merge(
+    each.value.env_vars,
+    {
+      # Pass in the Terraform workspace to use for this stage
+      TF_WORKSPACE = each.value.workspace
+    }
+  )
+
   depends_on = [aws_iam_policy.codebuild_artifacts]
 }
 
@@ -107,22 +115,6 @@ resource "aws_codepipeline" "pipeline" {
         configuration = {
           ProjectName   = module.codebuild[stage.value.name].name
           PrimarySource = local.primary_source
-        }
-
-        dynamic "environment_variable" {
-          for_each = merge(
-            stage.env_vars,
-            {
-              # Pass in the Terraform workspace to use for this stage
-              TF_WORKSPACE = stage.workspace
-            }
-          )
-          iterator = env_var
-
-          content {
-            name  = env_var.key
-            value = env_var.value
-          }
         }
       }
     }
