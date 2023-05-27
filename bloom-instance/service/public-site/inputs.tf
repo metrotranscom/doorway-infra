@@ -9,6 +9,11 @@ variable "name_prefix" {
   }
 }
 
+variable "log_group_name" {
+  type        = string
+  description = "The name of the CloudWatch Logs log group to use"
+}
+
 variable "alb_map" {
   # See ecs/service/inputs.tf for type structure
   type        = any

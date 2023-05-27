@@ -23,14 +23,22 @@ variable "port" {
   description = "The port to run this service on"
 }
 
+variable "log_group_name" {
+  type        = string
+  description = "The name of the CloudWatch Logs log group to use"
+}
+
 variable "alb_map" {
   type = map(object({
-    arn = string
+    arn      = string
+    dns_name = string
     security_group = object({
       id = string
     })
     listeners = map(object({
-      arn = string
+      arn       = string
+      port      = number
+      is_secure = bool
     }))
   }))
 

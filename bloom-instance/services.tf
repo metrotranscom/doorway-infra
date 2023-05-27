@@ -6,6 +6,7 @@ module "public_sites" {
 
   name_prefix        = local.default_name
   service_definition = each.value
+  log_group_name     = local.task_log_group_name
 
   alb_map    = module.albs
   subnet_map = module.network.subnets
@@ -14,7 +15,7 @@ module "public_sites" {
   secure_upload_bucket = aws_s3_bucket.secure_uploads.bucket
 
   # Just a placeholder for now
-  backend_api_base = "http://localhost:3100"
+  backend_api_base = module.backend_api.internal_url
 
   additional_tags = {
     ServiceType = "public-site"
@@ -28,6 +29,7 @@ module "partner_site" {
 
   name_prefix        = local.default_name
   service_definition = var.partner_site
+  log_group_name     = local.task_log_group_name
 
   alb_map    = module.albs
   subnet_map = module.network.subnets
@@ -36,7 +38,7 @@ module "partner_site" {
   secure_upload_bucket = aws_s3_bucket.secure_uploads.bucket
 
   # Just a placeholder for now
-  backend_api_base = "http://localhost:3100"
+  backend_api_base = module.backend_api.internal_url
 
   additional_tags = {
     ServiceType = "partner-site"
@@ -49,6 +51,7 @@ module "backend_api" {
 
   name_prefix        = local.default_name
   service_definition = var.backend_api
+  log_group_name     = local.task_log_group_name
 
   alb_map    = module.albs
   subnet_map = module.network.subnets
@@ -56,7 +59,9 @@ module "backend_api" {
 
   migration = var.backend_api.migration
 
-  partners_portal_url = "https://partners.demo.doorway.housingbayarea.org/" # Placeholder
+  partners_portal_url = var.backend_api.partners_portal_url
+
+  internal_url_path = var.backend_api.internal_url_path
 
   additional_tags = {
     ServiceType = "backend-api"

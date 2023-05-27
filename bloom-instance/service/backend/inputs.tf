@@ -9,6 +9,11 @@ variable "name_prefix" {
   }
 }
 
+variable "log_group_name" {
+  type        = string
+  description = "The name of the CloudWatch Logs log group to use"
+}
+
 variable "alb_map" {
   # See ecs/service/inputs.tf for type structure
   type        = any
@@ -19,6 +24,15 @@ variable "subnet_map" {
   # See ecs/service/inputs.tf for type structure
   type        = any
   description = "A map of available subnets"
+}
+
+variable "internal_url_path" {
+  type = tuple([
+    string, # ALB name
+    string, # listener name
+    number  # index of domain/url
+  ])
+  description = "Which URL to provide to other services in the format [alb_name, listener_name, url_index]"
 }
 
 variable "partners_portal_url" {
