@@ -44,5 +44,6 @@ phases:
       - terraform workspace show
       # Always have to `terraform init` since new modules may be installed
       - terraform init
-      - terraform plan -var-file "${TFVARS_FULL_PATH}"
+      # This really should be plan first then apply, but all-in-one works okay too
+      - terraform apply -var-file "${TFVARS_FULL_PATH}" -auto-approve
 
