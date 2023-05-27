@@ -5,12 +5,17 @@ locals {
 
   source_artifacts = keys(var.sources)
 
+  # We have validation to make sure there is only one primary source
   primary_sources = [for name, source in var.sources : name if source.is_primary]
-
-  # The primary source is the first one in the list
-  primary_source = local.primary_sources[0]
+  primary_source  = local.primary_sources[0]
 
   notification_topic_arns = [for approval in module.approvals : approval.topic_arn]
+
+  cloudbuild_src_dir_var = "CODEBUILD_SRC_DIR"
+
+  # If the tf_root is in the primary source, the path to it is in the CODEBUILD_SRC_DIR env var
+  # Otherwise it is in the var prefixed with "CODEBUILD_SRC_DIR_" and ending with the name of the source
+  tf_root_var_name = var.tf_root.source == primary_source ? cloudbuild_src_dir_var : "${cloudbuild_src_dir_var}_${var.tf_root.source}"
 }
 
 module "codebuild" {
@@ -29,12 +34,20 @@ module "codebuild" {
   env_vars = merge(
     each.value.env_vars,
     {
-      # Pass in the Terraform workspace to use for this stage
-      TF_WORKSPACE       = each.value.workspace
-      # Which source contains the var file
-      TF_VAR_FILE_SOURCE = each.value.var_file.source
+      # This var is used by terraform to determine which workspace to use
+      TF_WORKSPACE = each.value.workspace
+
+      # We use this to indicate which var holds the path to the tfvars file
+      TFVARS_SOURCE_VAR_NAME = each.value.var_file.source == primary_source ? cloudbuild_src_dir_var : "${cloudbuild_src_dir_var}_${each.value.var_file.source}"
+
       # The path to the var file in that source
-      TF_VAR_FILE_PATH   = each.value.var_file.path
+      TFVARS_PATH = each.value.var_file.path
+
+      # We use this to indicate which var holds the path to the TF root
+      TF_ROOT_SOURCE_VAR_NAME = local.tf_root_var_name
+
+      # And this tells us where under the TF root source to actually run the terraform commands
+      TF_ROOT_PATH = var.tf_root.path
     }
   )
 

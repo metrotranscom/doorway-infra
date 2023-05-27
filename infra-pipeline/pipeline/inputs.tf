@@ -34,12 +34,17 @@ variable "sources" {
     })
   }))
   description = "The source locations for this pipeline to use"
+
+  validation {
+    condition     = sum([for source in var.sources : source.is_primary ? 1 : 0]) == 1
+    error_message = "There must be exactly one primary source"
+  }
 }
 
 variable "environments" {
   type = list(object({
     # The name of this environment
-    name      = string
+    name = string
 
     # Which terraform workspace to use when deploying
     workspace = string
@@ -49,14 +54,14 @@ variable "environments" {
       # Source name
       source = string
       # Path
-      path   = string
+      path = string
     })
 
     # ARNs of IAM policies to attach to the CodeBuild role
     policy_arns = list(string)
 
     # Environment variables to pass to the build project
-    env_vars    = map(string)
+    env_vars = map(string)
 
     # Whether this stage requires approval prior to deployment
     approval = optional(object({

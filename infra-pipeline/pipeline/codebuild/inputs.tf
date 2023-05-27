@@ -9,6 +9,14 @@ variable "name" {
   description = "The name of this CodeBuild project"
 }
 
+variable "tf_root" {
+  type = object({
+    source = string
+    path = string
+  })
+  description = "The location (source repo and path) to run terraform commands"
+}
+
 variable "policy_arns" {
   type        = set(string)
   description = "A set of policy ARNS to attach to the role assumed by this project"
