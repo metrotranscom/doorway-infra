@@ -40,13 +40,17 @@ variable "partners_portal_url" {
   description = "The URL to the partners portal, for injecting into email templates"
 }
 
+variable "public_upload_bucket" {
+  type        = string
+  description = "The name of the bucket to use for publicly available file uploads"
+}
+
 variable "db" {
   type = object({
     host     = string
     port     = number
     username = string
     db_name  = string
-    password = string
 
     connection_string = string
     security_group_id = string

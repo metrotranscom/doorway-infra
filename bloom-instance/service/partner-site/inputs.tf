@@ -42,16 +42,6 @@ variable "backend_api_base" {
   description = "The base URL for the backend API"
 }
 
-variable "public_upload_bucket" {
-  type        = string
-  description = "The name of the bucket to use for publicly available file uploads"
-}
-
-variable "secure_upload_bucket" {
-  type        = string
-  description = "The name of the bucket to use for secure file uploads"
-}
-
 variable "additional_tags" {
   type        = map(string)
   default     = null
