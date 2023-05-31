@@ -74,7 +74,7 @@ module "apply" {
 
   name_prefix    = local.name_prefix
   name           = "${each.key}-apply"
-  buildspec_path = "infra-pipeline/buildspec.yaml"
+  buildspec_path = "infra-pipeline/buildspec/apply.yaml"
 
   policy_arns = toset(concat(
     each.value.policy_arns,
