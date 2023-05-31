@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "pipeline" {
-  name = "${var.name_prefix}-pipeline-exec"
+  name = "${var.name_prefix}-exec"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
