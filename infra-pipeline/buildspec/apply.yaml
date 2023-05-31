@@ -4,6 +4,7 @@ env:
   shell: bash
   variables:
     # This var is used to define which version of terraform to use
+    # This can be overridden by passing a TF_VERSION var to the build
     TF_VERSION: "1.3.7"
     # This var tells terraform that we're running in a CI/CD pipeline
     TF_IN_AUTOMATION: "true"
@@ -34,16 +35,14 @@ phases:
       # Change to that directory
       - cd "${TF_ROOT_FULL_PATH}"
 
-      # Set the path to the tfvars file
-      - TFVARS_ROOT="${!TFVARS_SOURCE_VAR_NAME}"
-      - echo "${TFVARS_ROOT}"
-      - TFVARS_FULL_PATH="${TFVARS_ROOT}/${TFVARS_PATH}"
-      - echo "${TFVARS_FULL_PATH}"
+      # Set the path to the plan file
+      - TF_PLAN_ROOT="${!TF_PLAN_SOURCE_VAR_NAME}"
+      - echo "${TF_PLAN_ROOT}"
+      - TF_PLAN_FULL_PATH="${TF_PLAN_ROOT}/${TF_PLAN_PATH}"
+      - echo "${TF_PLAN_FULL_PATH}"
 
-      # Verify which workspace is being used
-      - terraform workspace show
-      # Always have to `terraform init` since new modules may be installed
-      - terraform init
-      # This really should be plan first then apply, but all-in-one works okay too
+      # Determine the location of the plan file
+
+      # Apply the previously saved plan file
       - terraform apply -var-file "${TFVARS_FULL_PATH}" -auto-approve
 

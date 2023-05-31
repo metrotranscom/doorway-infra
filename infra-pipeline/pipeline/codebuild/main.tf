@@ -28,7 +28,7 @@ resource "aws_codebuild_project" "project" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = "infra-pipeline/buildspec.yaml"
+    buildspec = var.buildspec_path
   }
 
   logs_config {
@@ -39,7 +39,7 @@ resource "aws_codebuild_project" "project" {
 }
 
 resource "aws_iam_role" "codebuild" {
-  name = "${var.name_prefix}-${var.name}-codebuild-deploy"
+  name = "${var.name_prefix}-${var.name}-codebuild"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

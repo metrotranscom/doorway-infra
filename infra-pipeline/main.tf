@@ -38,6 +38,7 @@ module "pipeline" {
   name_prefix             = "${local.qualified_name_prefix}-bloom-infra-pipeline"
   codestar_connection_arn = local.codestar_connection_arn
 
+  tf_root      = var.pipeline.tf_root
   sources      = var.pipeline.sources
   environments = var.pipeline.environments
 }

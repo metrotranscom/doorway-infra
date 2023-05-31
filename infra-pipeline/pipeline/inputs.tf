@@ -41,6 +41,14 @@ variable "sources" {
   }
 }
 
+variable "tf_root" {
+  type = object({
+    source = string
+    path   = string
+  })
+  description = "The location (source repo and path) to run terraform commands"
+}
+
 variable "environments" {
   type = list(object({
     # The name of this environment

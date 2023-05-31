@@ -9,13 +9,13 @@ variable "name" {
   description = "The name of this CodeBuild project"
 }
 
-variable "tf_root" {
-  type = object({
-    source = string
-    path = string
-  })
-  description = "The location (source repo and path) to run terraform commands"
-}
+# variable "tf_root" {
+#   type = object({
+#     source = string
+#     path = string
+#   })
+#   description = "The location (source repo and path) to run terraform commands"
+# }
 
 variable "policy_arns" {
   type        = set(string)
@@ -23,6 +23,11 @@ variable "policy_arns" {
 }
 
 variable "env_vars" {
-  type = map(string)
+  type        = map(string)
   description = "Environment variables to set for this build environment"
+}
+
+variable "buildspec_path" {
+  type        = string
+  description = "The path to the buildspec file provided through CodePipeline"
 }
