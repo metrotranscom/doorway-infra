@@ -27,7 +27,7 @@ locals {
 module "plan" {
   source = "./codebuild"
 
-  for_each = { for env in var.environments : env.name => env }
+  for_each = { for env in var.environments : env.name => merge(env.plan, { workspace = env.workspace }) }
 
   name_prefix    = local.name_prefix
   name           = "${each.key}-plan"
@@ -69,7 +69,8 @@ module "plan" {
 module "apply" {
   source = "./codebuild"
 
-  for_each = { for env in var.environments : env.name => env }
+  #for_each = { for env in var.environments : env.name => env }
+  for_each = { for env in var.environments : env.name => merge(env.apply, { workspace = env.workspace }) }
 
   name_prefix    = local.name_prefix
   name           = "${each.key}-apply"
@@ -87,16 +88,6 @@ module "apply" {
       # This var is used by terraform to determine which workspace to use
       TF_WORKSPACE = each.value.workspace
 
-      # We use this to indicate which var holds the path to the tfvars file
-      TFVARS_SOURCE_VAR_NAME = (
-        each.value.var_file.source == local.primary_source
-        ? local.cloudbuild_src_dir_var
-        : "${local.cloudbuild_src_dir_var}_${each.value.var_file.source}"
-      )
-
-      # The path to the var file in that source
-      TFVARS_PATH = each.value.var_file.path
-
       # We use this to indicate which var holds the path to the TF root
       TF_ROOT_SOURCE_VAR_NAME = local.tf_root_var_name
 
@@ -104,7 +95,7 @@ module "apply" {
       TF_ROOT_PATH = var.tf_root.path
 
       # We use this to indicate which var holds the path to the artifact for the plan file
-      TF_PLAN_SOURCE_VAR_NAME = local.tf_root_var_name
+      TF_PLAN_SOURCE_VAR_NAME = "${local.cloudbuild_src_dir_var}_${local.plan_file_artifact_name}"
 
       # This holds the relative path to the plan file
       TF_PLAN_PATH = "plan.out"

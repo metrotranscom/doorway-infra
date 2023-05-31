@@ -54,22 +54,34 @@ variable "environments" {
     # The name of this environment
     name = string
 
-    # Which terraform workspace to use when deploying
+    # Which terraform workspace to use
     workspace = string
 
-    # The location of the tvfars file
-    var_file = object({
-      # Source name
-      source = string
-      # Path
-      path = string
+    # CodeBuild values for the plan action
+    plan = object({
+      # The location of the tvfars file
+      var_file = object({
+        # Source name
+        source = string
+        # Path
+        path = string
+      })
+
+      # ARNs of IAM policies to attach to the CodeBuild role
+      policy_arns = list(string)
+
+      # Environment variables to pass to the build project
+      env_vars = map(string)
     })
 
-    # ARNs of IAM policies to attach to the CodeBuild role
-    policy_arns = list(string)
+    # CodeBuild values for the apply action
+    apply = object({
+      # ARNs of IAM policies to attach to the CodeBuild role
+      policy_arns = list(string)
 
-    # Environment variables to pass to the build project
-    env_vars = map(string)
+      # Environment variables to pass to the build project
+      env_vars = map(string)
+    })
 
     # Whether this stage requires approval prior to deployment
     approval = optional(object({
