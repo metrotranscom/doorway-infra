@@ -41,7 +41,7 @@ phases:
       - TF_PLAN_FULL_PATH="${TF_PLAN_ROOT}/${TF_PLAN_PATH}"
       - echo "${TF_PLAN_FULL_PATH}"
 
-      - ls -l "${TF_PLAN_FULL_PATH}"
+      - ls -l "${TF_PLAN_ROOT}"
 
       # Apply the previously saved plan file
       #- terraform apply -var-file "${TFVARS_FULL_PATH}" -auto-approve
