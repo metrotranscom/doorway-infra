@@ -43,6 +43,9 @@ phases:
 
       - ls -l "${TF_PLAN_ROOT}"
 
+      # Have to init again to make sure providers are present
+      - terraform init
+
       # Apply the previously saved plan file
       - terraform apply "${TF_PLAN_FULL_PATH}"
 
