@@ -176,7 +176,7 @@ resource "aws_codepipeline" "pipeline" {
       # to be made (and optionally doing some security analysis) and applying
       # those changes
       dynamic "action" {
-        for_each = [try(module.approvals[stage.value.name].topic_arn, null)]
+        for_each = local.notification_topic_arns
 
         content {
           name      = "Approve-Deployment"
