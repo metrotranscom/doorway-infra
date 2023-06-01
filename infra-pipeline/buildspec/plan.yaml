@@ -52,4 +52,4 @@ phases:
 artifacts:
   name: plan
   files:
-    - "${CODEBUILD_SRC_DIR}/plan.out"
+    - plan.out
