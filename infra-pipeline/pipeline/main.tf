@@ -2,6 +2,7 @@
 locals {
   codestar_connection_arn = var.codestar_connection_arn
   name_prefix             = var.name_prefix
+  qualified_name          = "${var.name_prefix}-${var.name}"
 
   source_artifacts = keys(var.sources)
 
@@ -114,6 +115,30 @@ module "approvals" {
   name_prefix = local.name_prefix
   name        = each.key
   emails      = each.value.approvers
+}
+
+module "notification_topic" {
+  source = "./notification/topic"
+
+  for_each = var.notification_topics
+
+  name_prefix = local.name_prefix
+  name        = each.key
+  emails      = each.value.emails
+}
+
+module "notification_rules" {
+  source = "./notification/rule/pipeline"
+
+  for_each = { for idx, rule in var.notification_rules : idx => rule }
+
+  name_prefix = local.name_prefix
+  name        = "${each.value.topic}${each.key}"
+
+  topic_arn    = module.notification_topic[each.value.topic].topic_arn
+  pipeline_arn = aws_codepipeline.pipeline.arn
+  detail       = each.value.detail
+  events       = each.value.on
 }
 
 resource "aws_codepipeline" "pipeline" {
