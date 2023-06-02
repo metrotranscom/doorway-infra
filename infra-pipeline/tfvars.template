@@ -1,0 +1,65 @@
+project_name = "Doorway" # TBD
+project_id = "doorway"
+aws_region = "us-west-1"
+owner = "infra_team+setup@your-org.dev"
+codestar_connection_arn = ""
+
+pipeline = {
+  name = "Deploy Bloom Infra"
+
+  source = {
+    "templates" : {
+      repo: {
+        name = "doorway-infra"
+        branch = "main"
+      }
+    }
+
+    "configs" : {
+      repo: {
+        name = "doorway-config"
+        branch = "main"
+      }
+    }
+  }
+
+  environments = [
+    {
+      # The name of the environment
+      name      = "dev"
+
+      # The Terraform workspace to use
+      workspace = "example"
+
+      # Vars for the plan stage
+      plan = {
+        # The location of the tfvars file
+        var_file = {
+          source = "configs"
+          path   = "bloom-instance/example.tfvars"
+        }
+
+        # Policies to attach to the CodeBuild project
+        policy_arns = [
+          "arn:aws:iam::364076391763:policy/BloomInfraDeploymentAccess"
+        ]
+
+        # Env vars to inject into the project
+        env_vars = {
+          TF_VERSION : "1.3.7"
+        }
+      }
+
+      # Vars for the apply stage
+      apply = {
+        policy_arns = [
+          "arn:aws:iam::364076391763:policy/BloomInfraDeploymentAccess"
+        ]
+
+        env_vars = {
+          TF_VERSION : "1.3.7"
+        }
+      }
+    },
+  ]
+}
