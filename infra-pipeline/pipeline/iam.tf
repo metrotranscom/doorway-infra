@@ -62,7 +62,7 @@ resource "aws_iam_policy" "pipeline" {
 }
 
 resource "aws_iam_policy" "approvals" {
-  count = length(local.notification_topic_arns) > 0 ? 1 : 0
+  count = local.have_approvals ? 1 : 0
   name  = "${var.name_prefix}-approvals"
 
   policy = jsonencode({
@@ -76,7 +76,7 @@ resource "aws_iam_policy" "approvals" {
           "sns:Publish"
         ]
 
-        Resource = local.notification_topic_arns
+        Resource = local.approval_topic_arn_list
       },
     ],
   })
@@ -88,7 +88,7 @@ resource "aws_iam_role_policy_attachment" "pipeline" {
 }
 
 resource "aws_iam_role_policy_attachment" "approvals" {
-  count      = length(local.notification_topic_arns) > 0 ? 1 : 0
+  count      = local.have_approvals ? 1 : 0
   role       = aws_iam_role.pipeline.name
   policy_arn = aws_iam_policy.approvals[0].arn
 }

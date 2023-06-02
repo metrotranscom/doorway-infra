@@ -104,11 +104,11 @@ variable "environments" {
 
     # Whether this stage requires approval prior to deployment
     approval = optional(object({
-      required  = optional(bool, true)
-      approvers = set(string)
+      required = optional(bool, true)
+      topic    = string
       }), {
-      required  = false
-      approvers = []
+      required = false
+      topic    = ""
     })
   }))
   description = "The environments to deploy infra into"
