@@ -48,8 +48,10 @@ variable "codestar_connection_arn" {
 variable "pipeline" {
   type = object({
     # See ./pipeline/inputs.tf for object structures
-    tf_root      = any
-    sources      = any
-    environments = any
+    tf_root             = any
+    sources             = any
+    environments        = any
+    notification_topics = any
+    notify              = any
   })
 }
