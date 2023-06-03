@@ -27,6 +27,7 @@ locals {
   default_tags = {
     Owner     = var.owner
     Project   = var.project_name
+    ProjectID = var.project_id
     Workspace = terraform.workspace
   }
 }
