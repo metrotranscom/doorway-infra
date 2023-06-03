@@ -5,7 +5,7 @@ owner = "infra_team+setup@your-org.dev"
 codestar_connection_arn = ""
 
 pipeline = {
-  name = "Deploy Bloom Infra"
+  name = "bloom-infra-pipeline"
 
   source = {
     "templates" : {

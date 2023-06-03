@@ -1,6 +1,6 @@
 
 resource "aws_iam_role" "pipeline" {
-  name = "${var.name_prefix}-exec"
+  name = "${local.qualified_name}-exec"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -18,7 +18,7 @@ resource "aws_iam_role" "pipeline" {
 }
 
 resource "aws_iam_policy" "pipeline" {
-  name = "${var.name_prefix}-pipeline"
+  name = "${local.qualified_name}-pipeline"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -63,7 +63,7 @@ resource "aws_iam_policy" "pipeline" {
 
 resource "aws_iam_policy" "approvals" {
   count = local.have_approvals ? 1 : 0
-  name  = "${var.name_prefix}-approvals"
+  name  = "${local.qualified_name}-approvals"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -94,7 +94,7 @@ resource "aws_iam_role_policy_attachment" "approvals" {
 }
 
 resource "aws_iam_policy" "codebuild_artifacts" {
-  name = "${var.name_prefix}-codebuild-artifacts"
+  name = "${local.qualified_name}-artifacts"
 
   policy = jsonencode({
     Version = "2012-10-17"

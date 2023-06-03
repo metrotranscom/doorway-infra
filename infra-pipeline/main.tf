@@ -34,8 +34,8 @@ locals {
 module "pipeline" {
   source = "./pipeline"
 
-  name                    = "${local.qualified_name_prefix}-bloom-infra"
-  name_prefix             = "${local.qualified_name_prefix}-bloom-infra-pipeline"
+  name                    = var.pipeline.name
+  name_prefix             = local.qualified_name_prefix
   codestar_connection_arn = local.codestar_connection_arn
 
   tf_root             = var.pipeline.tf_root

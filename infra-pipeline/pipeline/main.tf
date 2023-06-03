@@ -140,7 +140,7 @@ module "notification_rules" {
 }
 
 resource "aws_codepipeline" "pipeline" {
-  name     = var.name
+  name     = local.qualified_name
   role_arn = aws_iam_role.pipeline.arn
 
   artifact_store {
