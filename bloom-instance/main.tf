@@ -28,9 +28,12 @@ data "aws_caller_identity" "current" {}
 data "aws_elb_service_account" "current" {}
 
 locals {
+  # This level of indirection helps when refactoring widely-used vars
+  project_id = var.project_id
+
   # We may want to rearrange the order of these in the future based on how easy
   # or hard it is to read at a glance in the console.
-  qualified_name_prefix = "${var.name_prefix}-${terraform.workspace}"
+  qualified_name_prefix = "${local.project_id}-${terraform.workspace}"
 
   # Alias the old name so it can be removed later
   default_name = local.qualified_name_prefix

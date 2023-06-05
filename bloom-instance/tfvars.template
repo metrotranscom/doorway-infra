@@ -1,6 +1,6 @@
 project_name = "Doorway" # TBD
 application_name = "Bloom Housing Instance"
-name_prefix = "doorway"
+project_id = "doorway"
 team_name = "doorway"
 aws_region = "us-west-1"
 environment = "dev"

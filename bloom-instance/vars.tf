@@ -1,6 +1,6 @@
 variable "project_name" {
   type        = string
-  description = "Name of the project"
+  description = "A human-readable name for this project. Can be changed if needed"
 
   validation {
     condition     = can(regex("^[\\w\\s\\.\\-]+$", var.project_name))
@@ -18,13 +18,13 @@ variable "application_name" {
   }
 }
 
-variable "name_prefix" {
+variable "project_id" {
   type        = string
-  description = "A prefix to be used when creating resources to provide a distinct, yet recognizable name"
+  description = "A unique, immutable identifier for this project"
 
   validation {
-    condition     = can(regex("^[[:alnum:]\\-]+$", var.name_prefix))
-    error_message = "name_prefix can only contain letters, numbers, and hyphens"
+    condition     = can(regex("^[[:alnum:]\\-]+$", var.project_id))
+    error_message = "project_id can only contain letters, numbers, and hyphens"
   }
 }
 
