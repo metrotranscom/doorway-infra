@@ -1,7 +1,7 @@
 project_name = "Doorway" # TBD
 application_name = "Bloom Housing Instance"
 project_id = "doorway"
-team_name = "doorway"
+owner = "infra_team+bloom@your-org.dev"
 aws_region = "us-west-1"
 environment = "dev"
 

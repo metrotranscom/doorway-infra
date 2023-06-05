@@ -28,13 +28,14 @@ variable "project_id" {
   }
 }
 
-variable "team_name" {
+# This var is only set on resource tags. Standard tag naming restrictions apply
+variable "owner" {
   type        = string
-  description = "The name of the team that owns this deployment"
+  description = "The owner of the resources created via these templates"
 
   validation {
-    condition     = can(regex("^[\\w\\s\\.\\-]+$", var.team_name))
-    error_message = "team_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
+    condition     = can(regex("^[\\w\\s\\.\\-\\:\\/\\=\\+@]{1,255}$", var.owner))
+    error_message = "owner can only contain letters, numbers, spaces, and these special characters: _ . : / = + - @"
   }
 }
 

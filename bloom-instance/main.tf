@@ -39,7 +39,7 @@ locals {
   default_name = local.qualified_name_prefix
 
   default_tags = {
-    Team        = var.team_name
+    Team        = var.owner
     Project     = var.project_name
     Application = var.application_name
     Environment = var.environment
