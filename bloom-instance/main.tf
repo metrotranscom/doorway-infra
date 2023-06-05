@@ -39,7 +39,7 @@ locals {
     Team        = var.team_name
     Project     = var.project_name
     Application = var.application_name
-    Environment = var.sdlc_stage
+    Environment = var.environment
     Workspace   = terraform.workspace
   }
 

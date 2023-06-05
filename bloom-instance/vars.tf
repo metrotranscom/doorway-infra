@@ -48,14 +48,14 @@ variable "aws_region" {
   }
 }
 
-variable "sdlc_stage" {
+variable "environment" {
   type        = string
   default     = "dev"
   description = "The stage of the software development lifecycle this deployement represents"
 
   validation {
-    condition     = contains(["dev", "test", "qa", "staging", "prod"], var.sdlc_stage)
-    error_message = "Valid values for var: sdlc_stage are (dev, test, qa, staging, prod)."
+    condition     = contains(["dev", "test", "qa", "staging", "prod"], var.environment)
+    error_message = "Valid values for var: environment are (dev, test, qa, staging, prod)."
   }
 }
 
