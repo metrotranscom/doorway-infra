@@ -56,7 +56,11 @@ resource "aws_rds_cluster" "aurora" {
 
   # TLS
 
-
+  # Periodic upgrades will change the running engine version
+  # We don't want future infra updates to roll that back
+  lifecycle {
+    ignore_changes = [engine_version]
+  }
 }
 
 resource "aws_rds_cluster_instance" "serverless" {
