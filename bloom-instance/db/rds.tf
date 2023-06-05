@@ -54,4 +54,10 @@ resource "aws_db_instance" "rds" {
 
   # TLS
   #ca_cert_identifier
+
+  # Periodic upgrades will change the running engine version
+  # We don't want future infra updates to roll that back
+  lifecycle {
+    ignore_changes = [engine_version]
+  }
 }
