@@ -1,8 +1,13 @@
 
+locals {
+  qualified_name_prefix = "${var.name_prefix}-${var.name}"
+  buildspec_path        = var.buildspec.path
+}
+
 resource "aws_codebuild_project" "project" {
-  name          = "${var.name_prefix}-build-${var.name}"
+  name          = local.qualified_name_prefix
   description   = "Deployment for ${var.name_prefix} into environment ${var.name}"
-  build_timeout = 60
+  build_timeout = var.build_timeout
   service_role  = aws_iam_role.codebuild.arn
 
   artifacts {
@@ -10,8 +15,8 @@ resource "aws_codebuild_project" "project" {
   }
 
   environment {
-    compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:6.0"
+    compute_type                = var.compute_type
+    image                       = var.image
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
 
@@ -28,7 +33,7 @@ resource "aws_codebuild_project" "project" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = var.buildspec_path
+    buildspec = local.buildspec_path
   }
 
   logs_config {
@@ -39,7 +44,7 @@ resource "aws_codebuild_project" "project" {
 }
 
 resource "aws_iam_role" "codebuild" {
-  name = "${var.name_prefix}-${var.name}-codebuild"
+  name = "${local.qualified_name_prefix}-codebuild"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"

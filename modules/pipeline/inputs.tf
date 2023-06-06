@@ -41,14 +41,6 @@ variable "sources" {
   }
 }
 
-variable "tf_root" {
-  type = object({
-    source = string
-    path   = string
-  })
-  description = "The location (source repo and path) to run terraform commands"
-}
-
 variable "notification_topics" {
   type = map(object({
     emails = set(string)
@@ -68,48 +60,26 @@ variable "notification_rules" {
   description = "Rules for triggering notifications on pipeline events"
 }
 
-variable "environments" {
+variable "stages" {
   type = list(object({
     # The name of this environment
     name = string
 
-    # Which terraform workspace to use
-    workspace = string
-
-    # CodeBuild values for the plan action
-    plan = object({
-      # The location of the tvfars file
-      var_file = object({
-        # Source name
-        source = string
-        # Path
-        path = string
-      })
-
-      # ARNs of IAM policies to attach to the CodeBuild role
-      policy_arns = list(string)
-
-      # Environment variables to pass to the build project
-      env_vars = map(string)
-    })
-
-    # CodeBuild values for the apply action
-    apply = object({
-      # ARNs of IAM policies to attach to the CodeBuild role
-      policy_arns = list(string)
-
-      # Environment variables to pass to the build project
-      env_vars = map(string)
-    })
+    actions = list(any)
+    # actions = list(object({
+    #   name  = string
+    #   type  = string
+    #   order = number
+    # }))
 
     # Whether this stage requires approval prior to deployment
-    approval = optional(object({
-      required = optional(bool, true)
-      topic    = string
-      }), {
-      required = false
-      topic    = ""
-    })
+    # approval = optional(object({
+    #   required = optional(bool, true)
+    #   topic    = string
+    #   }), {
+    #   required = false
+    #   topic    = ""
+    # })
   }))
   description = "The environments to deploy infra into"
 }
