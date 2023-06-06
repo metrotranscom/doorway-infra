@@ -60,26 +60,45 @@ variable "notification_rules" {
   description = "Rules for triggering notifications on pipeline events"
 }
 
+variable "build_policy_arns" {
+  type        = set(string)
+  description = "Additional policy ARNs to pass to every build action in this pipeline"
+}
+
+variable "build_env_vars" {
+  type        = map(string)
+  description = "Additional environmental variables to pass to every build action in this pipeline"
+}
+
 variable "stages" {
   type = list(object({
     # The name of this environment
     name = string
+    # Additional policy ARNs to pass to every build action in this stage
+    build_policy_arns = optional(set(string), [])
+    # Additional env vars to pass to every build action in this stage
+    build_env_vars = optional(map(string), {})
 
-    actions = list(any)
-    # actions = list(object({
-    #   name  = string
-    #   type  = string
-    #   order = number
-    # }))
+    # This must match the type definition in ./stage/inputs.tf
+    actions = list(object({
+      name  = string
+      type  = string
+      order = number
 
-    # Whether this stage requires approval prior to deployment
-    # approval = optional(object({
-    #   required = optional(bool, true)
-    #   topic    = string
-    #   }), {
-    #   required = false
-    #   topic    = ""
-    # })
+      # Build vars
+      compute_type  = optional(string)
+      image         = optional(string)
+      build_timeout = optional(number)
+      policy_arns   = optional(set(string))
+      env_vars      = optional(map(string))
+      buildspec = optional(object({
+        source = string
+        path   = string
+      }))
+
+      # Approval vars
+      topic = optional(string)
+    }))
   }))
   description = "The environments to deploy infra into"
 }

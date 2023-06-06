@@ -10,6 +10,10 @@ locals {
   primary_sources = [for name, source in var.sources : name if source.is_primary]
   primary_source  = local.primary_sources[0]
 
+  # Set type-appropriate empty values if not set
+  build_policy_arns = var.build_policy_arns != null ? var.build_policy_arns : []
+  build_env_vars    = var.build_env_vars != null ? var.build_env_vars : {}
+
   #notification_topic_arns = [for approval in module.approvals : approval.topic_arn]
   # Filter out which stages require approval before deployment
   # approvals = { for env in var.environments : env.name => env.approval.topic if try(env.approval.required, false) }
@@ -41,7 +45,29 @@ module "stages" {
   name        = each.key
   name_prefix = local.qualified_name
 
-  actions = each.value.actions
+  #actions = each.value.actions
+  build_actions    = [for action in each.value.actions : action if action.type == "build"]
+  approval_actions = [for action in each.value.actions : action if action.type == "approval"]
+
+  build_policy_arns = setunion(
+    # Pipeline-level policies
+    local.build_policy_arns,
+    # Stage-level policies in config
+    each.value.build_policy_arns,
+    #each.value.build_policy_arns != null ? each.value.build_policy_arns : [],
+    # The policy that enables reading from the artifact store
+    [aws_iam_policy.codebuild_artifacts.arn]
+  )
+
+  build_env_vars = merge(
+    # Pipeline-level env vars
+    local.build_env_vars,
+    # Stage-level env vars
+    #each.value.build_env_vars != null ? each.value.build_env_vars : {}
+    each.value.build_env_vars
+  )
+
+  notification_topics = module.notification_topic
 }
 
 module "notification_topic" {
@@ -143,23 +169,22 @@ resource "aws_codepipeline" "pipeline" {
       }
 
       # Approval actions
-      # dynamic "action" {
-      #   #for_each = try([local.approval_topic_arn_map[stage.value.name]], [])
-      #   for_each = try([local.approval_topic_arn_map[stage.value.name]], [])
+      dynamic "action" {
+        for_each = stage.value.approval_actions
 
-      #   content {
-      #     name      = "Approve-Deployment"
-      #     category  = "Approval"
-      #     owner     = "AWS"
-      #     provider  = "Manual"
-      #     version   = "1"
-      #     run_order = 3
+        content {
+          name      = action.key
+          category  = "Approval"
+          owner     = "AWS"
+          provider  = "Manual"
+          version   = "1"
+          run_order = action.value.order
 
-      #     configuration = {
-      #       NotificationArn = action.value
-      #     }
-      #   }
-      # }
+          configuration = {
+            NotificationArn = action.value.topic_arn
+          }
+        }
+      }
     }
   }
 }

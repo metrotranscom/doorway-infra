@@ -11,19 +11,16 @@ variable "name" {
 
 variable "build_timeout" {
   type        = number
-  default     = 60
   description = "The amount of time to let the build job run before failing"
 }
 
 variable "compute_type" {
   type        = string
-  default     = "BUILD_GENERAL1_SMALL"
   description = "The size of build instance to use"
 }
 
 variable "image" {
   type        = string
-  default     = "aws/codebuild/standard:6.0"
   description = "The container image to use for the build job"
 }
 
