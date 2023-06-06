@@ -24,6 +24,11 @@ variable "image" {
   description = "The container image to use for the build job"
 }
 
+variable "privileged" {
+  type        = bool
+  description = "Whether the build job needs to be run in privileged mode"
+}
+
 variable "policy_arns" {
   type        = set(string)
   description = "A set of policy ARNS to attach to the role assumed by this project"
@@ -32,6 +37,32 @@ variable "policy_arns" {
 variable "env_vars" {
   type        = map(string)
   description = "Environment variables to set for this build environment"
+}
+
+variable "vpc" {
+  type = object({
+    use             = bool
+    vpc_id          = string
+    subnets         = set(string)
+    security_groups = set(string)
+  })
+
+  description = "An optional configuration for the VPC to run the build job in"
+
+  validation {
+    condition     = !var.vpc.use || var.vpc.vpc_id != ""
+    error_message = "vpc_id cannot be empty if use == true"
+  }
+
+  validation {
+    condition     = !var.vpc.use || length(var.vpc.subnets) != 0
+    error_message = "subnets cannot be empty if use == true"
+  }
+
+  validation {
+    condition     = !var.vpc.use || length(var.vpc.security_groups) != 0
+    error_message = "security_groups cannot be empty if use == true"
+  }
 }
 
 variable "buildspec" {

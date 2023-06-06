@@ -26,6 +26,16 @@ variable "notification_topics" {
   description = "A map of topics to send notifications to"
 }
 
+variable "default_network" {
+  type = object({
+    vpc_id          = string
+    subnets         = set(string)
+    security_groups = set(string)
+  })
+
+  description = "An optional VPC configuration to apply to each build action in this stage"
+}
+
 variable "build_actions" {
   # This must match the type definition in ../inputs.tf
   type = list(object({
@@ -35,6 +45,14 @@ variable "build_actions" {
     compute_type  = optional(string, "BUILD_GENERAL1_SMALL")
     image         = optional(string, "aws/codebuild/standard:6.0")
     build_timeout = optional(number, 15)
+    privileged    = optional(bool, false)
+
+    vpc = object({
+      use             = bool
+      vpc_id          = string
+      subnets         = set(string)
+      security_groups = set(string)
+    })
 
     policy_arns = optional(set(string), [])
     env_vars    = optional(map(string), {})

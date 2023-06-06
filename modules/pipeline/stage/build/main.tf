@@ -19,6 +19,7 @@ resource "aws_codebuild_project" "project" {
     image                       = var.image
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
+    privileged_mode             = var.privileged
 
     dynamic "environment_variable" {
       for_each = var.env_vars
@@ -28,6 +29,17 @@ resource "aws_codebuild_project" "project" {
         name  = env_var.key
         value = env_var.value
       }
+    }
+  }
+
+  dynamic "vpc_config" {
+    # Only create a vpc_config block if var.vpc.use == true
+    for_each = [for vpc in [var.vpc] : vpc if vpc.use]
+
+    content {
+      vpc_id             = var.vpc.vpc_id
+      subnets            = var.vpc.subnets
+      security_group_ids = var.vpc.security_groups
     }
   }
 

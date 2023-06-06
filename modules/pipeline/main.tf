@@ -49,6 +49,8 @@ module "stages" {
   build_actions    = [for action in each.value.actions : action if action.type == "build"]
   approval_actions = [for action in each.value.actions : action if action.type == "approval"]
 
+  default_network = each.value.default_network
+
   build_policy_arns = setunion(
     # Pipeline-level policies
     local.build_policy_arns,

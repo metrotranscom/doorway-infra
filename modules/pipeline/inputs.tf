@@ -79,6 +79,8 @@ variable "stages" {
     # Additional env vars to pass to every build action in this stage
     build_env_vars = optional(map(string), {})
 
+    default_network = optional(any)
+
     # This must match the type definition in ./stage/inputs.tf
     actions = list(object({
       name  = string
@@ -91,6 +93,20 @@ variable "stages" {
       build_timeout = optional(number)
       policy_arns   = optional(set(string))
       env_vars      = optional(map(string))
+      privileged    = optional(bool)
+
+      vpc = optional(object({
+        use             = optional(bool, false)
+        vpc_id          = optional(string, "")
+        subnets         = optional(set(string), [])
+        security_groups = optional(set(string), [])
+        }), {
+        use             = false,
+        vpc_id          = ""
+        subnets         = []
+        security_groups = []
+      })
+
       buildspec = optional(object({
         source = string
         path   = string
