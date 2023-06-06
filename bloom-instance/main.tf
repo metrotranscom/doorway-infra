@@ -36,8 +36,9 @@ locals {
   qualified_name_prefix = "${local.project_id}-${terraform.workspace}"
 
   default_tags = {
-    Team        = var.owner
+    Owner       = var.owner
     Project     = var.project_name
+    ProjectID   = local.project_id
     Application = var.application_name
     Environment = var.environment
     Workspace   = terraform.workspace
