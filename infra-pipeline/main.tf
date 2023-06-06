@@ -27,6 +27,7 @@ locals {
   default_tags = {
     Owner     = var.owner
     Project   = var.project_name
+    ProjectID = var.project_id
     Workspace = terraform.workspace
   }
 }
@@ -34,11 +35,13 @@ locals {
 module "pipeline" {
   source = "./pipeline"
 
-  name                    = "${local.qualified_name_prefix}-bloom-infra"
-  name_prefix             = "${local.qualified_name_prefix}-bloom-infra-pipeline"
+  name                    = var.pipeline.name
+  name_prefix             = local.qualified_name_prefix
   codestar_connection_arn = local.codestar_connection_arn
 
-  tf_root      = var.pipeline.tf_root
-  sources      = var.pipeline.sources
-  environments = var.pipeline.environments
+  tf_root             = var.pipeline.tf_root
+  sources             = var.pipeline.sources
+  environments        = var.pipeline.environments
+  notification_topics = var.pipeline.notification_topics
+  notification_rules  = var.pipeline.notify
 }

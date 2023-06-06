@@ -49,6 +49,25 @@ variable "tf_root" {
   description = "The location (source repo and path) to run terraform commands"
 }
 
+variable "notification_topics" {
+  type = map(object({
+    emails = set(string)
+  }))
+
+  description = "Named groups of people to notify when a certain event occurs"
+}
+
+variable "notification_rules" {
+  type = list(object({
+    # Which topic to send notifications to 
+    topic  = string
+    detail = optional(string, "BASIC")
+    on     = map(set(string))
+  }))
+
+  description = "Rules for triggering notifications on pipeline events"
+}
+
 variable "environments" {
   type = list(object({
     # The name of this environment
@@ -85,11 +104,11 @@ variable "environments" {
 
     # Whether this stage requires approval prior to deployment
     approval = optional(object({
-      required  = optional(bool, true)
-      approvers = set(string)
+      required = optional(bool, true)
+      topic    = string
       }), {
-      required  = false
-      approvers = []
+      required = false
+      topic    = ""
     })
   }))
   description = "The environments to deploy infra into"
