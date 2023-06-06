@@ -4,7 +4,7 @@ module "public_sites" {
   for_each = { for idx, srv in var.public_sites : idx => srv }
   source   = "./service/public-site"
 
-  name_prefix        = local.default_name
+  name_prefix        = local.qualified_name_prefix
   service_definition = each.value
   log_group_name     = local.task_log_group_name
 
@@ -24,7 +24,7 @@ module "public_sites" {
 module "partner_site" {
   source = "./service/partner-site"
 
-  name_prefix        = local.default_name
+  name_prefix        = local.qualified_name_prefix
   service_definition = var.partner_site
   log_group_name     = local.task_log_group_name
 
@@ -43,7 +43,7 @@ module "partner_site" {
 module "backend_api" {
   source = "./service/backend"
 
-  name_prefix        = local.default_name
+  name_prefix        = local.qualified_name_prefix
   service_definition = var.backend_api
   log_group_name     = local.task_log_group_name
 

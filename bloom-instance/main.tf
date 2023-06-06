@@ -35,9 +35,6 @@ locals {
   # or hard it is to read at a glance in the console.
   qualified_name_prefix = "${local.project_id}-${terraform.workspace}"
 
-  # Alias the old name so it can be removed later
-  default_name = local.qualified_name_prefix
-
   default_tags = {
     Team        = var.owner
     Project     = var.project_name
@@ -53,12 +50,12 @@ locals {
   elb_service_account_arn = data.aws_elb_service_account.current.arn
 
   # Defining this here ensures that all of our task logs get grouped together
-  task_log_group_name = "${local.default_name}-tasks"
+  task_log_group_name = "${local.qualified_name_prefix}-tasks"
 }
 
 # The default cluster for all ECS tasks and services
 resource "aws_ecs_cluster" "default" {
-  name = "${local.default_name}-default"
+  name = "${local.qualified_name_prefix}-default"
 }
 
 # inform terraform about renamed network resources
