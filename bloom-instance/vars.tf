@@ -55,8 +55,8 @@ variable "environment" {
   description = "The stage of the software development lifecycle this deployement represents"
 
   validation {
-    condition     = contains(["dev", "test", "qa", "staging", "prod"], var.environment)
-    error_message = "Valid values for var: environment are (dev, test, qa, staging, prod)."
+    condition     = can(regex("^[[:alpha:]][[:alnum:]]{0,10}$", var.environment))
+    error_message = "environment can only contain letters and numbers, must start with a letter, and must be 10 or fewer characters"
   }
 }
 
