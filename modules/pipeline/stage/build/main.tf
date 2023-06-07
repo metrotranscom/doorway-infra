@@ -1,7 +1,6 @@
 
 locals {
   qualified_name = "${var.name_prefix}-${var.name}"
-  buildspec_path = var.buildspec.path
 }
 
 resource "aws_codebuild_project" "project" {
@@ -45,7 +44,7 @@ resource "aws_codebuild_project" "project" {
 
   source {
     type      = "CODEPIPELINE"
-    buildspec = local.buildspec_path
+    buildspec = var.buildspec
   }
 
   logs_config {

@@ -68,10 +68,7 @@ variable "build_actions" {
     policy_arns = optional(set(string), [])
     env_vars    = optional(map(string), {})
 
-    buildspec = object({
-      source = string
-      path   = string
-    })
+    buildspec = string
   }))
   description = "The list of build actions to perform in this stage"
 }

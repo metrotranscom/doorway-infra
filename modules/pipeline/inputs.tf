@@ -111,10 +111,7 @@ variable "stages" {
         security_groups = []
       })
 
-      buildspec = optional(object({
-        source = string
-        path   = string
-      }))
+      buildspec = optional(string)
 
       # Approval vars
       topic = optional(string)

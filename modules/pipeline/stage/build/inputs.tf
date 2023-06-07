@@ -66,9 +66,6 @@ variable "vpc" {
 }
 
 variable "buildspec" {
-  type = object({
-    source = string
-    path   = string
-  })
-  description = "The path to the buildspec file provided through CodePipeline"
+  type        = string
+  description = "The path to the buildspec file relative to primary source root"
 }
