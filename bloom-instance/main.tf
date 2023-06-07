@@ -28,18 +28,19 @@ data "aws_caller_identity" "current" {}
 data "aws_elb_service_account" "current" {}
 
 locals {
+  # This level of indirection helps when refactoring widely-used vars
+  project_id = var.project_id
+
   # We may want to rearrange the order of these in the future based on how easy
   # or hard it is to read at a glance in the console.
-  qualified_name_prefix = "${var.name_prefix}-${terraform.workspace}"
-
-  # Alias the old name so it can be removed later
-  default_name = local.qualified_name_prefix
+  qualified_name_prefix = "${local.project_id}-${terraform.workspace}"
 
   default_tags = {
-    Team        = var.team_name
+    Owner       = var.owner
     Project     = var.project_name
+    ProjectID   = local.project_id
     Application = var.application_name
-    Environment = var.sdlc_stage
+    Environment = var.environment
     Workspace   = terraform.workspace
   }
 
@@ -50,12 +51,12 @@ locals {
   elb_service_account_arn = data.aws_elb_service_account.current.arn
 
   # Defining this here ensures that all of our task logs get grouped together
-  task_log_group_name = "${local.default_name}-tasks"
+  task_log_group_name = "${local.qualified_name_prefix}-tasks"
 }
 
 # The default cluster for all ECS tasks and services
 resource "aws_ecs_cluster" "default" {
-  name = "${local.default_name}-default"
+  name = "${local.qualified_name_prefix}-default"
 }
 
 # inform terraform about renamed network resources

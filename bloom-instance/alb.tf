@@ -14,7 +14,7 @@ module "albs" {
   # The ARN is then resolved by the listener module based on the tls config
   cert_map = { for name, cert in module.certs : name => cert.arn }
 
-  name_prefix    = local.default_name
+  name_prefix    = local.qualified_name_prefix
   name           = each.key
   enable_logging = each.value.enable_logging
   internal       = each.value.internal

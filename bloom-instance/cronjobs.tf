@@ -2,7 +2,7 @@
 module "import_listings" {
   source = "./cronjob/import-listings"
 
-  name_prefix     = local.default_name
+  name_prefix     = local.qualified_name_prefix
   ecs_cluster_arn = aws_ecs_cluster.default.arn
   log_group_name  = local.task_log_group_name
 

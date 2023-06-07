@@ -1,6 +1,6 @@
 variable "project_name" {
   type        = string
-  description = "Name of the project"
+  description = "A human-readable name for this project. Can be changed if needed"
 
   validation {
     condition     = can(regex("^[\\w\\s\\.\\-]+$", var.project_name))
@@ -18,23 +18,24 @@ variable "application_name" {
   }
 }
 
-variable "name_prefix" {
+variable "project_id" {
   type        = string
-  description = "A prefix to be used when creating resources to provide a distinct, yet recognizable name"
+  description = "A unique, immutable identifier for this project"
 
   validation {
-    condition     = can(regex("^[[:alnum:]\\-]+$", var.name_prefix))
-    error_message = "name_prefix can only contain letters, numbers, and hyphens"
+    condition     = can(regex("^[[:alnum:]\\-]+$", var.project_id))
+    error_message = "project_id can only contain letters, numbers, and hyphens"
   }
 }
 
-variable "team_name" {
+# This var is only set on resource tags. Standard tag naming restrictions apply
+variable "owner" {
   type        = string
-  description = "The name of the team that owns this deployment"
+  description = "The owner of the resources created via these templates"
 
   validation {
-    condition     = can(regex("^[\\w\\s\\.\\-]+$", var.team_name))
-    error_message = "team_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
+    condition     = can(regex("^[\\w\\s\\.\\-\\:\\/\\=\\+@]{1,255}$", var.owner))
+    error_message = "owner can only contain letters, numbers, spaces, and these special characters: _ . : / = + - @"
   }
 }
 
@@ -48,14 +49,14 @@ variable "aws_region" {
   }
 }
 
-variable "sdlc_stage" {
+variable "environment" {
   type        = string
   default     = "dev"
   description = "The stage of the software development lifecycle this deployement represents"
 
   validation {
-    condition     = contains(["dev", "test", "qa", "staging", "prod"], var.sdlc_stage)
-    error_message = "Valid values for var: sdlc_stage are (dev, test, qa, staging, prod)."
+    condition     = can(regex("^[[:alpha:]][[:alnum:]]{0,10}$", var.environment))
+    error_message = "environment can only contain letters and numbers, must start with a letter, and must be 10 or fewer characters"
   }
 }
 

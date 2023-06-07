@@ -1,9 +1,9 @@
 project_name = "Doorway" # TBD
 application_name = "Bloom Housing Instance"
-name_prefix = "doorway"
-team_name = "doorway"
+project_id = "doorway"
+owner = "infra_team+bloom@your-org.dev"
 aws_region = "us-west-1"
-sdlc_stage = "dev"
+environment = "dev"
 
 network = {
   vpc_cidr = "10.0.0.0/16"
