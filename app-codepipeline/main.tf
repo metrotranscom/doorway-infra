@@ -19,7 +19,7 @@ provider "aws" {
 }
 
 locals {
-  qualified_name = "${var.name_prefix}-${terraform.workspace}"
+  qualified_name = "${var.project_id}-${terraform.workspace}"
 
   # Use the current region if var.ecr.default_region is not set
   ecr_repo_default_region = (
@@ -157,11 +157,3 @@ output "ecr_repos" {
 output "pipeline" {
   value = module.pipeline
 }
-
-# output "ecr_repo_attachments" {
-#   value = local.ecr_repo_policy_attachments
-# }
-
-# output "stages" {
-#   value = local.stages
-# }
