@@ -53,10 +53,10 @@ variable "build_actions" {
     label = optional(string)
     order = number
 
-    compute_type  = optional(string, "BUILD_GENERAL1_SMALL")
-    image         = optional(string, "aws/codebuild/standard:6.0")
-    build_timeout = optional(number, 15)
-    privileged    = optional(bool, false)
+    compute_type = optional(string, "BUILD_GENERAL1_SMALL")
+    image        = optional(string, "aws/codebuild/standard:6.0")
+    timeout      = optional(number, 15)
+    privileged   = optional(bool, false)
 
     vpc = object({
       use             = bool

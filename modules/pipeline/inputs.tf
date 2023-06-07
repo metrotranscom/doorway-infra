@@ -92,13 +92,13 @@ variable "stages" {
       order = number
 
       # Build vars
-      compute_type  = optional(string)
-      image         = optional(string)
-      build_timeout = optional(number)
-      policy_arns   = optional(set(string))
-      env_vars      = optional(map(string))
-      privileged    = optional(bool)
-      secret_arns   = optional(map(string))
+      compute_type = optional(string)
+      image        = optional(string)
+      timeout      = optional(number)
+      policy_arns  = optional(set(string))
+      env_vars     = optional(map(string))
+      privileged   = optional(bool)
+      secret_arns  = optional(map(string))
 
       vpc = optional(object({
         use             = optional(bool, false)

@@ -9,7 +9,7 @@ variable "name" {
   description = "The name of this CodeBuild project"
 }
 
-variable "build_timeout" {
+variable "timeout" {
   type        = number
   description = "The amount of time to let the build job run before failing"
 }
