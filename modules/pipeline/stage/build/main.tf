@@ -71,38 +71,3 @@ resource "aws_iam_role" "codebuild" {
     ]
   })
 }
-
-resource "aws_iam_role_policy_attachment" "supplied" {
-  for_each   = var.policy_arns
-  role       = aws_iam_role.codebuild.name
-  policy_arn = each.value
-}
-
-resource "aws_iam_policy" "write_logs" {
-  name = "${local.qualified_name}-logs"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid    = "AllowWriteLogs"
-        Effect = "Allow"
-
-        Action = [
-          "logs:CreateLogStream",
-          "logs:CreateLogGroup",
-          "logs:PutLogEvents",
-        ]
-
-        Resource = [
-          "arn:aws:logs:*:*:log-group:/aws/codebuild/${local.qualified_name}:log-stream:*"
-        ]
-      },
-    ],
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "write_logs" {
-  role       = aws_iam_role.codebuild.name
-  policy_arn = aws_iam_policy.write_logs.arn
-}

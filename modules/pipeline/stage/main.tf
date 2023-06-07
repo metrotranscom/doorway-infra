@@ -28,6 +28,7 @@ module "build" {
   image         = each.value.image
   build_timeout = each.value.build_timeout
   privileged    = each.value.privileged
+  secret_arns   = each.value.secret_arns
 
   vpc = {
     # Whatever the "use" value is on the action is what we pass in

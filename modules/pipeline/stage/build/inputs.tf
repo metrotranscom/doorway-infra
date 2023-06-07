@@ -39,6 +39,11 @@ variable "env_vars" {
   description = "Environment variables to set for this build environment"
 }
 
+variable "secret_arns" {
+  type        = set(string)
+  description = "The ARNs of secrets that the build job needs access to"
+}
+
 variable "vpc" {
   type = object({
     use             = bool

@@ -98,6 +98,7 @@ variable "stages" {
       policy_arns   = optional(set(string))
       env_vars      = optional(map(string))
       privileged    = optional(bool)
+      secret_arns = optional(set(string))
 
       vpc = optional(object({
         use             = optional(bool, false)
