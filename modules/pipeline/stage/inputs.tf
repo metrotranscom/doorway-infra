@@ -1,7 +1,7 @@
 
 variable "name" {
   type        = string
-  description = "The name of the pipeline"
+  description = "The name of the stage"
 
   # validation {
   #   condition     = can(regex("^[\\w\\s\\.\\-]+$", var.name))
@@ -16,6 +16,16 @@ variable "name_prefix" {
   validation {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.name_prefix))
     error_message = "name_prefix can only contain letters, numbers, and hyphens"
+  }
+}
+
+variable "label" {
+  type        = string
+  description = "A human-readable label to apply to the stage"
+
+  validation {
+    condition     = can(regex("^[\\w\\.\\-]+$", var.label))
+    error_message = "label can only contain letters, numbers, underscores, periods, and hyphens"
   }
 }
 
@@ -40,6 +50,7 @@ variable "build_actions" {
   # This must match the type definition in ../inputs.tf
   type = list(object({
     name  = string
+    label = optional(string)
     order = number
 
     compute_type  = optional(string, "BUILD_GENERAL1_SMALL")
@@ -70,6 +81,7 @@ variable "approval_actions" {
   type = list(object({
     name  = string
     order = number
+    label = optional(string)
     topic = string
   }))
   description = "The list of approval actions to perform in this stage"

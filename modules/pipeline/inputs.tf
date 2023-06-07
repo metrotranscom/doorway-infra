@@ -74,6 +74,9 @@ variable "stages" {
   type = list(object({
     # The name of this environment
     name = string
+    # An optional human-readable label to apply to the stage
+    label = optional(string)
+
     # Additional policy ARNs to pass to every build action in this stage
     build_policy_arns = optional(set(string), [])
     # Additional env vars to pass to every build action in this stage
@@ -84,6 +87,7 @@ variable "stages" {
     # This must match the type definition in ./stage/inputs.tf
     actions = list(object({
       name  = string
+      label = optional(string)
       type  = string
       order = number
 

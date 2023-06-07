@@ -37,9 +37,7 @@ locals {
 }
 
 module "ecr_repos" {
-  source = "./repo"
-  #for_each = { for name, repo in var.ecr.repos : var}
-  #for_each = var.ecr.repos
+  source = "./ecr_repo"
 
   for_each = merge([for group_name, group in var.ecr.repo_groups :
     { for repo in group.repos :

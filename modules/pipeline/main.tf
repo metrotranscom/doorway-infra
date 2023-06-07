@@ -43,6 +43,7 @@ module "stages" {
   for_each = { for stage in var.stages : stage.name => stage }
 
   name        = each.key
+  label       = each.value.label == null ? each.key : each.value.label
   name_prefix = local.qualified_name
 
   #actions = each.value.actions
@@ -132,7 +133,7 @@ resource "aws_codepipeline" "pipeline" {
     for_each = module.stages
 
     content {
-      name = stage.key
+      name = stage.value.label
 
       # action {
       #   name             = "Plan"
@@ -155,7 +156,7 @@ resource "aws_codepipeline" "pipeline" {
         for_each = stage.value.build_actions
 
         content {
-          name            = action.key
+          name            = action.value.label
           category        = "Build"
           owner           = "AWS"
           provider        = "CodeBuild"
@@ -175,7 +176,7 @@ resource "aws_codepipeline" "pipeline" {
         for_each = stage.value.approval_actions
 
         content {
-          name      = action.key
+          name      = action.value.label
           category  = "Approval"
           owner     = "AWS"
           provider  = "Manual"
