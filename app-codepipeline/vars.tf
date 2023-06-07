@@ -97,3 +97,33 @@ variable "s3_force_delete" {
   description = "If true, we'll be able to force delete the S3 bucket that holds the codepipline logs"
   default     = false
 }
+
+variable "pipeline" {
+  type = object({
+    name = string
+    # See ../modules/pipeline/inputs.tf for object structures
+    sources             = any
+    stages              = any
+    notification_topics = any
+    notify              = any
+    build_policy_arns   = optional(set(string), [])
+    build_env_vars      = optional(map(string), {})
+  })
+  description = "Settings for the pipeline"
+}
+
+variable "ecr" {
+  type = object({
+    default_region  = optional(string)
+    default_account = optional(string)
+
+    repo_groups = map(object({
+      region    = optional(string)
+      account   = optional(string)
+      namespace = string
+      repos     = set(string)
+    }))
+  })
+
+  description = "Information about available ECR repos"
+}

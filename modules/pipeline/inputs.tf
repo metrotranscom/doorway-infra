@@ -3,10 +3,10 @@ variable "name" {
   type        = string
   description = "The name of the pipeline"
 
-  # validation {
-  #   condition     = can(regex("^[\\w\\s\\.\\-]+$", var.name))
-  #   error_message = "name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
-  # }
+  validation {
+    condition     = can(regex("^[[:alnum:]\\-]+$", var.name))
+    error_message = "name can only contain letters, numbers, and hyphens"
+  }
 }
 
 variable "name_prefix" {
