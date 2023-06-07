@@ -11,6 +11,12 @@ locals {
     var.env_vars,
     var.secret_arns
   )
+
+  use_network     = var.vpc.use
+  vpc_id          = var.vpc.vpc_id
+  subnets         = var.vpc.subnets
+  security_groups = var.vpc.security_groups
+  subnet_arns     = [for subnet in local.subnets : "arn:aws:ec2:*:*:subnet/${subnet}"]
 }
 
 resource "aws_codebuild_project" "project" {

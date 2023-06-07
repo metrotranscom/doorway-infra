@@ -95,3 +95,58 @@ resource "aws_iam_role_policy_attachment" "secrets" {
   role       = aws_iam_role.codebuild.name
   policy_arn = aws_iam_policy.secrets[0].arn
 }
+
+resource "aws_iam_policy" "network" {
+  count = local.use_network ? 1 : 0
+  name  = "${local.qualified_name}-network"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      # Unscoped permissions
+      {
+        Sid    = "AllowDescribeNetworkResources"
+        Effect = "Allow"
+
+        Action = [
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeDhcpOptions",
+          "ec2:DescribeVpcs",
+          "ec2:DescribeSecurityGroups",
+
+          # These have to be granted broadly in order to work, apparently
+          "ec2:CreateNetworkInterface",
+          "ec2:DeleteNetworkInterface",
+        ],
+
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowDelegateCreateNetworkInterface"
+        Effect = "Allow"
+
+        Action = [
+          "ec2:CreateNetworkInterfacePermission"
+        ],
+
+        Resource = "arn:aws:ec2:*:*:network-interface/*",
+
+        Condition = {
+          StringEquals = {
+            "ec2:AuthorizedService" : "codebuild.amazonaws.com"
+          },
+          ArnEquals = {
+            "ec2:Subnet" : local.subnet_arns
+          }
+        }
+      },
+    ],
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "network" {
+  count      = local.use_network ? 1 : 0
+  role       = aws_iam_role.codebuild.name
+  policy_arn = aws_iam_policy.network[0].arn
+}
