@@ -63,14 +63,14 @@ resource "aws_iam_policy" "reporting" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "report" {
+resource "aws_iam_role_policy_attachment" "reporting" {
   role       = aws_iam_role.codebuild.name
   policy_arn = aws_iam_policy.reporting.arn
 }
 
 # Add the ability to read necessary secrets
 resource "aws_iam_policy" "secrets" {
-  count = length(var.secret_arns) > 0 ? 1 : 0
+  count = local.has_secrets ? 1 : 0
   name  = "${local.qualified_name}-secrets"
 
   policy = jsonencode({
@@ -84,14 +84,14 @@ resource "aws_iam_policy" "secrets" {
           "secretsmanager:GetSecretValue"
         ]
 
-        Resource = var.secret_arns
+        Resource = local.secret_arn_values
       },
     ],
   })
 }
 
 resource "aws_iam_role_policy_attachment" "secrets" {
-  count      = length(var.secret_arns) > 0 ? 1 : 0
+  count      = local.has_secrets ? 1 : 0
   role       = aws_iam_role.codebuild.name
   policy_arn = aws_iam_policy.secrets[0].arn
 }

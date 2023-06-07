@@ -67,7 +67,7 @@ variable "build_actions" {
 
     policy_arns = optional(set(string), [])
     env_vars    = optional(map(string), {})
-    secret_arns = optional(set(string), [])
+    secret_arns = optional(map(string), {})
 
     buildspec = string
   }))

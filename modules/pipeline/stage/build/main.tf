@@ -1,6 +1,16 @@
 
 locals {
-  qualified_name = "${var.name_prefix}-${var.name}"
+  qualified_name    = "${var.name_prefix}-${var.name}"
+  secret_arn_values = values(var.secret_arns)
+  has_secrets       = length(local.secret_arn_values) > 0
+
+  # var.secret_arn represents key-value pairs of secret ARNS that need to be
+  # passed in as env vars for use in the "secrets-manager" section of the buildspec
+  # Go ahead and add them to the env vars so they can be populated
+  env_vars = merge(
+    var.env_vars,
+    var.secret_arns
+  )
 }
 
 resource "aws_codebuild_project" "project" {
@@ -21,7 +31,7 @@ resource "aws_codebuild_project" "project" {
     privileged_mode             = var.privileged
 
     dynamic "environment_variable" {
-      for_each = var.env_vars
+      for_each = local.env_vars
       iterator = env_var
 
       content {

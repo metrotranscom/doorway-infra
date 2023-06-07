@@ -40,8 +40,8 @@ variable "env_vars" {
 }
 
 variable "secret_arns" {
-  type        = set(string)
-  description = "The ARNs of secrets that the build job needs access to"
+  type        = map(string)
+  description = "A map of env var names to the ARNs of secrets that the build job needs access to"
 }
 
 variable "vpc" {
