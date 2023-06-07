@@ -7,26 +7,6 @@ variable "name_prefix" {
     error_message = "name_prefix can only contain letters, numbers, and hyphens"
   }
 }
-variable "ecr_namespace" {
-  type        = string
-  description = "A project name used as a namespace for the ECR registry. Example <host>/<ecr_namespace>/<image_name>"
-  default     = ""
-  validation {
-    condition     = var.ecr_namespace == "" || can(regex("^[[:alnum:]\\-]+$", var.ecr_namespace))
-    error_message = "ecr_namespace can only contain letters, numbers, and hyphens"
-  }
-}
-
-variable "ecr_account_id" {
-  type        = string
-  description = "an AWS Account ID for the ECR target"
-  default     = ""
-  validation {
-    condition     = var.ecr_account_id == "" || can(regex("^[0-9]+$", var.ecr_account_id))
-    error_message = "Expecting all numbers for an AWS Account ID"
-  }
-}
-
 
 variable "aws_region" {
   type        = string
@@ -38,18 +18,6 @@ variable "aws_region" {
   }
 }
 
-variable "repo" {
-  type = object({
-    name   = string,
-    branch = string
-  })
-  description = "Full GitHub repo name in the format of organization/repo and the branch the pipeline will watch"
-  validation {
-    condition     = can(regex("^[^\\/]+\\/[^\\/]+$", var.repo.name)) && can(regex("^.+$", var.repo.branch))
-    error_message = "Repo name must be in the format of: `organization/repo' and branch name can't be empty."
-  }
-}
-
 variable "gh_codestar_conn_name" {
   type        = string
   description = "The github/AWS Codestar connection resource for the repo. This allows AWS to connect to the github repo"
@@ -58,44 +26,6 @@ variable "gh_codestar_conn_name" {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.gh_codestar_conn_name))
     error_message = "Branch name can't be empty."
   }
-}
-
-variable "build_env_vars" {
-  type        = map(string)
-  description = "Map of <env name>: <env value> that is injected as environment variables when building the image"
-}
-
-variable "deploy_env_vars" {
-  type        = map(string)
-  description = "Map of <env name>: <env value> that is injected as environment variables when deploying the services"
-}
-
-variable "db_creds_arn" {
-  type        = string
-  description = "The ARN for the backend database secrets in secret manager."
-}
-
-variable "codebuild_vpc_id" {
-  type        = string
-  description = "VPC id where codebuild projects can access the database"
-}
-variable "codebuild_vpc_subnets" {
-  type        = list(string)
-  description = "VPC subnets where codebuild projects can access the database"
-}
-variable "codebuild_vpc_sgs" {
-  type        = list(string)
-  description = "VPC security groupswhere codebuild projects can access the database"
-}
-variable "codebuild_vpc_region" {
-  type        = string
-  description = "VPC region where codebuild projects live"
-}
-
-variable "s3_force_delete" {
-  type        = bool
-  description = "If true, we'll be able to force delete the S3 bucket that holds the codepipline logs"
-  default     = false
 }
 
 variable "pipeline" {
@@ -125,5 +55,5 @@ variable "ecr" {
     }))
   })
 
-  description = "Information about available ECR repos"
+  description = "Information about available ECR repos, used for passing repo info to actions"
 }

@@ -103,6 +103,9 @@ locals {
   ]...)
 }
 
+# Needed to resolve current AWS Account ID
+data "aws_caller_identity" "current" {}
+
 # NOTE: Auth with the GitHub must be completed in the AWS Console.
 data "aws_codestarconnections_connection" "default" {
   name = var.gh_codestar_conn_name

@@ -1,24 +1,23 @@
-# Needed to resolve current AWS Account ID
-data "aws_caller_identity" "current" {}
-locals {
-  ecr_account_id        = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
-  ecr_namespace         = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo.branch}" : var.ecr_namespace
-  codebuild_aws_acct_id = data.aws_caller_identity.current.account_id
-  common_env_vars = [
-    { "name" : "ECR_REGION", "value" : "${var.aws_region}" },
-    { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
-    { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" }
-  ]
-  build_env_vars = concat(local.common_env_vars, [for n, val in var.build_env_vars : { name = n, value = val }])
 
-  deploy_secrets_env_vars = [
-    { "name" : "DB_CREDS_ARN", "value" : var.db_creds_arn }
-  ]
-  deploy_env_vars = concat(
-    local.common_env_vars,
-    [for n, val in var.deploy_env_vars : { name = n, value = val }],
-  local.deploy_secrets_env_vars)
-}
+# locals {
+#   ecr_account_id        = var.ecr_account_id == "" ? data.aws_caller_identity.current.account_id : var.ecr_account_id
+#   ecr_namespace         = var.ecr_namespace == "" ? "${var.name_prefix}-${var.repo.branch}" : var.ecr_namespace
+#   codebuild_aws_acct_id = data.aws_caller_identity.current.account_id
+#   common_env_vars = [
+#     { "name" : "ECR_REGION", "value" : "${var.aws_region}" },
+#     { "name" : "ECR_ACCOUNT_ID", "value" : "${local.ecr_account_id}" },
+#     { "name" : "ECR_NAMESPACE", "value" : "${local.ecr_namespace}" }
+#   ]
+#   build_env_vars = concat(local.common_env_vars, [for n, val in var.build_env_vars : { name = n, value = val }])
+
+#   deploy_secrets_env_vars = [
+#     { "name" : "DB_CREDS_ARN", "value" : var.db_creds_arn }
+#   ]
+#   deploy_env_vars = concat(
+#     local.common_env_vars,
+#     [for n, val in var.deploy_env_vars : { name = n, value = val }],
+#   local.deploy_secrets_env_vars)
+# }
 
 # resource "aws_codepipeline" "default" {
 #   name     = "${var.name_prefix}-codepipeline"
