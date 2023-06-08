@@ -10,7 +10,7 @@ resource "aws_ecs_service" "service" {
   cluster         = aws_ecs_cluster.service.id
   task_definition = local.task_id
 
-  desired_count = 1
+  desired_count = local.desired_count
   launch_type   = "FARGATE"
 
   load_balancer {
