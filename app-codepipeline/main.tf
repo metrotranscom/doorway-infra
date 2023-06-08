@@ -16,10 +16,19 @@ terraform {
 
 provider "aws" {
   region = var.aws_region
+  default_tags { tags = local.default_tags }
 }
 
 locals {
   qualified_name = "${var.project_id}-${terraform.workspace}"
+
+  default_tags = {
+    Owner       = var.owner
+    ProjectName = var.project_name
+    ProjectID   = var.project_id
+    Application = var.application_name
+    Workspace   = terraform.workspace
+  }
 
   # Use the current region if var.ecr.default_region is not set
   ecr_repo_default_region = (

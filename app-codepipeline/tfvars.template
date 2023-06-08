@@ -1,5 +1,9 @@
-aws_region            = "us-west-1"
-project_id            = "doorway"
+project_name     = "Doorway Housing Project"
+project_id       = "doorway"
+application_name = "Bloom Housing Pipeline"
+owner            = "infra-team@example.com"
+aws_region       = "us-west-1"
+
 gh_codestar_conn_name = "doorway-github-connection"
 
 ecr = {

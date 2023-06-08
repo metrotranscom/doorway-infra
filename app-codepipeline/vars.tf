@@ -1,6 +1,16 @@
+variable "project_name" {
+  type        = string
+  description = "A human-readable name for this project. Can be changed if needed"
+
+  validation {
+    condition     = can(regex("^[\\w\\s\\.\\-]+$", var.project_name))
+    error_message = "project_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
+  }
+}
+
 variable "project_id" {
   type        = string
-  description = "An identifier to be used when creating resources to provide a distinct, yet recognizable name"
+  description = "A unique, immutable identifier for this project"
 
   validation {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.project_id))
@@ -8,9 +18,30 @@ variable "project_id" {
   }
 }
 
+variable "application_name" {
+  type        = string
+  description = "The name for the application deployed"
+
+  validation {
+    condition     = can(regex("^[\\w\\s\\.\\-]+$", var.application_name))
+    error_message = "application_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
+  }
+}
+
+# This var is only set on resource tags. Standard tag naming restrictions apply
+variable "owner" {
+  type        = string
+  description = "The owner of the resources created via these templates"
+
+  validation {
+    condition     = can(regex("^[\\w\\s\\.\\-\\:\\/\\=\\+@]{1,255}$", var.owner))
+    error_message = "owner can only contain letters, numbers, spaces, and these special characters: _ . : / = + - @"
+  }
+}
+
 variable "aws_region" {
   type        = string
-  description = "The region to use when deploying regional resources, for example ECS and ECR"
+  description = "The region to use when deploying regional resources"
 
   validation {
     condition     = can(regex("^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\\d$", var.aws_region))
