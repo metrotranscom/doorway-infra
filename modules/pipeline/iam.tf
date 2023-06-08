@@ -61,37 +61,37 @@ resource "aws_iam_policy" "pipeline" {
   })
 }
 
-# resource "aws_iam_policy" "approvals" {
-#   count = local.have_approvals ? 1 : 0
-#   name  = "${local.qualified_name}-approvals"
+resource "aws_iam_policy" "approvals" {
+  count = local.have_approvals ? 1 : 0
+  name  = "${local.qualified_name}-approvals"
 
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Sid    = "AllowPublishNotifications"
-#         Effect = "Allow"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowPublishNotifications"
+        Effect = "Allow"
 
-#         Action = [
-#           "sns:Publish"
-#         ]
+        Action = [
+          "sns:Publish"
+        ]
 
-#         Resource = local.approval_topic_arn_list
-#       },
-#     ],
-#   })
-# }
+        Resource = local.approval_topic_arn_set
+      },
+    ],
+  })
+}
 
 resource "aws_iam_role_policy_attachment" "pipeline" {
   role       = aws_iam_role.pipeline.name
   policy_arn = aws_iam_policy.pipeline.arn
 }
 
-# resource "aws_iam_role_policy_attachment" "approvals" {
-#   count      = local.have_approvals ? 1 : 0
-#   role       = aws_iam_role.pipeline.name
-#   policy_arn = aws_iam_policy.approvals[0].arn
-# }
+resource "aws_iam_role_policy_attachment" "approvals" {
+  count      = local.have_approvals ? 1 : 0
+  role       = aws_iam_role.pipeline.name
+  policy_arn = aws_iam_policy.approvals[0].arn
+}
 
 resource "aws_iam_policy" "codebuild_artifacts" {
   name = "${local.qualified_name}-artifacts"

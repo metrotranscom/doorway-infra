@@ -14,28 +14,16 @@ locals {
   build_policy_arns = var.build_policy_arns != null ? var.build_policy_arns : []
   build_env_vars    = var.build_env_vars != null ? var.build_env_vars : {}
 
-  #notification_topic_arns = [for approval in module.approvals : approval.topic_arn]
-  # Filter out which stages require approval before deployment
-  # approvals = { for env in var.environments : env.name => env.approval.topic if try(env.approval.required, false) }
-  # # Map the topic ARNs for those stages
-  # approval_topic_arn_map = { for stage, topic in local.approvals : stage => module.notification_topic[topic].topic_arn }
-  # # And get just the ARNs for IAM policies
-  # approval_topic_arn_list = values(local.approval_topic_arn_map)
-  # # Boolean value for simple checks
-  # have_approvals = length(local.approval_topic_arn_list) > 0
+  # Get a list of all approval topic ARNS
+  approval_topic_arn_list = concat([
+    for stage in module.stages : [for action in stage.approval_actions : action.topic_arn]
+  ]...)
 
-  # The env var used in CodeBuild to point to the source root
-  cloudbuild_src_dir_var = "CODEBUILD_SRC_DIR"
+  # Convert to a set of unique values
+  approval_topic_arn_set = toset(local.approval_topic_arn_list)
 
-  # If the tf_root is in the primary source, the path to it is in the CODEBUILD_SRC_DIR env var
-  # Otherwise it is in the var prefixed with "CODEBUILD_SRC_DIR_" and ending with the name of the source
-  # tf_root_var_name = (
-  #   var.tf_root.source == local.primary_source
-  #   ? local.cloudbuild_src_dir_var
-  #   : "${local.cloudbuild_src_dir_var}_${var.tf_root.source}"
-  # )
-
-  #plan_file_artifact_name = "plan"
+  # Boolean value for simple checks
+  have_approvals = length(local.approval_topic_arn_set) > 0
 }
 
 module "stages" {
