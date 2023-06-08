@@ -86,9 +86,10 @@ locals {
                 # with another that contains additional policies.
                 {
                   # Combine any existing policy_arns...
-                  policy_arns : concat(
+                  policy_arns : setunion(
                     try(action.policy_arns, []),
-                    [
+                    # The try here is because concat needs at least one arg, but we might not have any
+                    toset(try(concat([
                       # with additional ones based on the values in ecr_repo_access
                       # Note that we use "try" because it might not be set on the action
                       for repo_id, perms in try(action.ecr_repo_access, {}) : concat([
@@ -96,7 +97,7 @@ locals {
                           module.ecr_repos[repo_id].policy_arns[perm]
                         ] if contains(["push", "pull"], perm)
                       ]...) if try(action.ecr_repo_access, null) != null
-                    ]...
+                    ]...), []))
                   )
 
                   # It would be possible to add/change some other action values here

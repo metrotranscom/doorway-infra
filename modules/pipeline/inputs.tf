@@ -82,7 +82,15 @@ variable "stages" {
     # Additional env vars to pass to every build action in this stage
     build_env_vars = optional(map(string), {})
 
-    default_network = optional(any)
+    default_network = optional(object({
+      vpc_id          = string
+      subnets         = set(string)
+      security_groups = set(string)
+      }), {
+      vpc_id          = ""
+      subnets         = []
+      security_groups = []
+    })
 
     # This must match the type definition in ./stage/inputs.tf
     actions = list(object({

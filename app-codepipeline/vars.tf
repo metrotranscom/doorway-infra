@@ -63,13 +63,75 @@ variable "pipeline" {
   type = object({
     name = string
     # See ../modules/pipeline/inputs.tf for object structures
-    sources             = any
-    stages              = any
+    sources = any
+
+    # From ../modules/pipeline/inputs.tf
+    # Necessary to avoid typing issues with "any" and lists
+    stages = set(object({
+      # The name of this environment
+      name = string
+      # An optional human-readable label to apply to the stage
+      label = optional(string)
+
+      # Additional policy ARNs to pass to every build action in this stage
+      build_policy_arns = optional(set(string), [])
+      # Additional env vars to pass to every build action in this stage
+      build_env_vars = optional(map(string), {})
+
+      default_network = optional(object({
+        vpc_id          = string
+        subnets         = set(string)
+        security_groups = set(string)
+        }), {
+        vpc_id          = ""
+        subnets         = []
+        security_groups = []
+      })
+
+      # This is the same as in ../modules/pipeline/inputs.tf with exceptions noted
+      actions = list(object({
+        # These are new
+        ecr_repo_access = optional(map(list(string)), {})
+
+        # These are from the module
+        name  = string
+        label = optional(string)
+        type  = string
+        order = number
+
+        compute_type = optional(string)
+        image        = optional(string)
+        timeout      = optional(number)
+        policy_arns  = optional(set(string), [])
+        env_vars     = optional(map(string), {})
+        privileged   = optional(bool)
+        secret_arns  = optional(map(string), {})
+
+        vpc = optional(object({
+          use             = optional(bool, false)
+          vpc_id          = optional(string, "")
+          subnets         = optional(set(string), [])
+          security_groups = optional(set(string), [])
+          }), {
+          use             = false,
+          vpc_id          = ""
+          subnets         = []
+          security_groups = []
+        })
+
+        buildspec = optional(string)
+
+        # Approval vars
+        topic = optional(string)
+      }))
+    }))
+
     notification_topics = any
     notify              = any
     build_policy_arns   = optional(set(string), [])
     build_env_vars      = optional(map(string), {})
   })
+
   description = "Settings for the pipeline"
 }
 
