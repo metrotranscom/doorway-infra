@@ -13,6 +13,7 @@ module "service" {
 
   task_role_arn  = aws_iam_role.service.arn
   log_group_name = var.log_group_name
+  cluster_name   = var.cluster_name
 
   additional_tags = var.additional_tags
 }

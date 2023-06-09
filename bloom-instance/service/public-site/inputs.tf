@@ -26,6 +26,11 @@ variable "subnet_map" {
   description = "A map of available subnets"
 }
 
+variable "cluster_name" {
+  type        = string
+  description = "The name of the ECS cluster to run this service in"
+}
+
 variable "service_definition" {
   # See services/inputs.tf for type structure
   type        = any

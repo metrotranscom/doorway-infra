@@ -8,8 +8,9 @@ module "public_sites" {
   service_definition = each.value
   log_group_name     = local.task_log_group_name
 
-  alb_map    = module.albs
-  subnet_map = module.network.subnets
+  alb_map      = module.albs
+  subnet_map   = module.network.subnets
+  cluster_name = aws_ecs_cluster.default.name
 
   # Just a placeholder for now
   backend_api_base = module.backend_api.internal_url
@@ -28,8 +29,9 @@ module "partner_site" {
   service_definition = var.partner_site
   log_group_name     = local.task_log_group_name
 
-  alb_map    = module.albs
-  subnet_map = module.network.subnets
+  alb_map      = module.albs
+  subnet_map   = module.network.subnets
+  cluster_name = aws_ecs_cluster.default.name
 
   # Just a placeholder for now
   backend_api_base = module.backend_api.internal_url
@@ -47,9 +49,10 @@ module "backend_api" {
   service_definition = var.backend_api
   log_group_name     = local.task_log_group_name
 
-  alb_map    = module.albs
-  subnet_map = module.network.subnets
-  db         = module.db
+  alb_map      = module.albs
+  subnet_map   = module.network.subnets
+  db           = module.db
+  cluster_name = aws_ecs_cluster.default.name
 
   public_upload_bucket = aws_s3_bucket.public_uploads.bucket
 
