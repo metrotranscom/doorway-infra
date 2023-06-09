@@ -67,6 +67,31 @@ variable "service" {
       unhealthy_threshold = optional(number, 3)
     })
 
+    scaling = optional(object({
+      enabled = optional(bool, true)
+      # The minimum number of instances to run
+      min = optional(number, 1)
+
+      # The maximum number of instance to run
+      max = number
+
+      # The number of instances to start with
+      # If less than min, min is used instead, which is why we default to 0
+      desired = optional(number, 0)
+
+      metrics = map(object({
+        name   = string
+        target = number
+      }))
+
+      }), {
+      enabled = false
+      min     = 1
+      desired = 1
+      max     = 1
+      metrics = {}
+    })
+
     # Which port to send requests to
     port = optional(number, 80)
 

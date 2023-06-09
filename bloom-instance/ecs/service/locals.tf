@@ -64,4 +64,11 @@ locals {
   security_group_ids = toset([for alb in local.filtered_albs : alb.security_group.id])
 
   subnet_ids = [for subnet in var.subnet_map[var.service.subnet_group] : subnet.id]
+
+  # Autoscaling
+  scaling     = var.service.scaling
+  use_scaling = local.scaling.enabled
+  # If the desired count is less than the min, make min the desired count
+  desired_count       = local.scaling.desired < local.scaling.min ? local.scaling.min : local.scaling.desired
+  autoscaling_metrics = (local.use_scaling ? local.scaling.metrics : {})
 }
