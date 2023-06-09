@@ -1,4 +1,9 @@
 
+locals {
+  name           = var.name
+  qualified_name = "${var.name_prefix}-${local.name}"
+}
+
 module "task" {
   source = "../ecs/task"
 

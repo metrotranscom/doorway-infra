@@ -45,6 +45,15 @@ variable "alb_map" {
   description = "The available ALBs"
 }
 
+variable "dns" {
+  type = object({
+    default_ttl = number
+    zone_map    = map(string)
+  })
+
+  description = "Values from the dns module"
+}
+
 variable "subnet_map" {
   type = map(list(object({
     id   = string

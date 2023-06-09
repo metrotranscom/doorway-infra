@@ -10,6 +10,7 @@ module "public_sites" {
 
   alb_map    = module.albs
   subnet_map = module.network.subnets
+  dns        = module.dns
 
   # Just a placeholder for now
   backend_api_base = module.backend_api.internal_url
@@ -30,6 +31,7 @@ module "partner_site" {
 
   alb_map    = module.albs
   subnet_map = module.network.subnets
+  dns        = module.dns
 
   # Just a placeholder for now
   backend_api_base = module.backend_api.internal_url
@@ -49,6 +51,7 @@ module "backend_api" {
 
   alb_map    = module.albs
   subnet_map = module.network.subnets
+  dns        = module.dns
   db         = module.db
 
   public_upload_bucket = aws_s3_bucket.public_uploads.bucket
