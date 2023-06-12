@@ -1,8 +1,197 @@
-aws_region="us-west-1"
-name_prefix="doorway-cicd-dev"
-repo_name="metrotranscom/doorway"
-repo_branch_name="main"
-ecr_namespace="doorway-staging"
-db_creds_arn="arn:etc"
-deploy_env_vars={"BUILD_VAR": "blank"}
-build_env_vars={"DEPLOY_VAR": "blank"}
+project_name     = "Doorway Housing Project"
+project_id       = "doorway"
+application_name = "Bloom Housing Pipeline"
+owner            = "infra-team@example.com"
+aws_region       = "us-west-1"
+
+gh_codestar_conn_name = "doorway-github-connection"
+
+ecr = {
+  default_region  = "us-west-1"
+  default_account = "123456789012"
+
+  repo_groups = {
+    "dev" = {
+      namespace = "doorway-dev"
+      repos = [
+        "public",
+        "partner",
+        "backend",
+        "import-listings"
+      ]
+    }
+  }
+}
+
+pipeline = {
+  name = "bloom-app"
+
+  sources = {
+    "code" : {
+      name : "DoorwayBloomSource"
+      is_primary : true
+      repo : {
+        name   = "metrotranscom/doorway"
+        branch = "main"
+      }
+    }
+  }
+
+  notification_topics = {
+    "devs" : {
+      emails : ["dev-team@example.com"]
+    }
+    "approvers" : {
+      emails : ["approvers@example.com"]
+    }
+  }
+
+  notify = [
+    {
+      topic : "devs"
+      on : {
+        pipeline : ["failed"]
+      }
+    }
+  ]
+
+  # These vars are applied to all build actions in all stages
+  build_env_vars = {
+    ECR_ACCOUNT_ID : "123456789012"
+    ECR_REGION : "us-west-1"
+  }
+
+  stages = [
+    {
+      name  = "dev"
+      label = "Dev.Build"
+
+      # These vars are applied to all build actions in this stage
+      build_env_vars = {
+        ECR_NAMESPACE : "doorway-dev"
+      }
+
+      default_network = {
+        vpc_id          = "vpc-08b353eee422a1d1b"
+        subnets         = ["subnet-08e79084ddb4f1ab8", "subnet-059055b7efcdcf7d7"]
+        security_groups = ["sg-0e2851e14f826e8af"]
+      }
+
+      actions = [
+        {
+          name       = "public"
+          label      = "BuildPublic"
+          type       = "build"
+          order      = 1
+          privileged = true
+          timeout    = 60
+
+          buildspec = "ci/buildspec_public.yml"
+
+          ecr_repo_access = {
+            "dev:public" : ["push"]
+          }
+
+          env_vars = {
+            CLOUDINARY_CLOUD_NAME : "exygy"
+            FILE_SERVICE : "null"
+          }
+        },
+        {
+          name       = "partners"
+          label      = "BuildPartners"
+          type       = "build"
+          order      = 1
+          privileged = true
+          timeout    = 60
+
+          buildspec = "ci/buildspec_partners.yml"
+
+          ecr_repo_access = {
+            "dev:partner" : ["push"]
+          }
+
+          env_vars = {
+            CLOUDINARY_CLOUD_NAME : "exygy"
+            FILE_SERVICE : "null"
+          }
+        },
+        {
+          name       = "backend"
+          label      = "BuildBackend"
+          type       = "build"
+          order      = 1
+          privileged = true
+
+          buildspec = "ci/buildspec_backend.yml"
+
+          ecr_repo_access = {
+            "dev:backend" : ["push"]
+          }
+        },
+        {
+          name       = "import-listings"
+          label      = "BuildImportListings"
+          type       = "build"
+          order      = 1
+          privileged = true
+
+          ecr_repo_access = {
+            "dev:import-listings" : ["push"]
+          }
+
+          buildspec = "ci/buildspec_import_listings.yml"
+
+          secret_arns = {
+            DB_CREDS_ARN : "arn:<db_secret>"
+          }
+        },
+        {
+          name  = "approve-deploy"
+          label = "ApproveDeployment"
+          type  = "approval"
+          order = 2
+          topic = "approvers"
+        },
+        {
+          name  = "deploy-all"
+          label = "BuildDeploy"
+          type  = "build"
+          order = 3
+
+          vpc = { use : true }
+
+          buildspec = "ci/buildspec_deploy.yml"
+
+          # The deploy stage needs read and write access to all repos
+          ecr_repo_access = {
+            "dev:public" : ["push", "pull"]
+            "dev:partner" : ["push", "pull"]
+            "dev:backend" : ["push", "pull"]
+          }
+
+          secret_arns = {
+            DB_CREDS_ARN : "arn:<db_secret>"
+          }
+
+          env_vars = {
+            DEV_ECS_BACKEND_CLUSTER = "doorway-dev-srv-backend"
+            DEV_ECS_BACKEND_SERVICE = "doorway-dev-srv-backend"
+            DEV_ECS_PUBLIC_CLUSTER  = "doorway-dev-srv-public"
+            DEV_ECS_PUBLIC_SERVICE  = "doorway-dev-srv-public"
+            DEV_ECS_PARTNER_CLUSTER = "doorway-dev-srv-partner"
+            DEV_ECS_PARTNER_SERVICE = "doorway-dev-srv-partner"
+            PORT                    = "3100"
+            EMAIL_API_KEY           = "SOME-LONG-SECRET-KEY"
+            APP_SECRET              = "SOME-LONG-SECRET-KEY"
+            CLOUDINARY_SECRET       = "CLOUDINARY_SECRET"
+            CLOUDINARY_KEY          = "CLOUDINARY_KEY"
+            FILE_SERVICE            = "cloudinary"
+            PARTNERS_PORTAL_URL     = "http://localhost:3001"
+            PARTNERS_BASE_URL       = "http://localhost:3001"
+          }
+        },
+      ]
+    },
+  ]
+}
