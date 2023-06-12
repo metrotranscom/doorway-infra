@@ -20,6 +20,12 @@ variable "alb_map" {
   description = "A map of available ALBs"
 }
 
+variable "dns" {
+  # See ../service/inputs.tf for type structure
+  type        = any
+  description = "Values from the dns module"
+}
+
 variable "subnet_map" {
   # See ecs/service/inputs.tf for type structure
   type        = any

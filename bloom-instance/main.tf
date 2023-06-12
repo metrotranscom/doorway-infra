@@ -59,6 +59,11 @@ resource "aws_ecs_cluster" "default" {
   name = "${local.qualified_name_prefix}-default"
 }
 
+module "dns" {
+  source = "./dns"
+  dns    = var.dns
+}
+
 # inform terraform about renamed network resources
 moved {
   from = module.network.module.public
