@@ -66,7 +66,7 @@ module "notification_topic" {
 
   for_each = var.notification_topics
 
-  name_prefix = local.name_prefix
+  name_prefix = local.qualified_name
   name        = each.key
   emails      = each.value.emails
 }
@@ -76,7 +76,7 @@ module "notification_rules" {
 
   for_each = { for idx, rule in var.notification_rules : idx => rule }
 
-  name_prefix = local.name_prefix
+  name_prefix = local.qualified_name
   name        = "${each.value.topic}${each.key}"
 
   topic_arn    = module.notification_topic[each.value.topic].topic_arn
