@@ -1,4 +1,8 @@
 
+locals {
+  qualified_name = "${var.name_prefix}-${var.name}"
+}
+
 resource "aws_codebuild_project" "project" {
   name          = "${var.name_prefix}-build-${var.name}"
   description   = "Deployment for ${var.name_prefix} into environment ${var.name}"
@@ -39,7 +43,7 @@ resource "aws_codebuild_project" "project" {
 }
 
 resource "aws_iam_role" "codebuild" {
-  name = "${var.name_prefix}-${var.name}-codebuild"
+  name = "${local.qualified_name}-codebuild"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -60,4 +64,34 @@ resource "aws_iam_role_policy_attachment" "supplied" {
   for_each   = var.policy_arns
   role       = aws_iam_role.codebuild.name
   policy_arn = each.value
+}
+
+# Add permission to write logs
+resource "aws_iam_policy" "write_logs" {
+  name = "${local.qualified_name}-logs"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowWriteLogs"
+        Effect = "Allow"
+
+        Action = [
+          "logs:CreateLogStream",
+          "logs:CreateLogGroup",
+          "logs:PutLogEvents",
+        ]
+
+        Resource = [
+          "arn:aws:logs:*:*:log-group:/aws/codebuild/${local.qualified_name}:log-stream:*"
+        ]
+      },
+    ],
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "write_logs" {
+  role       = aws_iam_role.codebuild.name
+  policy_arn = aws_iam_policy.write_logs.arn
 }
