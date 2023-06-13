@@ -78,3 +78,35 @@ resource "aws_iam_policy" "push" {
     ],
   })
 }
+
+resource "aws_iam_policy" "retag" {
+  name = "${local.qualified_name}-retag"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        # We need the ability to authenticate to ECR regardless of other permissions
+        Sid    = "AllowGetAuthorization"
+        Effect = "Allow"
+
+        Action = [
+          "ecr:GetAuthorizationToken",
+        ],
+
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowPushToRepo"
+        Effect = "Allow"
+
+        Action = [
+          "ecr:BatchGetImage",
+          "ecr:PutImage"
+        ],
+
+        Resource = local.arn
+      },
+    ],
+  })
+}

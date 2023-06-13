@@ -95,7 +95,7 @@ locals {
                       for repo_id, perms in try(action.ecr_repo_access, {}) : concat([
                         for perm in perms : [
                           module.ecr_repos[repo_id].policy_arns[perm]
-                        ] if contains(["push", "pull"], perm)
+                        ] if contains(["push", "pull", "retag"], perm)
                       ]...) if try(action.ecr_repo_access, null) != null
                     ]...), []))
                   )
