@@ -32,6 +32,7 @@ variable "alb_map" {
   type = map(object({
     arn      = string
     dns_name = string
+    zone_id  = string
     security_group = object({
       id = string
     })
