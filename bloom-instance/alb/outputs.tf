@@ -21,7 +21,7 @@ output "listeners" {
 
 # Used for generating log bucket policy
 output "log_prefix" {
-  value = var.enable_logging ? local.log_prefix : ""
+  value = local.log_prefix
 }
 
 output "dns_name" {
