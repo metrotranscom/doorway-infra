@@ -32,6 +32,7 @@ variable "alb_map" {
   type = map(object({
     arn      = string
     dns_name = string
+    zone_id  = string
     security_group = object({
       id = string
     })
@@ -43,6 +44,15 @@ variable "alb_map" {
   }))
 
   description = "The available ALBs"
+}
+
+variable "dns" {
+  type = object({
+    default_ttl = number
+    zone_map    = map(string)
+  })
+
+  description = "Values from the dns module"
 }
 
 variable "subnet_map" {

@@ -1,52 +1,51 @@
-variable "name_prefix" {
+variable "project_name" {
   type        = string
-  description = "A prefix to be used when creating resources to provide a distinct, yet recognizable name"
+  description = "A human-readable name for this project. Can be changed if needed"
 
   validation {
-    condition     = can(regex("^[[:alnum:]\\-]+$", var.name_prefix))
-    error_message = "name_prefix can only contain letters, numbers, and hyphens"
-  }
-}
-variable "ecr_namespace" {
-  type        = string
-  description = "A project name used as a namespace for the ECR registry. Example <host>/<ecr_namespace>/<image_name>"
-  default     = ""
-  validation {
-    condition     = var.ecr_namespace == "" || can(regex("^[[:alnum:]\\-]+$", var.ecr_namespace))
-    error_message = "ecr_namespace can only contain letters, numbers, and hyphens"
+    condition     = can(regex("^[\\w\\s\\.\\-]+$", var.project_name))
+    error_message = "project_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
   }
 }
 
-variable "ecr_account_id" {
+variable "project_id" {
   type        = string
-  description = "an AWS Account ID for the ECR target"
-  default     = ""
+  description = "A unique, immutable identifier for this project"
+
   validation {
-    condition     = var.ecr_account_id == "" || can(regex("^[0-9]+$", var.ecr_account_id))
-    error_message = "Expecting all numbers for an AWS Account ID"
+    condition     = can(regex("^[[:alnum:]\\-]+$", var.project_id))
+    error_message = "project_id can only contain letters, numbers, and hyphens"
   }
 }
 
+variable "application_name" {
+  type        = string
+  description = "The name for the application deployed"
+
+  validation {
+    condition     = can(regex("^[\\w\\s\\.\\-]+$", var.application_name))
+    error_message = "application_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
+  }
+}
+
+# This var is only set on resource tags. Standard tag naming restrictions apply
+variable "owner" {
+  type        = string
+  description = "The owner of the resources created via these templates"
+
+  validation {
+    condition     = can(regex("^[\\w\\s\\.\\-\\:\\/\\=\\+@]{1,255}$", var.owner))
+    error_message = "owner can only contain letters, numbers, spaces, and these special characters: _ . : / = + - @"
+  }
+}
 
 variable "aws_region" {
   type        = string
-  description = "The region to use when deploying regional resources, for example ECS and ECR"
+  description = "The region to use when deploying regional resources"
 
   validation {
     condition     = can(regex("^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\\d$", var.aws_region))
     error_message = "Must be a valid AWS region"
-  }
-}
-
-variable "repo" {
-  type = object({
-    name   = string,
-    branch = string
-  })
-  description = "Full GitHub repo name in the format of organization/repo and the branch the pipeline will watch"
-  validation {
-    condition     = can(regex("^[^\\/]+\\/[^\\/]+$", var.repo.name)) && can(regex("^.+$", var.repo.branch))
-    error_message = "Repo name must be in the format of: `organization/repo' and branch name can't be empty."
   }
 }
 
@@ -60,40 +59,94 @@ variable "gh_codestar_conn_name" {
   }
 }
 
-variable "build_env_vars" {
-  type        = map(string)
-  description = "Map of <env name>: <env value> that is injected as environment variables when building the image"
+variable "pipeline" {
+  type = object({
+    name = string
+    # See ../modules/pipeline/inputs.tf for object structures
+    sources = any
+
+    # From ../modules/pipeline/inputs.tf
+    # Necessary to avoid typing issues with "any" and lists
+    stages = set(object({
+      # The name of this environment
+      name = string
+      # An optional human-readable label to apply to the stage
+      label = optional(string)
+
+      # Additional policy ARNs to pass to every build action in this stage
+      build_policy_arns = optional(set(string), [])
+      # Additional env vars to pass to every build action in this stage
+      build_env_vars = optional(map(string), {})
+
+      default_network = optional(object({
+        vpc_id          = string
+        subnets         = set(string)
+        security_groups = set(string)
+        }), {
+        vpc_id          = ""
+        subnets         = []
+        security_groups = []
+      })
+
+      # This is the same as in ../modules/pipeline/inputs.tf with exceptions noted
+      actions = list(object({
+        # These are new
+        ecr_repo_access = optional(map(list(string)), {})
+
+        # These are from the module
+        name  = string
+        label = optional(string)
+        type  = string
+        order = number
+
+        compute_type = optional(string)
+        image        = optional(string)
+        timeout      = optional(number)
+        policy_arns  = optional(set(string), [])
+        env_vars     = optional(map(string), {})
+        privileged   = optional(bool)
+        secret_arns  = optional(map(string), {})
+
+        vpc = optional(object({
+          use             = optional(bool, false)
+          vpc_id          = optional(string, "")
+          subnets         = optional(set(string), [])
+          security_groups = optional(set(string), [])
+          }), {
+          use             = false,
+          vpc_id          = ""
+          subnets         = []
+          security_groups = []
+        })
+
+        buildspec = optional(string)
+
+        # Approval vars
+        topic = optional(string)
+      }))
+    }))
+
+    notification_topics = any
+    notify              = any
+    build_policy_arns   = optional(set(string), [])
+    build_env_vars      = optional(map(string), {})
+  })
+
+  description = "Settings for the pipeline"
 }
 
-variable "deploy_env_vars" {
-  type        = map(string)
-  description = "Map of <env name>: <env value> that is injected as environment variables when deploying the services"
-}
+variable "ecr" {
+  type = object({
+    default_region  = optional(string)
+    default_account = optional(string)
 
-variable "db_creds_arn" {
-  type        = string
-  description = "The ARN for the backend database secrets in secret manager."
-}
+    repo_groups = map(object({
+      region    = optional(string)
+      account   = optional(string)
+      namespace = string
+      repos     = set(string)
+    }))
+  })
 
-variable "codebuild_vpc_id" {
-  type        = string
-  description = "VPC id where codebuild projects can access the database"
-}
-variable "codebuild_vpc_subnets" {
-  type        = list(string)
-  description = "VPC subnets where codebuild projects can access the database"
-}
-variable "codebuild_vpc_sgs" {
-  type        = list(string)
-  description = "VPC security groupswhere codebuild projects can access the database"
-}
-variable "codebuild_vpc_region" {
-  type        = string
-  description = "VPC region where codebuild projects live"
-}
-
-variable "s3_force_delete" {
-  type        = bool
-  description = "If true, we'll be able to force delete the S3 bucket that holds the codepipline logs"
-  default     = false
+  description = "Information about available ECR repos, used for passing repo info to actions"
 }

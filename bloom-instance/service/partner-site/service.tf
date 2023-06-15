@@ -4,6 +4,7 @@ module "service" {
 
   alb_map    = var.alb_map
   subnet_map = var.subnet_map
+  dns        = var.dns
 
   name_prefix = var.name_prefix
   name        = local.name

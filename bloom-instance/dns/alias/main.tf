@@ -15,12 +15,17 @@ locals {
   zone_id = local.matches[0]
 }
 
-resource "aws_route53_record" "record" {
+resource "aws_route53_record" "alias" {
   count = local.zone_id != null ? 1 : 0
 
   zone_id = local.zone_id
   name    = var.record.name
   type    = var.record.type
-  ttl     = var.record.ttl
-  records = var.record.values
+
+  alias {
+    name    = var.record.target.dns_name
+    zone_id = var.record.target.zone_id
+
+    evaluate_target_health = false
+  }
 }
