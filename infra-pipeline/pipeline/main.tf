@@ -31,7 +31,7 @@ locals {
     : "${local.cloudbuild_src_dir_var}_${var.tf_root.source}"
   )
 
-  plan_file_artifact_name = "plan"
+  plan_file_artifact_prefix = "plan"
 }
 
 module "plan" {
@@ -105,7 +105,7 @@ module "apply" {
       TF_ROOT_PATH = var.tf_root.path
 
       # We use this to indicate which var holds the path to the artifact for the plan file
-      TF_PLAN_SOURCE_VAR_NAME = "${local.cloudbuild_src_dir_var}_${local.plan_file_artifact_name}"
+      TF_PLAN_SOURCE_VAR_NAME = "${local.cloudbuild_src_dir_var}_${local.plan_file_artifact_prefix}_${each.key}"
 
       # This holds the relative path to the plan file
       TF_PLAN_PATH = "plan.out"
@@ -184,7 +184,7 @@ resource "aws_codepipeline" "pipeline" {
         provider         = "CodeBuild"
         version          = "1"
         input_artifacts  = local.source_artifacts
-        output_artifacts = [local.plan_file_artifact_name]
+        output_artifacts = ["${local.plan_file_artifact_prefix}_${stage.value.name}"]
         run_order        = 1
 
         configuration = {
@@ -222,7 +222,7 @@ resource "aws_codepipeline" "pipeline" {
         provider = "CodeBuild"
         version  = "1"
         # Add plan file from "Plan" action to input artifacts
-        input_artifacts = concat(local.source_artifacts, [local.plan_file_artifact_name])
+        input_artifacts = concat(local.source_artifacts, ["${local.plan_file_artifact_prefix}_${stage.value.name}"])
         run_order       = 4
 
         configuration = {
