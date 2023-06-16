@@ -73,6 +73,7 @@ resource "aws_iam_policy" "read" {
           "elasticloadbalancing:DescribeListenerCertificates",
           "elasticloadbalancing:DescribeRules",
           "elasticloadbalancing:DescribeTargetHealth",
+          # TODO: move to modify
           "elasticloadbalancing:RemoveTags"
         ]
 
@@ -107,6 +108,7 @@ resource "aws_iam_policy" "read" {
         ]
 
         Resource = "*"
+        #Condition = local.default_read_condition
       },
 
       # IAM unscoped
@@ -132,10 +134,14 @@ resource "aws_iam_policy" "read" {
           "iam:GetPolicy",
           "iam:GetPolicyVersion",
           "iam:GetRolePolicy",
+          "iam:ListRolePolicies",
+          "iam:ListAttachedRolePolicies",
+          "iam:ListInstanceProfilesForRole",
+          "iam:ListPolicyVersions",
         ]
 
-        Resource  = "*"
-        Condition = local.default_read_condition
+        Resource = "*"
+        #Condition = local.default_read_condition
       },
 
       # Secrets Manager
@@ -147,8 +153,8 @@ resource "aws_iam_policy" "read" {
           "secretsmanager:GetResourcePolicy",
         ]
 
-        Resource  = "*"
-        Condition = local.default_read_condition
+        Resource = "*"
+        #Condition = local.default_read_condition
       },
 
       # Route 53
