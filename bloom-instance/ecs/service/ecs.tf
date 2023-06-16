@@ -1,13 +1,14 @@
 
-resource "aws_ecs_cluster" "service" {
-  name = local.default_name
-  tags = var.additional_tags
-}
+# resource "aws_ecs_cluster" "service" {
+#   name = local.default_name
+#   tags = var.additional_tags
+# }
 
 resource "aws_ecs_service" "service" {
   # Only alphanumeric characters, hyphens, and underscores
-  name            = local.default_name
-  cluster         = aws_ecs_cluster.service.id
+  name = local.default_name
+  #cluster         = aws_ecs_cluster.service.id
+  cluster         = data.aws_ecs_cluster.cluster.arn
   task_definition = local.task_id
 
   desired_count = local.desired_count
