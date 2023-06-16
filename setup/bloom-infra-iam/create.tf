@@ -113,7 +113,7 @@ resource "aws_iam_policy" "create" {
           "iam:PassRole"
         ]
 
-        # TODO: This should probably be just roles prefixed with a known good value
+        # This should probably be just roles prefixed with a known good value
         # Note that there are valid use cases that may preclude this (passing AWS-managed roles, etc)
         Resource = "*"
 
