@@ -65,6 +65,47 @@ variable "service" {
   description = "The object defining settings for the service component"
 }
 
+variable "cloudfront" {
+  type = optional(object({
+    enabled     = optional(bool, true)
+    domains     = set(string)
+    price_class = optional(string, "PriceClass_100")
+    certificate = string
+
+    cache = map(object({
+      viewer_protocol_policy = optional(string, "redirect-to-https")
+      compress               = optional(bool, false)
+
+      allowed_methods = list(string)
+      cached_methods  = list(string)
+
+      ttl = object({
+        min     = number
+        max     = number
+        default = number
+      })
+
+      forward = object({
+        query_string = bool
+        headers      = set(string)
+        cookies      = set(string)
+      })
+
+    }))
+  }))
+  description = "The object defining settings for the service component"
+
+  validation {
+    condition     = contains(["PriceClass_All", "PriceClass_200", "PriceClass_100"], var.cloudfront.price_class)
+    error_message = "cloudfront.price_class must be one of [PriceClass_All, PriceClass_200, PriceClass_100]"
+  }
+
+  validation {
+    condition     = lookup(var.cloudfront.cache, "default", null) != null
+    error_message = "cloudfront.cache must contain an entry named \"default\""
+  }
+}
+
 variable "additional_tags" {
   type        = map(string)
   default     = null
