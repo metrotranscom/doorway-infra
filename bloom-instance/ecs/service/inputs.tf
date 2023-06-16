@@ -47,6 +47,9 @@ variable "service" {
     # The group of subnets to run this service in
     subnet_group = string
 
+    # The name of the cluster to run this service on
+    cluster_name = string
+
     # This object tells the service which ALB listeners to add forwarding rules for
     albs = map(object({
       listeners = map(object({

@@ -33,8 +33,9 @@ module "service" {
   service = merge(
     var.service,
     {
-      name = var.name
-      port = var.port
+      name         = var.name
+      port         = var.port
+      cluster_name = var.cluster_name
     }
   )
 

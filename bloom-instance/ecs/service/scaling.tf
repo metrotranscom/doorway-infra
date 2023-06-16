@@ -1,7 +1,7 @@
 
 resource "aws_appautoscaling_target" "service" {
   count       = local.use_scaling ? 1 : 0
-  resource_id = "service/${aws_ecs_cluster.service.name}/${aws_ecs_service.service.name}"
+  resource_id = "service/${local.cluster_name}/${aws_ecs_service.service.name}"
 
   min_capacity = local.scaling.min
   max_capacity = local.scaling.max
