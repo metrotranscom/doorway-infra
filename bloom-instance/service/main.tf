@@ -1,6 +1,7 @@
 
 locals {
-  qualified_name = "${var.name_prefix}-${var.name}"
+  name           = var.name
+  qualified_name = "${var.name_prefix}-${local.name}"
 
   cloudfront_test = {
     enabled = true
@@ -90,8 +91,9 @@ module "service" {
   service = merge(
     var.service,
     {
-      name = var.name
-      port = var.port
+      name         = var.name
+      port         = var.port
+      cluster_name = var.cluster_name
     }
   )
 

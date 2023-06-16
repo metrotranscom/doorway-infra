@@ -10,3 +10,18 @@ output "urls" {
     backend  = module.backend_api.url_list
   }
 }
+
+output "network" {
+  value = {
+    vpc_id = module.network.vpc.id
+    subnets = {
+      for name, subnet_group in module.network.subnets : name => [
+        for subnet in subnet_group : subnet.id
+      ]
+    }
+  }
+}
+
+output "default_cluster_name" {
+  value = aws_ecs_cluster.default.name
+}

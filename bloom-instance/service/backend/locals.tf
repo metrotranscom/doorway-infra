@@ -20,8 +20,12 @@ locals {
 
   # The value to use in IAM policies restricting access to upload objects
   s3_access_policy_object_resource = [
-    "${local.public_bucket_arn}/${local.bucket_prefix}/*",
-    // Another can be added here in the future if files need to be uploaded to non-public bucket(s)
+    # Use this for now
+    "${local.public_bucket_arn}/*",
+    # Use this when/if prefix is implemented
+    #"${local.public_bucket_arn}/${local.bucket_prefix}/*",
+
+    # Others can be added here in the future if files need to be uploaded to non-public bucket(s)
   ]
 
   # Add service-specific env vars
