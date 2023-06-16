@@ -45,18 +45,46 @@ resource "aws_iam_policy" "create" {
         #Condition = local.default_create_condition
       },
 
-      # ECS
+      # ECS - No resource ARNs permitted
       {
         Effect = "Allow"
 
         Action = [
           "ecs:CreateCluster",
           "ecs:CreateService",
-          "ecs:RegisterTaskDefinition"
+          "ecs:RegisterTaskDefinition",
+          #"ecs:TagResource"
         ]
 
         Resource  = "*"
         Condition = local.default_create_condition
+      },
+
+      # ECS tagging
+      {
+        Effect = "Allow"
+
+        Action = [
+          "ecs:TagResource"
+        ]
+
+        # Resource = [
+        #   "arn:aws:ecs:${var.infra_region}:${var.infra_account_id}:cluster/${local.arn_resource_prefix}*",
+        #   "arn:aws:ecs:${var.infra_region}:${var.infra_account_id}:task-definition/${local.arn_resource_prefix}*",
+        # ]
+        Resource = "*"
+        Condition = merge(
+          local.default_create_condition,
+          {
+            "StringEquals" : {
+              # Permit tagging during these creation actions
+              "ecs:CreateAction" : [
+                "ecs:CreateCluster",
+                "ecs:CreateService",
+              ]
+            }
+          }
+        )
       },
 
       # Elastic Load Balancing
@@ -67,11 +95,12 @@ resource "aws_iam_policy" "create" {
           "elasticloadbalancing:CreateTargetGroup",
           "elasticloadbalancing:CreateLoadBalancer",
           "elasticloadbalancing:CreateListener",
-          "elasticloadbalancing:CreateRule"
+          "elasticloadbalancing:CreateRule",
+          "elasticloadbalancing:AddTags"
         ]
 
-        Resource  = "*"
-        Condition = local.default_create_condition
+        Resource = "arn:aws:elasticloadbalancing:${var.infra_region}:${var.infra_account_id}:loadbalancer/app/${local.arn_resource_prefix}*"
+        #Condition = local.default_create_condition
       },
 
       # Amazon Certificate Manager
@@ -93,15 +122,31 @@ resource "aws_iam_policy" "create" {
 
         Action = [
           "iam:CreateRole",
-          "iam:CreatePolicy",
+          "iam:CreatePolicy"
+        ]
+
+        Resource  = "*"
+        Condition = local.default_create_condition
+      },
+
+      # IAM apply tags to new resources
+      {
+        Effect = "Allow"
+
+        Action = [
           "iam:TagRole",
           "iam:UntagRole",
           "iam:TagPolicy",
           "iam:UntagPolicy"
         ]
 
-        Resource  = "*"
-        Condition = local.default_create_condition
+        Resource = [
+          # Roles
+          "arn:aws:iam::${var.infra_account_id}:role/${local.arn_resource_prefix}*",
+
+          # Policies
+          "arn:aws:iam::${var.infra_account_id}:policy/${local.arn_resource_prefix}*"
+        ]
       },
 
       # IAM PassRole
@@ -133,8 +178,20 @@ resource "aws_iam_policy" "create" {
           "secretsmanager:CreateSecret"
         ]
 
-        Resource  = "*"
+        #Resource  = "*"
+        Resource  = "arn:aws:secretsmanager:${var.infra_region}:${var.infra_account_id}:secret:${local.arn_resource_prefix}*"
         Condition = local.default_create_condition
+      },
+
+      # Secrets Manager - Create inital tags on untagged secrets
+      {
+        Effect = "Allow"
+
+        Action = [
+          "secretsmanager:TagResource"
+        ]
+
+        Resource = "arn:aws:secretsmanager:${var.infra_region}:${var.infra_account_id}:secret:${local.arn_resource_prefix}*"
       },
 
       # Route 53

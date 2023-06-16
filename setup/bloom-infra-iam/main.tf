@@ -4,9 +4,9 @@ locals {
   qualified_name = "${var.name_prefix}-setup-bloom-infra"
 
   # We know the Bloom infra terraform creates S3 buckets with this prefix
-  s3_bucket_prefix = "${var.project_id}-${var.environment}"
+  arn_resource_prefix = "${var.project_id}-${var.environment}"
   # This cannot contain a region or account ID
-  s3_bucket_arn    = "arn:aws:s3:::${local.s3_bucket_prefix}"
+  s3_bucket_arn = "arn:aws:s3:::${local.arn_resource_prefix}"
 
   # These are services that we need to ability to pass IAM roles to
   pass_role_services = [
@@ -21,13 +21,13 @@ locals {
 
   service_role_arns = [
     for role in local.used_service_roles :
-    "arn:aws:iam:${var.infra_region}:${var.infra_account_id}:role/aws-service-role/${role}"
+    "arn:aws:iam::${var.infra_account_id}:role/aws-service-role/${role}"
   ]
 
   default_read_condition = {
     StringEquals : {
       "aws:RequestTag/ProjectID" : var.project_id
-      #"aws:RequestTag/Environment" : var.environment
+      "aws:RequestTag/Environment" : var.environment
     }
   }
 
@@ -35,14 +35,14 @@ locals {
   default_create_condition = {
     StringEquals : {
       "aws:RequestTag/ProjectID" : var.project_id
-      #"aws:RequestTag/Environment" : var.environment
+      "aws:RequestTag/Environment" : var.environment
     }
   }
 
   default_modify_condition = {
     StringEquals : {
       "aws:ResourceTag/ProjectID" : var.project_id
-      #"aws:ResourceTag/Environment" : var.environment
+      "aws:ResourceTag/Environment" : var.environment
     }
   }
 }
