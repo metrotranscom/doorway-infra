@@ -5,6 +5,17 @@ resource "aws_iam_policy" "modify" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+      # S3 (does not support ABAC)
+      {
+        "Action" : [
+          "s3:DeleteBucket",
+          "s3:PutBucketTagging",
+          "s3:PutBucketPolicy"
+        ],
+        "Effect" : "Allow",
+        "Resource" : "${local.s3_bucket_arn}*"
+      },
+
       # Application AutoScaling for Fargate services
       {
         Effect = "Allow"
@@ -101,6 +112,7 @@ resource "aws_iam_policy" "modify" {
         Action = [
           "iam:UpdateRole",
           "iam:AttachRolePolicy",
+          "iam:CreatePolicyVersion",
           "iam:DetachRolePolicy",
           "iam:DeleteRole",
           "iam:DeletePolicy",

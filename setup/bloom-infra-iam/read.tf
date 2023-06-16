@@ -6,6 +6,7 @@ resource "aws_iam_policy" "read" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+
       # Required for VPC
       {
         Effect = "Allow"
@@ -15,6 +16,15 @@ resource "aws_iam_policy" "read" {
         ]
 
         Resource = "*"
+      },
+
+      # S3 (does not support ABAC)
+      {
+        "Action" : [
+          "s3:GetBucket*",
+        ],
+        "Effect" : "Allow",
+        "Resource" : "${local.s3_bucket_arn}*"
       },
 
       # Application AutoScaling for Fargate services

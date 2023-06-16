@@ -5,6 +5,16 @@ resource "aws_iam_policy" "create" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+
+      # S3 (does not support ABAC)
+      {
+        "Action" : [
+          "s3:CreateBucket",
+        ],
+        "Effect" : "Allow",
+        "Resource" : "${local.s3_bucket_arn}*"
+      },
+
       # Application AutoScaling for Fargate services
       {
         Effect = "Allow"
@@ -92,6 +102,27 @@ resource "aws_iam_policy" "create" {
 
         Resource  = "*"
         Condition = local.default_create_condition
+      },
+
+      # IAM PassRole
+      # Required for passing roles to other services to use
+      {
+        Effect = "Allow"
+
+        Action = [
+          "iam:PassRole"
+        ]
+
+        # TODO: This should probably be just roles prefixed with a known good value
+        # Note that there are valid use cases that may preclude this (passing AWS-managed roles, etc)
+        Resource = "*"
+
+        # Restrict to just the services we know we'll be using
+        Condition = {
+          StringEquals = {
+            "iam:PassedToService" = local.pass_role_services
+          }
+        }
       },
 
       # Secrets Manager
