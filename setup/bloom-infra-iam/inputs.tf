@@ -28,3 +28,13 @@ variable "environment" {
     error_message = "environment can only contain letters, numbers, and hyphens"
   }
 }
+
+variable "infra_account_id" {
+  type        = string
+  description = "The ID of the AWS account where the Bloom infra is deployed for this environment"
+}
+
+variable "infra_region" {
+  type        = string
+  description = "The region where the Bloom infra is deployed for this environment"
+}

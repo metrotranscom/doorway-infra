@@ -154,6 +154,19 @@ resource "aws_iam_policy" "read" {
         #Condition = local.default_read_condition
       },
 
+      # Read AWS service roles
+      {
+        Effect = "Allow"
+
+        Action = [
+          "iam:GetRole",
+          "iam:ListRolePolicies",
+          "iam:ListAttachedRolePolicies"
+        ]
+
+        Resource = local.service_role_arns
+      },
+
       # Secrets Manager
       {
         Effect = "Allow"

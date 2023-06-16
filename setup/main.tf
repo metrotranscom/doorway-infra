@@ -18,6 +18,7 @@ provider "aws" {
 
   default_tags {
     tags = {
+      Application = local.application_name
       Project     = var.project_name
       ProjectId   = var.project_id
       Workspace   = terraform.workspace
@@ -38,6 +39,8 @@ locals {
 
   #The ID for the Account that our resources are being deployed into
   current_account_id = data.aws_caller_identity.current.account_id
+
+  application_name = "Base Infra"
 }
 
 module "repos" {
@@ -54,7 +57,9 @@ module "repos" {
 module "bloom-infra-iam" {
   source = "./bloom-infra-iam"
 
-  name_prefix = local.name_prefix
-  project_id  = var.project_id
-  environment = local.environment
+  name_prefix      = local.name_prefix
+  project_id       = var.project_id
+  environment      = local.environment
+  infra_account_id = local.current_account_id
+  infra_region     = var.aws_region
 }
