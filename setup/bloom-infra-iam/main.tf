@@ -1,6 +1,6 @@
 
 locals {
-  qualified_name = "${var.name_prefix}-bloom-infra"
+  qualified_name = "${var.name_prefix}-setup-bloom-infra"
 
   default_read_condition = {
     StringEquals : {
