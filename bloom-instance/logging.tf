@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "logging_bucket" {
-  bucket_prefix = "${local.qualified_name_prefix}-logging"
+  bucket_prefix = "${local.project_id}-logging"
+  #bucket_prefix = "${local.qualified_name_prefix}-logging"
 }
 
 resource "aws_s3_bucket_policy" "log_bucket_policy" {
