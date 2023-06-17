@@ -32,6 +32,11 @@ variable "subnet_map" {
   description = "A map of available subnets"
 }
 
+variable "cert_map" {
+  type        = map(string)
+  description = "ARNs for TLS certificates to apply to secure listeners"
+}
+
 variable "cluster_name" {
   type        = string
   description = "The name of the ECS cluster to run this service in"

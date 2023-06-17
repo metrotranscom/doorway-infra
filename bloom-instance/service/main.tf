@@ -2,64 +2,6 @@
 locals {
   name           = var.name
   qualified_name = "${var.name_prefix}-${local.name}"
-
-  cloudfront_test = {
-    enabled = true
-    domains = ["partners.chriscasto.doorway.housingbayarea.org"]
-    #origin       = "" => alb.dns_name
-    #comment      = "" => doorway-dev-partners
-    #default_root = "" ? probably not needed
-    price_class = "PriceClass_100" #PriceClass_All, PriceClass_200, PriceClass_100
-
-    certificate = "doorway"
-
-    default_restrictions : {
-      geo : {
-        type      = "whitelist"
-        locations = ["US"]
-      }
-    }
-
-    cache = {
-      default = {
-        viewer_protocol_policy = "redirect-to-https"
-        compress               = true
-
-        ttl = {
-          min : 0
-          max : 86400
-          default : 60
-        }
-
-        allowed_methods = ["GET", "POST"]
-        cached_methods  = ["GET"]
-
-        forward = {
-          query_string = false
-          headers      = []
-          cookies      = ["all"]
-        }
-
-      }
-
-      rules = {
-        "/listings/*" : {
-
-        }
-
-      }
-    }
-  }
-
-  cloudfront         = local.cloudfront_test
-  cloudfront_enabled = local.cloudfront.enabled
-
-  cloudfront_origin_id = "${local.qualified_name}-default"
-
-  # The default cache has the same data shape, but is treated differently
-  cloudfront_default_cache = local.cloudfront.cache.default
-  # The other cache rules need to be separated out
-  cloudfront_other_caches = [for path, cache in local.cloudfront.cache : cache if path != "default"]
 }
 
 module "task" {

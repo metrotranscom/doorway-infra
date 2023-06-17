@@ -5,6 +5,8 @@ module "service" {
   alb_map    = var.alb_map
   subnet_map = var.subnet_map
   dns        = var.dns
+  # CloudFront is unsupported for the backend service
+  cert_map = { "foo" : "bar" }
 
   name_prefix = var.name_prefix
   name        = local.name

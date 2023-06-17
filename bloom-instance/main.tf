@@ -52,6 +52,8 @@ locals {
 
   # Defining this here ensures that all of our task logs get grouped together
   task_log_group_name = "${local.qualified_name_prefix}-tasks"
+
+  cert_map = { for name, cert in module.certs : name => cert.arn }
 }
 
 # The default cluster for all ECS tasks and services
