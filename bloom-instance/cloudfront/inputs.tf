@@ -52,8 +52,8 @@ variable "distribution" {
       compress               = optional(bool, false)
       order                  = optional(number, 1)
 
-      allowed_methods = list(string)
-      cached_methods  = list(string)
+      allowed_method_set = string
+      cached_method_set  = string
 
       # Either policy_id or policy is required
       policy_id = optional(string)
@@ -115,5 +115,21 @@ variable "distribution" {
       !(cache.policy_id == null && cache.policy == null)
     ])
     error_message = "Either cache.policy_id or cache.policy must be set on all cache objects"
+  }
+
+  validation {
+    condition = alltrue([
+      for cache in var.distribution.cache :
+      contains(["get", "with-options", "all"], cache.allowed_method_set)
+    ])
+    error_message = "cache.allowed_method_set must be one of [get, with-options, all]"
+  }
+
+  validation {
+    condition = alltrue([
+      for cache in var.distribution.cache :
+      contains(["get", "with-options"], cache.cached_method_set)
+    ])
+    error_message = "cache.cached_method_set must be one of [get, with-options]"
   }
 }

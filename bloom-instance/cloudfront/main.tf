@@ -2,56 +2,20 @@
 locals {
   qualified_name = "${var.name_prefix}-${var.name}"
 
-  cloudfront_test = {
-    enabled = true
-    domains = ["partners.chriscasto.doorway.housingbayarea.org"]
-    #origin       = "" => alb.dns_name
-    #comment      = "" => doorway-dev-partners
-    #default_root = "" ? probably not needed
-    price_class = "PriceClass_100" #PriceClass_All, PriceClass_200, PriceClass_100
-
-    certificate = "doorway"
-
-    default_restrictions : {
-      geo : {
-        type      = "whitelist"
-        locations = ["US"]
-      }
-    }
-
-    cache = {
-      default = {
-        viewer_protocol_policy = "redirect-to-https"
-        compress               = true
-
-        ttl = {
-          min : 0
-          max : 86400
-          default : 60
-        }
-
-        allowed_methods = ["GET", "POST"]
-        cached_methods  = ["GET"]
-
-        forward = {
-          query_string = false
-          headers      = []
-          cookies      = ["all"]
-        }
-
-      }
-
-      rules = {
-        "/listings/*" : {
-
-        }
-
-      }
-    }
-  }
-
   distribution       = var.distribution
   cloudfront_enabled = local.distribution.enabled
+
+  # Only certain combinations are valid for allowed methods
+  allowed_method_map = {
+    "get"          = ["HEAD", "GET"]
+    "with-options" = ["HEAD", "GET", "OPTIONS"]
+    "all"          = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+  }
+
+  cached_method_map = {
+    "get"          = ["HEAD", "GET"]
+    "with-options" = ["HEAD", "GET", "OPTIONS"]
+  }
 
   # Origin
   origin_id           = "${local.qualified_name}-default"
@@ -100,6 +64,13 @@ resource "aws_cloudfront_distribution" "main" {
   origin {
     origin_id   = local.origin_id
     domain_name = local.origin_alb.dns_name
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "http-only"
+      origin_ssl_protocols   = ["SSLv3", "TLSv1", "TLSv1.1", "TLSv1.2"]
+    }
   }
 
   # Derived from known values
@@ -132,8 +103,8 @@ resource "aws_cloudfront_distribution" "main" {
 
   default_cache_behavior {
     target_origin_id       = local.origin_id
-    allowed_methods        = local.default_cache.allowed_methods
-    cached_methods         = local.default_cache.cached_methods
+    allowed_methods        = local.allowed_method_map[local.default_cache.allowed_method_set]
+    cached_methods         = local.cached_method_map[local.default_cache.cached_method_set]
     viewer_protocol_policy = local.default_cache.viewer_protocol_policy
 
     cache_policy_id = local.policy_ids.default
@@ -153,8 +124,8 @@ resource "aws_cloudfront_distribution" "main" {
 
     content {
       target_origin_id       = local.origin_id
-      allowed_methods        = cache.value.allowed_methods
-      cached_methods         = cache.value.cached_methods
+      allowed_methods        = local.allowed_method_map[cache.value.allowed_method_set]
+      cached_methods         = local.cached_method_map[cache.value.cached_method_set]
       viewer_protocol_policy = cache.value.viewer_protocol_policy
       path_pattern           = cache.value.path_pattern
 
