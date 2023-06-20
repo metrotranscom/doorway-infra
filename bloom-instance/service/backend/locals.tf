@@ -30,25 +30,33 @@ locals {
 
   # Add service-specific env vars
   env_vars = merge(
-    local.base_task.env_vars,
+    # Lowest Priority - enable overrides
     tomap({
-      # Core Bloom vars
-      PORT                = local.port,
       PARTNERS_BASE_URL   = var.partners_portal_url
       PARTNERS_PORTAL_URL = var.partners_portal_url
 
-      # Required to start the server, but not used
+      # Required to start the server, but usually not used
       EMAIL_API_KEY     = "SG.<dummy-value>"
       APP_SECRET        = "<dummy-value-that-is-at-least-16-character-long>"
       CLOUDINARY_SECRET = "<dummy-value>"
       CLOUDINARY_KEY    = "<dummy-value>"
+    }),
+
+    # Provided values are moderate priority and can override low priority values if set
+    local.base_task.env_vars,
+
+    # Highest priority - do not override these or things might break
+    tomap({
+      # Should never be anything else
+      PORT = local.port,
 
       # Disable color in log output
       # Makes logs more readable in CloudWatch
       NO_COLOR = "true"
 
       # For uploading public assets to S3
-      ASSET_FS_CONFIG_s3_REGION     = "us-west-1"
+      # Note that it is still possible to use other file storage configs even if these are set
+      ASSET_FS_CONFIG_s3_REGION     = "us-west-1" # TODO: use variable
       ASSET_FS_CONFIG_s3_BUCKET     = var.public_upload_bucket
       ASSET_FS_CONFIG_s3_URL_FORMAT = "public"
       # This var is not implemented yet but is included for illustration
