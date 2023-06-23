@@ -11,44 +11,55 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-
+      
       - name: Generate Bloom instance documentation
         uses: terraform-docs/gh-actions@v1.0.0
         with:
-          git-commit-message: "terraform-docs: update bloom instance docs"
-          working-dir: bloom-instance
+          git-commit-message: "terraform-docs: update project docs"
+          working-dir: bloom-instance,app-codepipeline,infra-pipeline,setup
           output-file: README.md
           output-method: inject
           git-push: true
           recursive: true
           recursive-path: .
 
-      - name: Generate app pipeline documentation
-        uses: terraform-docs/gh-actions@v1.0.0
-        with:
-          git-commit-message: "terraform-docs: update app pipeline docs"
-          working-dir: app-codepipeline
-          output-file: README.md
-          output-method: inject
-          git-push: true
-          recursive: true
-          recursive-path: .
+      # - name: Generate Bloom instance documentation
+      #   uses: terraform-docs/gh-actions@v1.0.0
+      #   with:
+      #     git-commit-message: "terraform-docs: update bloom instance docs"
+      #     working-dir: bloom-instance
+      #     output-file: README.md
+      #     output-method: inject
+      #     git-push: true
+      #     recursive: true
+      #     recursive-path: .
 
-      - name: Generate infra pipeline documentation
-        uses: terraform-docs/gh-actions@v1.0.0
-        with:
-          git-commit-message: "terraform-docs: update infra pipeline docs"
-          working-dir: infra-pipeline
-          output-file: README.md
-          output-method: inject
-          git-push: true
-          recursive: true
-          recursive-path: .
+      # - name: Generate app pipeline documentation
+      #   uses: terraform-docs/gh-actions@v1.0.0
+      #   with:
+      #     git-commit-message: "terraform-docs: update app pipeline docs"
+      #     working-dir: app-codepipeline
+      #     output-file: README.md
+      #     output-method: inject
+      #     git-push: true
+      #     recursive: true
+      #     recursive-path: .
 
-      - name: Generate module documentation
+      # - name: Generate infra pipeline documentation
+      #   uses: terraform-docs/gh-actions@v1.0.0
+      #   with:
+      #     git-commit-message: "terraform-docs: update infra pipeline docs"
+      #     working-dir: infra-pipeline
+      #     output-file: README.md
+      #     output-method: inject
+      #     git-push: true
+      #     recursive: true
+      #     recursive-path: .
+
+      - name: Generate shared module documentation
         uses: terraform-docs/gh-actions@v1.0.0
         with:
-          git-commit-message: "terraform-docs: update module docs"
+          git-commit-message: "terraform-docs: update shared module docs"
           working-dir: modules/pipeline
           output-file: README.md
           output-method: inject
