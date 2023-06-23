@@ -3,9 +3,6 @@ name: Generate Terraform Docs
 on:
   pull_request:
     branches: main
-  # push:
-  #   branches:
-  #     - feat/add-terraform-docs
 
 jobs:
   docs:
@@ -19,7 +16,9 @@ jobs:
         uses: terraform-docs/gh-actions@v1.0.0
         with:
           working-dir: bloom-instance
-          output-method: print
+          output-file: README.md
+          output-method: inject
+          git-push: true
 
       - name: Generate app pipeline documentation
         uses: terraform-docs/gh-actions@v1.0.0
@@ -28,15 +27,20 @@ jobs:
           output-file: README.md
           output-method: inject
           git-push: true
+          recursive: true
 
       - name: Generate infra pipeline documentation
         uses: terraform-docs/gh-actions@v1.0.0
         with:
           working-dir: infra-pipeline
-          output-method: print
+          output-file: README.md
+          output-method: inject
+          git-push: true
 
       - name: Generate module documentation
         uses: terraform-docs/gh-actions@v1.0.0
         with:
           working-dir: modules/pipeline
-          output-method: print
+          output-file: README.md
+          output-method: inject
+          git-push: true
