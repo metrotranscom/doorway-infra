@@ -1,0 +1,38 @@
+name: Generate Terraform Docs
+
+on:
+  push:
+    branches:
+      - feat/add-terraform-docs
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+
+      - name: Generate Bloom instance documentation
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          working-dir: bloom-instance
+          output-method: print
+
+      - name: Generate app pipeline documentation
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          working-dir: app-codepipeline
+          output-method: print
+
+      - name: Generate infra pipeline documentation
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          working-dir: infra-pipeline
+          output-method: print
+
+      - name: Generate module documentation
+        uses: terraform-docs/gh-actions@v1.0.0
+        with:
+          working-dir: modules/pipeline
+          output-method: print
