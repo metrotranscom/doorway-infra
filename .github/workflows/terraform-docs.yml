@@ -1,9 +1,11 @@
 name: Generate Terraform Docs
 
 on:
-  push:
-    branches:
-      - feat/add-terraform-docs
+  pull_request:
+    branches: main
+  # push:
+  #   branches:
+  #     - feat/add-terraform-docs
 
 jobs:
   docs:
@@ -11,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: feat/add-terraform-docs
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Generate Bloom instance documentation
         uses: terraform-docs/gh-actions@v1.0.0
@@ -25,6 +27,7 @@ jobs:
           working-dir: app-codepipeline
           output-file: README.md
           output-method: inject
+          git-push: true
 
       - name: Generate infra pipeline documentation
         uses: terraform-docs/gh-actions@v1.0.0
