@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: master
+          ref: feat/add-terraform-docs
 
       - name: Generate Bloom instance documentation
         uses: terraform-docs/gh-actions@v1.0.0
