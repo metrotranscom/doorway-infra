@@ -23,7 +23,8 @@ jobs:
         uses: terraform-docs/gh-actions@v1.0.0
         with:
           working-dir: app-codepipeline
-          output-method: print
+          output-file: README.md
+          output-method: inject
 
       - name: Generate infra pipeline documentation
         uses: terraform-docs/gh-actions@v1.0.0
