@@ -28,6 +28,7 @@ jobs:
           output-method: inject
           git-push: true
           recursive: true
+          recursive-path: .
 
       - name: Generate infra pipeline documentation
         uses: terraform-docs/gh-actions@v1.0.0
