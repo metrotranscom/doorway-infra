@@ -13,11 +13,13 @@ locals {
   pass_role_services = [
     "ecs.amazonaws.com",
     "ecs-tasks.amazonaws.com",
-    "scheduler.amazonaws.com"
+    "scheduler.amazonaws.com",
+    "ecs.application-autoscaling.amazonaws.com"
   ]
 
   used_service_roles = [
-    "rds.amazonaws.com/AWSServiceRoleForRDS"
+    "rds.amazonaws.com/AWSServiceRoleForRDS",
+    "ecs.application-autoscaling.amazonaws.com/AWSServiceRoleForApplicationAutoScaling_ECSService"
   ]
 
   service_role_arns = [
