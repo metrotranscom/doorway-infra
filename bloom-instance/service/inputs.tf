@@ -86,8 +86,8 @@ variable "cluster_name" {
 }
 
 variable "cloudfront" {
-  type = any
-  default = null
+  type        = any
+  default     = null
   description = "The object defining settings for the CloudFront distribution"
 }
 
