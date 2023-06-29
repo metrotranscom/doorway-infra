@@ -2,6 +2,7 @@
 locals {
   # This provides a unique, consistent, and meaningful name prefix for resources
   qualified_name = "${var.name_prefix}-setup-bloom-infra"
+  group_path     = "/${var.project_id}/${var.environment}/"
 
   # We know the Bloom infra terraform creates S3 buckets with this prefix
   arn_resource_prefix = "${var.project_id}-${var.environment}"
@@ -45,20 +46,35 @@ locals {
       "aws:ResourceTag/Environment" : var.environment
     }
   }
+
+  policy_arns = {
+    read : aws_iam_policy.read.arn
+    create : aws_iam_policy.create.arn
+    modify : aws_iam_policy.modify.arn
+  }
 }
 
-# Could create a role that has all policies attached by default
-# resource "aws_iam_role" "full_access" {
-#   name = "${local.qualified_name}-full-access"
+# Create a group with read-only access
+resource "aws_iam_group" "read_only" {
+  name = "${local.qualified_name}-read-only"
+  path = local.group_path
+}
 
-#   assume_role_policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Action = "sts:AssumeRole"
-#         Effect = "Allow"
-#         Principal = ""
-#       }
-#     ]
-#   })
-# }
+# Attach the "read" policy to the "read-only" group
+resource "aws_iam_group_policy_attachment" "read_only" {
+  group      = aws_iam_group.read_only.name
+  policy_arn = aws_iam_policy.read.arn
+}
+
+# Create a group with read and write access
+resource "aws_iam_group" "read_write" {
+  name = "${local.qualified_name}-read-write"
+  path = local.group_path
+}
+
+# Assign all policies here to the read-write group
+resource "aws_iam_group_policy_attachment" "read_write" {
+  for_each   = local.policy_arns
+  group      = aws_iam_group.read_write.name
+  policy_arn = each.value
+}
