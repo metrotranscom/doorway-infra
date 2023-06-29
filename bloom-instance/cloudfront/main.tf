@@ -81,6 +81,7 @@ resource "aws_cloudfront_distribution" "main" {
   aliases     = local.distribution.domains
   price_class = local.distribution.price_class
 
+  # TODO: add logging config
   # logging_config {
   #   bucket          = "<logging_bucket.s3.amazonaws.com>"
   #   prefix          = "cloudfront/${local.qualified_name}"

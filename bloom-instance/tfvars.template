@@ -1,9 +1,9 @@
-project_name = "Doorway" # TBD
+project_name     = "Doorway" # TBD
 application_name = "Bloom Housing Instance"
-project_id = "doorway"
-owner = "infra_team+bloom@your-org.dev"
-aws_region = "us-west-1"
-environment = "dev"
+project_id       = "doorway"
+owner            = "infra_team+bloom@your-org.dev"
+aws_region       = "us-west-1"
+environment      = "dev"
 
 network = {
   vpc_cidr = "10.0.0.0/16"
@@ -64,8 +64,8 @@ dns = {
 
       additional_records = [
         {
-          name = "txt.doorway.test"
-          type = "TXT"
+          name   = "txt.doorway.test"
+          type   = "TXT"
           values = ["some-text-value"]
         }
       ]
@@ -74,8 +74,8 @@ dns = {
 }
 
 database = {
-  db_name = "bloom"
-  type    = "rds" # rds, aurora-serverless
+  db_name                  = "bloom"
+  type                     = "rds" # rds, aurora-serverless
   subnet_group             = "data"
   engine_version           = "13.8"
   instance_class           = "db.t3.micro" # Only needed if rds
@@ -88,8 +88,8 @@ database = {
   maintenance_window = "Sat:23:00-Sun:04:00"
 
   storage = {
-    min     = 20
-    max     = 50
+    min = 20
+    max = 50
   }
 
   backups = {
@@ -139,9 +139,9 @@ albs = {
       }
 
       https = {
-        port        = 443
+        port           = 443
         default_action = "404"
-        allowed_ips = ["0.0.0.0/0"]
+        allowed_ips    = ["0.0.0.0/0"]
 
         tls = {
           default_cert     = "doorway"
@@ -182,7 +182,7 @@ public_sites = [
         "public" = {
           listeners = {
             "https" = {
-              domains = [ "doorway.test" ]
+              domains = ["doorway.test"]
             }
           }
         }
@@ -194,6 +194,81 @@ public_sites = [
         path         = "/"
         protocol     = "HTTP"
         timeout      = 5
+      }
+    }
+
+    cloudfront = {
+      enabled = true
+      # Which domains to use for the CloudFront distribution
+      domains = ["public.chriscasto.doorway.housingbayarea.org"]
+      # Which price class to use
+      price_class = "PriceClass_100" #PriceClass_All, PriceClass_200, PriceClass_100
+      # The origin to send requests to
+      origin = {
+        # Send requests to the ALB named "public"
+        alb : "public"
+      }
+
+      # Which TLS certificate to use
+      # NOTE: The certificate has to be in us-east-1
+      certificate = {
+        name = "doorway"
+      }
+
+      # Place restrictions on who can access the content
+      restrictions : {
+        geo : {
+          # This means no restrictions
+          type = "none"
+          # This means only people in the US can access the content
+          #locations = ["US"]
+        }
+      }
+
+      # Cache policies
+      cache = {
+        # Default cache policy
+        default = {
+          # Redirect http requests to https
+          viewer_protocol_policy = "redirect-to-https"
+          # Only allow HEAD and GET methods
+          allowed_method_set = "get"
+          # Only cache HEAD and GET methods
+          cached_method_set = "get"
+
+          # Use an existing policy if ID is provided
+          policy_id = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+        }
+
+        # Cache policy for /images
+        "/images/*" : {
+          viewer_protocol_policy = "allow-all"
+          # Allow these methods: "HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"
+          allowed_method_set = "all"
+          # Only cache HEAD and GET methods
+          cached_method_set = "get"
+          compress          = true
+          # Order determines which order to apply policies in
+          # Important for when policies overlap for subdirectories
+          order = 1
+
+          # Define a new policy
+          policy = {
+            name    = "PublicImages"
+            comment = "Cache public site images"
+
+            ttl = {
+              min : 60
+              max : 31536000
+              default : 86400
+            }
+
+            # Do not include any request data in cache key
+            headers = { include : "none" }
+            cookies = { include : "none" }
+            query   = { include : "none" }
+          }
+        }
       }
     }
   }
@@ -222,7 +297,7 @@ partner_site = {
       "public" = {
         listeners = {
           "https" = {
-            domains = [ "partner.doorway.test" ]
+            domains = ["partner.doorway.test"]
           }
         }
       }
