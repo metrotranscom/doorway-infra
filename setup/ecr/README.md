@@ -24,7 +24,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_name"></a> [name](#input\_name) | The name to give to give to this ALB and its related resources | `string` | n/a | yes |
+| <a name="input_name"></a> [name](#input\_name) | The name to give to give to this ECR repo and its related resources | `string` | n/a | yes |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | The prefix to prepend to resource names | `string` | n/a | yes |
 | <a name="input_scan_images"></a> [scan\_images](#input\_scan\_images) | Whether to scan images pushed to the ECR repo | `bool` | `false` | no |
 | <a name="input_source_account"></a> [source\_account](#input\_source\_account) | The ID of the account where images will be pushed and/or pulled from | `string` | n/a | yes |
