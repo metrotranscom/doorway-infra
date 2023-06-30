@@ -4,18 +4,25 @@ application_name = "Bloom Housing Pipeline"
 owner            = "infra-team@example.com"
 aws_region       = "us-west-1"
 
+# The name of the CodeStar Connection to use for reading GitHub repos
 gh_codestar_conn_name = "doorway-github-connection"
 
 ecr = {
-  default_region  = "us-west-1"
+  # This should be the region where the ECR repos exist
+  default_region = "us-west-1"
+  # And this should be the account where they exist
   default_account = "123456789012"
 
   repo_groups = {
+    # The key for each repo group is used to resolve the name of a specific repo
+    # With the definition below, using "dev:partners" will point to a repo with a URI like:
+    # 123456789012.dkr.ecr.us-west-1.amazonaws.com/doorway-dev/partners
+
     "dev" = {
       namespace = "doorway-dev"
       repos = [
         "public",
-        "partner",
+        "partners",
         "backend",
         "import-listings"
       ]
@@ -24,19 +31,32 @@ ecr = {
 }
 
 pipeline = {
+  # This helps identify the pipeline
+  # It shouldn't need to be changed, but it can be
   name = "bloom-app"
 
+  # The sources to use as a starting point for the pipeline
   sources = {
     "code" : {
+      # The display name for this source
       name : "DoorwayBloomSource"
+
+      # Whether this source is the primary source
+      # There must be exactly 1 primary source
       is_primary : true
+
+      # The repo where the source files are located
       repo : {
-        name   = "metrotranscom/doorway"
+        # The name of this repo in GitHub
+        name = "metrotranscom/doorway"
+
+        # The branch to respond to changes to
         branch = "main"
       }
     }
   }
 
+  # Define named groups for sending notifications
   notification_topics = {
     "devs" : {
       emails : ["dev-team@example.com"]
@@ -46,24 +66,41 @@ pipeline = {
     }
   }
 
+  # Notify named group(s) above when there are state changes to the pipeline or
+  # pipeline resources like stages or actions
   notify = [
+
+    # "Notify group 'devs' when pipeline state changes to 'failed'
     {
       topic : "devs"
       on : {
         pipeline : ["failed"]
+
+        # We normally only care if the pipeline failed, but some groups may be
+        # interested in other statuses and/or components
+        #pipeline : ["failed", "started", "succeeded", "canceled"]
+        #approval: ["failed", "succeeded", "needed"]
+        #stage : ["failed"]
+        #action : ["failed"]
       }
     }
   ]
 
-  # These vars are applied to all build actions in all stages
+  # These vars are applied to all build actions in all stages in this pipeline
   build_env_vars = {
+    # All build stages are looking for these vars so they can know where to push
+    # new images. These values should match the account ID and region in the ecr
+    # section above.
     ECR_ACCOUNT_ID : "123456789012"
     ECR_REGION : "us-west-1"
   }
 
   stages = [
+    # Build dev Docker images
     {
-      name  = "dev"
+      # Terraform automatically sorts lists/maps by alphabetical order
+      # Prefix with a number to ensure proper ordering
+      name  = "0-dev-build"
       label = "Dev.Build"
 
       # These vars are applied to all build actions in this stage
@@ -71,30 +108,39 @@ pipeline = {
         ECR_NAMESPACE : "doorway-dev"
       }
 
-      default_network = {
-        vpc_id          = "vpc-08b353eee422a1d1b"
-        subnets         = ["subnet-08e79084ddb4f1ab8", "subnet-059055b7efcdcf7d7"]
-        security_groups = ["sg-0e2851e14f826e8af"]
-      }
-
+      # The actions to perform in this stage
       actions = [
         {
-          name       = "public"
-          label      = "BuildPublic"
-          type       = "build"
-          order      = 1
+          # Internal resource name
+          name = "public"
+
+          # Display name in pipeline
+          label = "BuildPublic"
+
+          # The type of action. Only "build" and "approve" are supported
+          type = "build"
+
+          # The order to run this action in.  Set to the same value to run concurrently
+          order = 1
+
+          # Whether to run in privileged mode.  Necessary for building Docker images
           privileged = true
-          timeout    = 60
 
-          buildspec = "ci/buildspec_public.yml"
+          # How long to let the build job run before giving up
+          timeout = 60
 
+          # The path to the buildspec file to use in the primary source
+          buildspec = "ci/buildspec/build_public.yml"
+
+          # Grant access to named ECR repos defined above in ecr.repo_groups
           ecr_repo_access = {
+            # "Permit pushing images to <account>.dkr.ecr.<region>.amazonaws.com/<namespace>/public"
             "dev:public" : ["push"]
           }
 
+          # Environmental variables to pass to this build project
           env_vars = {
             CLOUDINARY_CLOUD_NAME : "exygy"
-            FILE_SERVICE : "null"
           }
         },
         {
@@ -105,7 +151,7 @@ pipeline = {
           privileged = true
           timeout    = 60
 
-          buildspec = "ci/buildspec_partners.yml"
+          buildspec = "ci/buildspec/build_partners.yml"
 
           ecr_repo_access = {
             "dev:partner" : ["push"]
@@ -113,7 +159,6 @@ pipeline = {
 
           env_vars = {
             CLOUDINARY_CLOUD_NAME : "exygy"
-            FILE_SERVICE : "null"
           }
         },
         {
@@ -123,7 +168,7 @@ pipeline = {
           order      = 1
           privileged = true
 
-          buildspec = "ci/buildspec_backend.yml"
+          buildspec = "ci/buildspec/build_backend.yml"
 
           ecr_repo_access = {
             "dev:backend" : ["push"]
@@ -140,55 +185,119 @@ pipeline = {
             "dev:import-listings" : ["push"]
           }
 
-          buildspec = "ci/buildspec_import_listings.yml"
-
-          secret_arns = {
-            DB_CREDS_ARN : "arn:<db_secret>"
-          }
+          buildspec = "ci/buildspec/build_import_listings.yml"
         },
+      ]
+    },
+
+    # Deploy app into dev environment
+    {
+      name  = "1-dev-deploy"
+      label = "Dev.Deploy"
+
+      # These vars are applied to all build actions in this stage
+      build_env_vars = {
+        # Used by all build steps in this stage
+        ECR_NAMESPACE       = "doorway-dev"
+        ECS_DEFAULT_CLUSTER = "doorway-dev-default"
+      }
+
+      # These network settings are applied to any build action with `vpc.use = true`
+      # unless other values are provided at the action level
+      default_network = {
+        vpc_id = "vpc-08b353eee422a1d1b"
+        # "App" subnets
+        subnets         = ["subnet-08e79084ddb4f1ab8", "subnet-059055b7efcdcf7d7"]
+        security_groups = ["sg-0e2851e14f826e8af"]
+      }
+
+      actions = [
+        # Require approval before permitting deployment in this environment
         {
           name  = "approve-deploy"
           label = "ApproveDeployment"
           type  = "approval"
-          order = 2
+          order = 1
+
+          # The emails in the "approvers" notification group above will be sent
+          # a notification asking them to approve or reject.  These individuals
+          # must still have permission to do so.
           topic = "approvers"
         },
-        {
-          name  = "deploy-all"
-          label = "BuildDeploy"
-          type  = "build"
-          order = 3
 
+        # Reseed the database
+        # Could also be used to just run migrations
+        {
+          name       = "reseed"
+          label      = "Migration.Reseed"
+          type       = "build"
+          privileged = true
+          # Run this after approval
+          order = 2
+
+          # The migration step needs to run in the VPC to be able to access the database
           vpc = { use : true }
 
-          buildspec = "ci/buildspec_deploy.yml"
-
-          # The deploy stage needs read and write access to all repos
+          # Need to be able to pull the migration image from the ECR repo
           ecr_repo_access = {
-            "dev:public" : ["push", "pull"]
-            "dev:partner" : ["push", "pull"]
-            "dev:backend" : ["push", "pull"]
+            "dev:backend" : ["pull"]
           }
 
-          secret_arns = {
-            DB_CREDS_ARN : "arn:<db_secret>"
-          }
+          buildspec = "ci/buildspec/migrate_stop_backend.yml"
+
+          # Pass in extra policies containing necessary permissions
+          policy_arns = [
+            "arn:aws:iam::123456789012:policy/doorway-migration-auth-to-repo"
+          ]
 
           env_vars = {
-            DEV_ECS_BACKEND_CLUSTER = "doorway-dev-srv-backend"
-            DEV_ECS_BACKEND_SERVICE = "doorway-dev-srv-backend"
-            DEV_ECS_PUBLIC_CLUSTER  = "doorway-dev-srv-public"
-            DEV_ECS_PUBLIC_SERVICE  = "doorway-dev-srv-public"
-            DEV_ECS_PARTNER_CLUSTER = "doorway-dev-srv-partner"
-            DEV_ECS_PARTNER_SERVICE = "doorway-dev-srv-partner"
-            PORT                    = "3100"
-            EMAIL_API_KEY           = "SOME-LONG-SECRET-KEY"
-            APP_SECRET              = "SOME-LONG-SECRET-KEY"
-            CLOUDINARY_SECRET       = "CLOUDINARY_SECRET"
-            CLOUDINARY_KEY          = "CLOUDINARY_KEY"
-            FILE_SERVICE            = "cloudinary"
-            PARTNERS_PORTAL_URL     = "http://localhost:3001"
-            PARTNERS_BASE_URL       = "http://localhost:3001"
+            ECS_BACKEND_SERVICE = "doorway-dev-srv-backend"
+          }
+
+          # This action uses secrets
+          # Pass in an ARN to the secret to use and the name of the env var that will contain it
+          secret_arns = {
+            DB_CREDS_ARN : "arn:aws:secretsmanager:us-west-1:123456789012:secret:doorway-dev/db/20230420230531086300000123-abcdef"
+          }
+        },
+
+        # Promote images with commit-specific tags to the approved version for running in this environment
+        {
+          name  = "promote-images"
+          label = "PromoteImages"
+          type  = "build"
+          # Only run this if the previous step succeeds
+          order = 3
+
+          # Need the ability to retag images in all repos in this environment
+          ecr_repo_access = {
+            "dev:public" : ["retag"]
+            "dev:partners" : ["retag"]
+            "dev:backend" : ["retag"]
+            "dev:import-listings" : ["retag"]
+          }
+
+          buildspec = "ci/buildspec/promote_images.yml"
+        },
+
+        # Trigger a redeployment of ECS services so they use the new images
+        {
+          name  = "update-ecs"
+          label = "Update-ECS"
+          type  = "build"
+          # Only run this if the previous step succeeds
+          order = 4
+
+          buildspec = "ci/buildspec/update_ecs.yml"
+
+          policy_arns = [
+            "arn:aws:iam::123456789012:policy/doorway-update-ecs-all"
+          ]
+
+          env_vars = {
+            ECS_BACKEND_SERVICE = "doorway-dev-srv-backend"
+            ECS_PUBLIC_SERVICE  = "doorway-dev-srv-public"
+            ECS_PARTNER_SERVICE = "doorway-dev-srv-partner"
           }
         },
       ]
