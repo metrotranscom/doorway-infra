@@ -1,40 +1,55 @@
-project_name = "Doorway" # TBD
-project_id = "doorway"
-aws_region = "us-west-1"
-owner = "infra_team+setup@your-org.dev"
+project_name = "Doorway Housing Project"
+project_id   = "doorway"
+aws_region   = "us-west-1"
+owner        = "infra_team+setup@your-org.dev"
+
+# The ARN of the CodeStar Connection to use for reading GitHub repos
 codestar_connection_arn = ""
 
 pipeline = {
-  name = "bloom-infra-pipeline"
+  # This helps identify the pipeline
+  # It shouldn't need to be changed, but it can be
+  name = "bloom-infra"
 
   source = {
+    # The repo that holds the template files
     "templates" : {
-      repo: {
-        name = "doorway-infra"
+      name : "Templates"
+      is_primary : true
+      repo : {
+        name   = "doorway-terraform-templates"
         branch = "main"
       }
     }
 
+    # The repo that holds the tfvars files
+    # These might not be in a separate repo or may be in a monorepo with other configs
     "configs" : {
-      repo: {
-        name = "doorway-config"
+      name : "Configs"
+      repo : {
+        name   = "doorway-tfvars"
         branch = "main"
       }
     }
   }
 
   notification_topics = {
+    # The infrastructure team
     "infra" : {
       emails : ["admin@example.com"]
     }
+    # The development team
     "developers" : {
       emails : ["dev@example.com"]
     }
+    # People authorized to approve running actions in certain stages
     "approvers" : {
       emails : ["pm@example.com", "security@example.com"]
     }
   }
 
+  # Notify named groups on pipeline status changes
+  # Note: `pipeline : ["failed"]` is probably the only event that will need to be monitored
   notify = [
     {
       topic : "infra"
@@ -53,41 +68,59 @@ pipeline = {
     }
   ]
 
+  # The root directory for running Terraform commands
+  tf_root = {
+    # The name of the source where the templates exist
+    source = "templates"
+    # The specific directory within that source
+    path = "bloom-instance"
+  }
+
   environments = [
     {
       # The name of the environment
-      name      = "dev"
+      name = "dev"
 
-      # The Terraform workspace to use
-      workspace = "example"
+      # The Terraform workspace to use for managing this environment
+      workspace = "dev"
 
       # Vars for the plan stage
       plan = {
         # The location of the tfvars file
         var_file = {
+          # The name of the source where the config exists
           source = "configs"
-          path   = "bloom-instance/example.tfvars"
+          # The path to the specific file
+          path = "bloom-instance/dev.tfvars"
         }
 
         # Policies to attach to the CodeBuild project
         policy_arns = [
-          "arn:aws:iam::364076391763:policy/BloomInfraDeploymentAccess"
+          # The plan action only needs to be able to view resources so it can compare desired to current
+          "arn:aws:iam::123456789012:policy/doorway-dev-setup-bloom-infra-read"
         ]
 
         # Env vars to inject into the project
         env_vars = {
+          # This (optional) var tells the build action which version of TF to use
           TF_VERSION : "1.3.7"
         }
       }
 
+      # Optional approval step
+      # Notify approvers and block deployment until someone approves
       approval = {
         topic = "approvers"
       }
 
       # Vars for the apply stage
       apply = {
+        # Policies to attach to the CodeBuild project
+        # The apply action requires the ability to both view and modify/create resources
         policy_arns = [
-          "arn:aws:iam::364076391763:policy/BloomInfraDeploymentAccess"
+          "arn:aws:iam::123456789012:policy/doorway-dev-setup-bloom-infra-read",
+          "arn:aws:iam::123456789012:policy/doorway-dev-setup-bloom-infra-modify",
+          "arn:aws:iam::123456789012:policy/doorway-dev-setup-bloom-infra-create"
         ]
 
         env_vars = {
