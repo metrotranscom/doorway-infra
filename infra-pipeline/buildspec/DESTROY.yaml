@@ -53,5 +53,5 @@ phases:
       - terraform init -migrate-state
       # Generate a plan output file for analysis and later deployment
       # The plan file has to go to a reliable location to be picked up in the artifact section
-      - terraform destroy -var-file "${TFVARS_FULL_PATH}"  -no-color
+      - terraform destroy  "${TF_PLAN_FULL_PATH}"  -no-color
 
