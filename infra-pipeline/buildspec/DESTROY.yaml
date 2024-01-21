@@ -25,12 +25,12 @@ phases:
 
   build:
     commands:
-      # Verify the values of vars passed in via the project
+       # Verify the values of vars passed in via the project
       - echo "${TF_WORKSPACE}"
       - echo "${TF_ROOT_SOURCE_VAR_NAME}"
       - echo "${TF_ROOT_PATH}"
-      - echo "${TFVARS_SOURCE_VAR_NAME}"
-      - echo "${TFVARS_PATH}"
+      - echo "${TF_PLAN_SOURCE_VAR_NAME}"
+      - echo "${TF_PLAN_PATH}"
 
       # Set the root dir for running terraform commands
       - TF_ROOT="${!TF_ROOT_SOURCE_VAR_NAME}"
@@ -40,18 +40,15 @@ phases:
       # Change to that directory
       - cd "${TF_ROOT_FULL_PATH}"
 
-      # Set the path to the tfvars file
-      - TFVARS_ROOT="${!TFVARS_SOURCE_VAR_NAME}"
-      - echo "${TFVARS_ROOT}"
-      - TFVARS_FULL_PATH="${TFVARS_ROOT}/${TFVARS_PATH}"
-      - echo "${TFVARS_FULL_PATH}"
+      # Set the path to the plan file
+      - TF_PLAN_ROOT="${!TF_PLAN_SOURCE_VAR_NAME}"
+      - echo "${TF_PLAN_ROOT}"
+      - TF_PLAN_FULL_PATH="${TF_PLAN_ROOT}/${TF_PLAN_PATH}"
+      - echo "${TF_PLAN_FULL_PATH}"
 
-      # Verify which workspace is being used
-      - terraform workspace show
-      # Always have to `terraform init` since new modules may be installed
-      # State may have moved, so also call with -migrate-state
-      - terraform init -migrate-state
-      # Generate a plan output file for analysis and later deployment
-      # The plan file has to go to a reliable location to be picked up in the artifact section
+      - ls -l "${TF_PLAN_ROOT}"
+
+      # Have to init again to make sure providers are present
+      - terraform init
       - terraform destroy  "${TF_PLAN_FULL_PATH}"  -no-color
 
