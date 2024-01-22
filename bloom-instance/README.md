@@ -1,4 +1,33 @@
+
 <!-- BEGIN_TF_DOCS -->
+# Bloom Instance
+
+The `bloom-instance` project creates the infrastructure on which the Bloom services run. This must be deployed once per environment (dev, staging, prod, etc), and should be deployed after the base infra for that environment has been created through the setup project. Note that deployments will fail if the app pipeline has not yet been set up as the service images would not not exist to be run by the compute runtime.
+
+The value of the "repos" output from deploying the setup infra should be used to populate the values for the `image` property for each service.
+
+## Deployment
+
+It is recommended to use the infra pipeline to manage changes to Bloom infrastructure, but it can sometimes be helpful or even necessary to deploy manually.
+
+To initialize a new environment, you will first want to create a new Terraform workspace in this directory with the name of the environment you are creating (ie `terraform workspace new dev`) and a copy of the tfvars template named after the environment (ie `dev.tfvars`)\*.
+
+Note that, due to a circular dependency between the ALB and the log bucket, you should first create the ALB with `logging = false`. Once everything is created, you can enable logging and reapply.
+
+A sample flow to create an environment named "dev" might look something like this:
+
+1. `terraform workspace new dev`
+2. `cp tfvars.template dev.tfvars`
+3. Edit tfvars file to add desired configuration
+   - Make sure that `alb.logging = false` for initial creation
+4. `terraform apply -var-file dev.tfvars`
+5. Visually validate resource changes and ensure there are no permissions issues
+6. Type "yes" to apply changes
+7. Change `alb.logging` to `true` if desired and repeat steps 4-6
+
+# Terraform Docs
+
+<!-- Do not edit below this line! -->
 ## Requirements
 
 | Name | Version |

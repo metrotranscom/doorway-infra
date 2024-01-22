@@ -1,3 +1,34 @@
+# Infrastructure Pipeline
+
+The `infra-pipeline` project creates the pipeline that automates deployment of changes to infrastructure. This is most commonly used to manage changes to Bloom infrastructure, but could also be used to automate changes to the base infra (after initial setup) or the app pipeline.
+
+Note that while the app pipeline makes use of the pipeline module under `modules/pipeline`, this project predates that module and has not yet been updated to make use of it.
+
+## Deployment
+
+To create a new pipeline, you will first want to create a new Terraform workspace in this directory with the name of the environment you are creating and/or the infrastructure being managed (ie `terraform workspace new bloom-infra-prod`) and a copy of the tfvars template named after the environment (ie `bloom-infra-prod.tfvars`)\*. Here are some sample names you might consider:
+
+- bloom-infra -> the only Bloom instance pipeline
+- prod -> another way to say the only Bloom instance pipeline
+- bloom-infra-nonprod -> the pipeline that builds the Bloom infra in the non-production environments
+- bloom-infra-prod -> the pipeline that builds the Bloom infra in the production environments
+- setup-dev -> the pipeline that updates the base infra in the dev environment
+
+Note that, due to some internal dependencies, the pipeline must be deployed in a two step process; one step to setup some IAM policies and another to deploy the rest of the infra. This additional step should only be needed when first creating the pipeline.
+
+A sample flow to create an environment named "bloom-infra-prod" might look something like this:
+
+1. `terraform workspace new bloom-infra-prod`
+2. `cp tfvars.template bloom-infra-prod.tfvars`
+3. Edit tfvars file to add desired configuration
+4. Run `terraform apply -var-file bloom-infra-prod.tfvars -target module.pipeline.aws_iam_policy.codebuild_artifacts` to create IAM resources
+5. Visually validate resource changes and ensure there are no permissions issues
+6. Type "yes" to apply changes
+7. Run `terraform apply -var-file bloom-infra-prod.tfvars` to create the rest of the resources
+
+# Terraform Docs
+
+<!-- Do not edit below this line! -->
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

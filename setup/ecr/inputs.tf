@@ -11,7 +11,7 @@ variable "name_prefix" {
 
 variable "name" {
   type        = string
-  description = "The name to give to give to this ALB and its related resources"
+  description = "The name to give to give to this ECR repo and its related resources"
 
   validation {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.name))

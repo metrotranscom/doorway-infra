@@ -1,3 +1,24 @@
+# Bloom App Pipeline
+
+The `app-codepipeline` project creates the pipeline that builds and deploys the Bloom services. It is intended to be deployed once for all environments (dev->staging->prod), but it's also possible to break it up into separate pipelines if needed (dev->staging with prod separate, etc). It makes use of the shared pipeline module to handle the actual pipeline, with a separate local module for creating permissions needed to push to / pull from ECR repositories.
+
+## Deployment
+
+Note that, due to some internal dependencies, the pipeline must be created in a two step process; one step to setup some IAM policies and another to deploy the rest of the infra. This additional step is only needed when first creating the pipeline or when adding new ECR repos.
+
+A sample flow to create an environment named "dev" might look something like this:
+
+1. `terraform workspace new dev`
+2. `cp tfvars.template dev.tfvars`
+3. Edit tfvars file to add desired configuration
+4. Run `terraform apply -var-file dev.tfvars  -target module.pipeline.aws_iam_policy.codebuild_artifacts -target module.ecr_repo` to create IAM resources
+5. Visually validate resource changes and ensure there are no permissions issues
+6. Type "yes" to apply changes
+7. Run `terraform apply -var-file dev.tfvars` to create the rest of the resources
+
+# Terraform Docs
+
+<!-- Do not edit below this line! -->
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
