@@ -51,5 +51,5 @@ phases:
       # Always have to `terraform init` since new modules may be installed
       # State may have moved, so also call with -migrate-state
       - terraform init -migrate-state
-      - terraform apply -destroy  var-file "${TFVARS_FULL_PATH}" -out="${CODEBUILD_SRC_DIR}/plan.out" -no-color
+      - terraform apply -destroy  -var-file "${TFVARS_FULL_PATH}" -out="${CODEBUILD_SRC_DIR}/plan.out" -no-color
 
