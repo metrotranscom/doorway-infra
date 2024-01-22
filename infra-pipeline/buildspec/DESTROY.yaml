@@ -25,7 +25,7 @@ phases:
 
   build:
     commands:
-      # Verify the values of vars passed in via the project
+       # Verify the values of vars passed in via the project
       - echo "${TF_WORKSPACE}"
       - echo "${TF_ROOT_SOURCE_VAR_NAME}"
       - echo "${TF_ROOT_PATH}"
@@ -51,5 +51,5 @@ phases:
       # Always have to `terraform init` since new modules may be installed
       # State may have moved, so also call with -migrate-state
       - terraform init -migrate-state
-      - terraform destroy -var-file "${TFVARS_FULL_PATH}" -no-color
+      - terraform apply -destroy  var-file "${TFVARS_FULL_PATH}" -out="${CODEBUILD_SRC_DIR}/plan.out" -no-color
 
