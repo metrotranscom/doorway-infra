@@ -40,7 +40,7 @@ phases:
       - echo "${TFVARS_ROOT}"
       - TFVARS_FULL_PATH="${TFVARS_ROOT}/${TFVARS_PATH}"
       - echo "${TFVARS_FULL_PATH}"
-      - terraform worspace new infradev
+      - terraform workspace new infradev
 
       # Verify which workspace is being used
       - terraform workspace show
