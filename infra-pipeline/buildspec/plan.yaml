@@ -46,11 +46,9 @@ phases:
      
       # Always have to `terraform init` since new modules may be installed
       # State may have moved, so also call with -migrate-state
+      - terraform workspace show
 
       - terraform init -migrate-state
-      - terraform workspace new infradev
-      - terraform init
-      - terraform workspace show
 
     
       # Generate a plan output file for analysis and later deployment
