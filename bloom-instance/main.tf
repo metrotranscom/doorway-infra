@@ -24,7 +24,10 @@ provider "aws" {
   alias = "use1"
   default_tags { tags = local.default_tags }
 }
-
+variable "s3_force_destroy" {
+  type    = bool
+  default = false
+}
 # Needed to resolve current AWS Account ID for policy documents
 data "aws_caller_identity" "current" {}
 

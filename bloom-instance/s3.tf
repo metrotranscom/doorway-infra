@@ -1,13 +1,16 @@
 resource "aws_s3_bucket" "public_uploads" {
   bucket_prefix = "${local.qualified_name_prefix}-public-uploads"
+  force_destroy = var.s3_force_destroy
 }
 
 resource "aws_s3_bucket" "secure_uploads" {
   bucket_prefix = "${local.qualified_name_prefix}-secure-uploads"
+  force_destroy = var.s3_force_destroy
 }
 
 resource "aws_s3_bucket" "static_content" {
   bucket_prefix = "${local.qualified_name_prefix}-static-content"
+  force_destroy = var.s3_force_destroy
 }
 
 resource "aws_s3_bucket_public_access_block" "public_uploads" {
