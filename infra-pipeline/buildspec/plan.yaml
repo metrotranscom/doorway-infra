@@ -40,14 +40,18 @@ phases:
       - echo "${TFVARS_ROOT}"
       - TFVARS_FULL_PATH="${TFVARS_ROOT}/${TFVARS_PATH}"
       - echo "${TFVARS_FULL_PATH}"
-      - terraform workspace new infradev
+      
 
       # Verify which workspace is being used
-      - terraform workspace show
+     
       # Always have to `terraform init` since new modules may be installed
       # State may have moved, so also call with -migrate-state
 
       - terraform init -migrate-state
+      - terraform workspace new infradev
+      - terraform init
+      - terraform workspace show
+
     
       # Generate a plan output file for analysis and later deployment
       # The plan file has to go to a reliable location to be picked up in the artifact section
