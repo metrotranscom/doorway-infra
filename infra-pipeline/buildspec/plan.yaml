@@ -46,7 +46,7 @@ phases:
       # Always have to `terraform init` since new modules may be installed
       # State may have moved, so also call with -migrate-state
       #     FIXME TEMPORaRy CHANGE- terraform init -migrate-state
-      - rm  .terraform
+      - ls -latr
       - rm terraform.*
       - terraform init
     
