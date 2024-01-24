@@ -8,7 +8,7 @@ resource "aws_ecs_service" "service" {
   # Only alphanumeric characters, hyphens, and underscores
   name = local.default_name
   #cluster         = aws_ecs_cluster.service.id
-  cluster         = data.aws_ecs_cluster.cluster.arn
+  cluster         = aws_ecs_cluster.default.arn
   task_definition = local.task_id
 
   desired_count = local.desired_count
