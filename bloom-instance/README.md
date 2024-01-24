@@ -67,6 +67,7 @@
 | Name | Description |
 |------|-------------|
 | <a name="output_cert_validation_records_not_created"></a> [cert\_validation\_records\_not\_created](#output\_cert\_validation\_records\_not\_created) | n/a |
+| <a name="output_default_cluster_arn"></a> [default\_cluster\_arn](#output\_default\_cluster\_arn) | n/a |
 | <a name="output_default_cluster_name"></a> [default\_cluster\_name](#output\_default\_cluster\_name) | n/a |
 | <a name="output_network"></a> [network](#output\_network) | n/a |
 | <a name="output_urls"></a> [urls](#output\_urls) | n/a |
