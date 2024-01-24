@@ -11,8 +11,7 @@ resource "aws_s3_bucket_policy" "log_bucket_policy" {
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [for name, alb in module.albs :
-      {
+    Statement = {
         Sid = "AllowWritesToLogBucket"
         Action = [
           "s3:PutObject",
@@ -21,8 +20,7 @@ resource "aws_s3_bucket_policy" "log_bucket_policy" {
         Principal = {
           AWS = local.elb_service_account_arn
         }
-        Resource = "${aws_s3_bucket.logging_bucket.arn}/${alb.log_prefix}/AWSLogs/${local.current_account_id}/*",
+        Resource = "${aws_s3_bucket.logging_bucket.arn}/*",
       }
-    ]
   })
 }
