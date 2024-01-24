@@ -46,7 +46,7 @@ phases:
       # Always have to `terraform init` since new modules may be installed
       # State may have moved, so also call with -migrate-state
       #     FIXME TEMPORaRy CHANGE- terraform init -migrate-state
-      - terraform init ß
+      - terraform init
     
       # Generate a plan output file for analysis and later deployment
       # The plan file has to go to a reliable location to be picked up in the artifact section
