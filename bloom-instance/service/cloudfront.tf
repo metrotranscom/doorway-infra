@@ -11,6 +11,8 @@ module "cloudfront" {
 
   distribution = var.cloudfront
   providers = {
-    "aws" = aws.use1
+    aws = {
+      region = "us-east-1"
+      alias = "use1"
   }
 }
