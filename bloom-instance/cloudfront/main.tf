@@ -1,12 +1,4 @@
-terraform {
-  required_providers {
-    aws = {
-      source                = "hashicorp/aws"
-      version               = "~> 4.57.0"
-      configuration_aliases = [aws.use1]
-    }
-  }
-}
+
 locals {
   qualified_name = "${var.name_prefix}-${var.name}"
 
