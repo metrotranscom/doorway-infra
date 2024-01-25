@@ -1,4 +1,10 @@
-
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+    }
+  }
+}
 locals {
   qualified_name = "${var.name_prefix}-${var.name}"
 
