@@ -18,12 +18,7 @@ provider "aws" {
   region = var.aws_region
   default_tags { tags = local.default_tags }
 }
-# This provider is to create the certs in us-east-1 so that it can be used by cloudfront
-provider "aws" {
-  region = "us-east-1"
-  alias = "use1"
-  default_tags { tags = local.default_tags }
-}
+
 variable "s3_force_destroy" {
   type    = bool
   default = false
