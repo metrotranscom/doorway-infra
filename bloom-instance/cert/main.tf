@@ -91,7 +91,7 @@ resource "aws_acm_certificate" "cloudfront-cert" {
   validation_method         = "DNS"
   subject_alternative_names = var.cert.alt_names
 }
-resource "aws_acm_certificate_validation" "cert" {
+resource "aws_acm_certificate_validation" "cloudfront-cert" {
   provider = aws.use1
   count                   = local.auto_validate ? 1 : 0
   certificate_arn         = aws_acm_certificate.cert.arn
