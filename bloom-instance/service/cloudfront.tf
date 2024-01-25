@@ -10,4 +10,7 @@ module "cloudfront" {
   cert_map = var.cert_map
 
   distribution = var.cloudfront
+  providers = {
+    "aws" = aws.use1
+  }
 }
