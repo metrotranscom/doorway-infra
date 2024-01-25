@@ -1,4 +1,12 @@
-
+terraform {
+  required_providers {
+    aws = {
+      source                = "hashicorp/aws"
+      version               = "~> 4.57.0"
+      configuration_aliases = [aws.use1]
+    }
+  }
+}
 locals {
   qualified_name = "${var.name_prefix}-${var.name}"
 
@@ -60,13 +68,13 @@ module "policies" {
   policy      = each.value
 }
 resource "aws_acm_certificate" "cloudfront-cert" {
-  provider = aws.use1
+  provider                  = aws.use1
   domain_name               = var.cert.domain
   validation_method         = "DNS"
   subject_alternative_names = var.cert.alt_names
 }
 resource "aws_acm_certificate_validation" "cloudfront-cert" {
-  provider = aws.use1
+  provider                = aws.use1
   certificate_arn         = aws_acm_certificate.cloudfront-cert.arn
   validation_record_fqdns = [for record in aws_route53_record.cert : record.fqdn]
 }
