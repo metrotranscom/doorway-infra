@@ -8,7 +8,6 @@ No requirements.
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
-| <a name="provider_aws.use1"></a> [aws.use1](#provider\_aws.use1) | n/a |
 
 ## Modules
 

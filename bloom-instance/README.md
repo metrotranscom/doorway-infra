@@ -61,6 +61,7 @@
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | A unique, immutable identifier for this project | `string` | n/a | yes |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | A human-readable name for this project. Can be changed if needed | `string` | n/a | yes |
 | <a name="input_public_sites"></a> [public\_sites](#input\_public\_sites) | A list of public portal service definitions | `any` | n/a | yes |
+| <a name="input_s3_force_destroy"></a> [s3\_force\_destroy](#input\_s3\_force\_destroy) | n/a | `bool` | `false` | no |
 
 ## Outputs
 
