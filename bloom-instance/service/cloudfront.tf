@@ -1,4 +1,8 @@
 
+provider "aws" {
+  alias  = "use1"
+  region = "us-east-1"
+}
 module "cloudfront" {
   source = "../cloudfront"
   count  = var.cloudfront != null ? 1 : 0
@@ -11,8 +15,6 @@ module "cloudfront" {
 
   distribution = var.cloudfront
   providers = {
-    aws = {
-      region = "us-east-1"
-    }
+    aws = aws.use1
   }
 }
