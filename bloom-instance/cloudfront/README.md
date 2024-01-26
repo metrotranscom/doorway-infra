@@ -19,8 +19,6 @@ No requirements.
 
 | Name | Type |
 |------|------|
-| [aws_acm_certificate.cloudfront-cert](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acm_certificate) | resource |
-| [aws_acm_certificate_validation.cloudfront-cert](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/acm_certificate_validation) | resource |
 | [aws_cloudfront_distribution.main](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudfront_distribution) | resource |
 
 ## Inputs
