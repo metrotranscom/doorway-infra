@@ -31,7 +31,7 @@ locals {
 
   # Certificates
   cert_arn = var.distribution.certificate.arn
- # cert_arn  = var.cert_map[local.cert_name]
+  # cert_arn  = var.cert_map[local.cert_name]
 
 
   # The default cache has the same data shape, but is treated differently
