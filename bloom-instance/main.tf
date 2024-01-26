@@ -42,8 +42,7 @@ locals {
     Workspace   = terraform.workspace
   }
 
-  #The ID for the Account that our resources are being deployed into
-  current_account_id = data.aws_caller_identity.current.account_id
+
 
   # The Account ID for the AWS ELB service in this region
   elb_service_account_arn = data.aws_elb_service_account.current.arn
