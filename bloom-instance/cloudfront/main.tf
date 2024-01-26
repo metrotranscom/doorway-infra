@@ -65,17 +65,7 @@ module "policies" {
   name_prefix = local.qualified_name
   policy      = each.value
 }
-resource "aws_acm_certificate" "cloudfront-cert" {
 
-  domain_name               = var.cert.domain
-  validation_method         = "DNS"
-  subject_alternative_names = var.cert.alt_names
-}
-resource "aws_acm_certificate_validation" "cloudfront-cert" {
-
-  certificate_arn         = aws_acm_certificate.cloudfront-cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.cert : record.fqdn]
-}
 
 resource "aws_cloudfront_distribution" "main" {
   origin {

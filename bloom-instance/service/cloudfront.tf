@@ -1,8 +1,4 @@
 
-provider "aws" {
-  alias  = "use1"
-  region = "us-east-1"
-}
 module "cloudfront" {
   source = "../cloudfront"
   count  = var.cloudfront != null ? 1 : 0
@@ -14,7 +10,4 @@ module "cloudfront" {
   cert_map = var.cert_map
 
   distribution = var.cloudfront
-  providers = {
-    aws = aws.use1
-  }
 }
