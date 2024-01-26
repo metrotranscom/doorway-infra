@@ -32,7 +32,7 @@ variable "distribution" {
     price_class = optional(string, "PriceClass_100")
 
     certificate = object({
-      name = string
+      arn = string
     })
 
     # Note: This module only supports ALB origins right now

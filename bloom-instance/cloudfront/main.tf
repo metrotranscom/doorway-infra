@@ -30,8 +30,8 @@ locals {
   origin_alb_dns_name = local.origin_alb.dns_name
 
   # Certificates
-  cert_name = var.distribution.certificate.name
-  cert_arn  = var.cert_map[local.cert_name]
+  cert_arn = var.distribution.certificate.arn
+ # cert_arn  = var.cert_map[local.cert_name]
 
 
   # The default cache has the same data shape, but is treated differently
