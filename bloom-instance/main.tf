@@ -18,8 +18,7 @@ variable "s3_force_destroy" {
   type    = bool
   default = false
 }
-# Needed to resolve current AWS Account ID for policy documents
-data "aws_caller_identity" "current" {}
+
 
 # ELBs have special rules for granting access for logging purposes
 # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
