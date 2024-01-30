@@ -35,7 +35,7 @@ A sample flow to create an environment named "bloom-infra-prod" might look somet
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.57.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.64 |
 
 ## Providers
 
