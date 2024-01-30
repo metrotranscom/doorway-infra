@@ -1,3 +1,4 @@
+
 resource "aws_s3_bucket" "public_uploads" {
   bucket_prefix = "${local.qualified_name_prefix}-public-uploads"
   force_destroy = var.s3_force_destroy
