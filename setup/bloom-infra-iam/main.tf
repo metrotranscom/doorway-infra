@@ -1,4 +1,11 @@
-
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
 locals {
   # This provides a unique, consistent, and meaningful name prefix for resources
   qualified_name = "${var.name_prefix}-setup-bloom-infra"
@@ -27,13 +34,6 @@ locals {
     "arn:aws:iam::${var.infra_account_id}:role/aws-service-role/${role}"
   ]
 
-  default_read_condition = {
-    StringEquals : {
-      "aws:RequestTag/ProjectID" : var.project_id
-      "aws:RequestTag/Environment" : var.environment
-    }
-  }
-
   # Only permit the creation of resources with both the ProjectID and Environment variables
   default_create_condition = {
     StringEquals : {
@@ -61,6 +61,7 @@ resource "aws_iam_group" "read_only" {
   name = "${local.qualified_name}-read-only"
   path = local.group_path
 }
+
 
 # Attach the "read" policy to the "read-only" group
 resource "aws_iam_group_policy_attachment" "read_only" {

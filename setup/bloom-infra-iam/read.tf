@@ -1,5 +1,5 @@
 
-
+# trunk-ignore(checkov/CKV_AWS_355): this is a generic read-only policy. wildcards are appropriate.
 resource "aws_iam_policy" "read" {
   name = "${local.qualified_name}-read"
 

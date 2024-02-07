@@ -5,7 +5,7 @@ variable "aws_region" {
 
   validation {
     condition     = can(regex("^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\\d$", var.aws_region))
-    error_message = "Must be a valid AWS region"
+    error_message = "Must be a valid AWS region."
   }
 }
 
@@ -15,20 +15,10 @@ variable "project_name" {
 
   validation {
     condition     = can(regex("^[\\w\\s\\.\\-]+$", var.project_name))
-    error_message = "project_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
+    error_message = "The project_name variable can only contain letters, numbers, spaces, periods, underscores, and hyphens."
   }
 }
 
-# This var is only set on resource tags. Standard tag naming restrictions apply
-variable "owner" {
-  type        = string
-  description = "The owner of the resources created via these templates"
-
-  validation {
-    condition     = can(regex("^[\\w\\s\\.\\-\\:\\/\\=\\+@]{1,255}$", var.owner))
-    error_message = "owner can only contain letters, numbers, spaces, and these special characters: _ . : / = + - @"
-  }
-}
 
 variable "project_id" {
   type        = string
@@ -36,7 +26,7 @@ variable "project_id" {
 
   validation {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.project_id))
-    error_message = "project_id can only contain letters, numbers, and hyphens"
+    error_message = "The project_id variable can only contain letters, numbers, and hyphens."
   }
 }
 
@@ -50,7 +40,7 @@ variable "environment" {
 
   validation {
     condition     = can(regex("^[[:alpha:]][[:alnum:]]{0,10}$", var.environment))
-    error_message = "environment can only contain letters and numbers, must start with a letter, and must be 10 or fewer characters"
+    error_message = "The variable 'environment' can only contain letters and numbers, must start with a letter, and must be 10 or fewer characters."
   }
 }
 

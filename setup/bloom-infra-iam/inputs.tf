@@ -5,7 +5,7 @@ variable "name_prefix" {
 
   validation {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.name_prefix))
-    error_message = "name_prefix can only contain letters, numbers, and hyphens"
+    error_message = "Variable name_prefix can only contain letters, numbers, and hyphens."
   }
 }
 
@@ -15,7 +15,7 @@ variable "project_id" {
 
   validation {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.project_id))
-    error_message = "project_id can only contain letters, numbers, and hyphens"
+    error_message = "Variable project_id can only contain letters, numbers, and hyphens."
   }
 }
 
@@ -25,7 +25,7 @@ variable "environment" {
 
   validation {
     condition     = can(regex("^[[:alnum:]\\-]+$", var.environment))
-    error_message = "environment can only contain letters, numbers, and hyphens"
+    error_message = "Variable environment can only contain letters, numbers, and hyphens."
   }
 }
 
