@@ -1,7 +1,14 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
 
 locals {
   codestar_connection_arn = var.codestar_connection_arn
-  name_prefix             = var.name_prefix
   qualified_name          = "${var.name_prefix}-${var.name}"
 
   source_artifacts = keys(var.sources)
@@ -90,8 +97,12 @@ resource "aws_codepipeline" "pipeline" {
   role_arn = aws_iam_role.pipeline.arn
 
   artifact_store {
-    location = aws_s3_bucket.artifacts.bucket
+    location = module.s3_bucket
     type     = "S3"
+    encryption_key {
+      id = module.s3_bucket.encryption_key_arn
+      type = "KMS"
+    }
   }
 
   stage {
