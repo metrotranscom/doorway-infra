@@ -57,7 +57,7 @@ module "backend_api" {
   db           = module.db
   cluster_name = aws_ecs_cluster.default.name
 
-  public_upload_bucket = aws_s3_bucket.public_uploads.bucket
+  public_upload_bucket = module.s3_public_uploads.bucket
 
   migration = var.backend_api.migration
 

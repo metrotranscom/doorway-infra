@@ -4,7 +4,7 @@ module "albs" {
   for_each = { for name, alb in var.albs : name => alb }
 
   vpc_id     = module.network.vpc.id
-  log_bucket = aws_s3_bucket.logging_bucket.bucket
+  log_bucket = module.s3.bucket.id
 
   # Pass in available subnets so the ALB can pick which subnets to deploy into based on subnet group
   # Also used by listener module to allow IPs from subnets in allowed_subnets

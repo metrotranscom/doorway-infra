@@ -1,12 +1,11 @@
-resource "aws_s3_bucket" "logging_bucket" {
-  bucket_prefix = "${local.qualified_name_prefix}-logging"
-  # Uncomment to have the bucket automatically delete all objects in it when destroyed
-  # By default, buckets with objects in them cannot be deleted
-  #force_destroy = true
+
+module "s3_logging" {
+  source = "../modules/s3"
+  prefix =  "${local.qualified_name_prefix}-logging"
 }
 
 resource "aws_s3_bucket_policy" "log_bucket_policy" {
-  bucket = aws_s3_bucket.logging_bucket.id
+  bucket = module.s3_logging.bucket.id
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -20,7 +19,7 @@ resource "aws_s3_bucket_policy" "log_bucket_policy" {
         Principal = {
           AWS = local.elb_service_account_arn
         }
-        Resource = "arn:aws:s3:::${aws_s3_bucket.logging_bucket.bucket}/${alb.log_prefix}/AWSLogs/${local.current_account_id}/*",
+        Resource = "${module.s3.bucket.arn}/${alb.log_prefix}/AWSLogs/${local.current_account_id}/*",
       }
     ]
   })
