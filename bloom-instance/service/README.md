@@ -44,6 +44,7 @@ No resources.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_cloudfront_distribution"></a> [cloudfront\_distribution](#output\_cloudfront\_distribution) | n/a |
 | <a name="output_security_group"></a> [security\_group](#output\_security\_group) | n/a |
 | <a name="output_target_group"></a> [target\_group](#output\_target\_group) | n/a |
 | <a name="output_url_list"></a> [url\_list](#output\_url\_list) | n/a |
