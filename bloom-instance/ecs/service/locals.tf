@@ -3,12 +3,7 @@ data "aws_subnet" "first" {
   id = local.subnet_ids[0]
 }
 
-# This isn't strictly necessary since we have access to the default cluster 
-# resource, but doing this lookup gives us the ability to provide a cluster
-# name in the config in the future if needed
-# data "aws_ecs_cluster" "cluster" {
-#   cluster_name = local.cluster_name
-# }
+
 
 locals {
   # TODO: replace this with subnet property
