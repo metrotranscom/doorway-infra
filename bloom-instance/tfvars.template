@@ -221,7 +221,7 @@ public_sites = [
           # This means no restrictions
           type = "none"
           # This means only people in the US can access the content
-          #locations = ["US"]
+          locations = ["US"]
         }
       }
 
