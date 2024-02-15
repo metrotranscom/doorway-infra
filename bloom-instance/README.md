@@ -1,44 +1,17 @@
-# Bloom Instance
 
-The `bloom-instance` project creates the infrastructure on which the Bloom services run. This must be deployed once per environment (dev, staging, prod, etc), and should be deployed after the base infra for that environment has been created through the setup project. Note that deployments will fail if the app pipeline has not yet been set up as the service images would not not exist to be run by the compute runtime.
-
-The value of the "repos" output from deploying the setup infra should be used to populate the values for the `image` property for each service.
-
-## Deployment
-
-It is recommended to use the infra pipeline to manage changes to Bloom infrastructure, but it can sometimes be helpful or even necessary to deploy manually.
-
-To initialize a new environment, you will first want to create a new Terraform workspace in this directory with the name of the environment you are creating (ie `terraform workspace new dev`) and a copy of the tfvars template named after the environment (ie `dev.tfvars`)\*.
-
-Note that, due to a circular dependency between the ALB and the log bucket, you should first create the ALB with `logging = false`. Once everything is created, you can enable logging and reapply.
-
-A sample flow to create an environment named "dev" might look something like this:
-
-1. `terraform workspace new dev`
-2. `cp tfvars.template dev.tfvars`
-3. Edit tfvars file to add desired configuration
-   - Make sure that `alb.logging = false` for initial creation
-4. `terraform apply -var-file dev.tfvars`
-5. Visually validate resource changes and ensure there are no permissions issues
-6. Type "yes" to apply changes
-7. Change `alb.logging` to `true` if desired and repeat steps 4-6
-
-# Terraform Docs
-
-<!-- Do not edit below this line! -->
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.57.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 4.64 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.57.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.67.0 |
 
 ## Modules
 
@@ -66,7 +39,6 @@ A sample flow to create an environment named "dev" might look something like thi
 | [aws_s3_bucket_policy.log_bucket_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_s3_bucket_policy.public_uploads](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_policy) | resource |
 | [aws_s3_bucket_public_access_block.public_uploads](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket_public_access_block) | resource |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_elb_service_account.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/elb_service_account) | data source |
 
 ## Inputs
@@ -88,12 +60,14 @@ A sample flow to create an environment named "dev" might look something like thi
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | A unique, immutable identifier for this project | `string` | n/a | yes |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | A human-readable name for this project. Can be changed if needed | `string` | n/a | yes |
 | <a name="input_public_sites"></a> [public\_sites](#input\_public\_sites) | A list of public portal service definitions | `any` | n/a | yes |
+| <a name="input_s3_force_destroy"></a> [s3\_force\_destroy](#input\_s3\_force\_destroy) | n/a | `bool` | `false` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | <a name="output_cert_validation_records_not_created"></a> [cert\_validation\_records\_not\_created](#output\_cert\_validation\_records\_not\_created) | n/a |
+| <a name="output_default_cluster_arn"></a> [default\_cluster\_arn](#output\_default\_cluster\_arn) | n/a |
 | <a name="output_default_cluster_name"></a> [default\_cluster\_name](#output\_default\_cluster\_name) | n/a |
 | <a name="output_network"></a> [network](#output\_network) | n/a |
 | <a name="output_urls"></a> [urls](#output\_urls) | n/a |

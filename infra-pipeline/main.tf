@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.57.0"
+      version = "~> 4.64"
     }
   }
 
@@ -18,6 +18,7 @@ provider "aws" {
   region = var.aws_region
   default_tags { tags = local.default_tags }
 }
+
 
 locals {
   name_prefix             = var.project_id

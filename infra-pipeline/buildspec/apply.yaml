@@ -42,6 +42,7 @@ phases:
       - echo "${TF_PLAN_FULL_PATH}"
 
       - ls -l "${TF_PLAN_ROOT}"
+    
 
       # Have to init again to make sure providers are present
       - terraform init

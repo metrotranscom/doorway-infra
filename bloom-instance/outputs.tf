@@ -25,3 +25,6 @@ output "network" {
 output "default_cluster_name" {
   value = aws_ecs_cluster.default.name
 }
+output "default_cluster_arn" {
+  value = aws_ecs_cluster.default.arn
+}

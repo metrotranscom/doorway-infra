@@ -32,6 +32,11 @@ variable "subnet_map" {
   description = "A map of available subnets"
 }
 
+variable "cert_map" {
+  type        = map(string)
+  description = "ARNs for TLS certificates to apply to secure listeners"
+}
+
 variable "cluster_name" {
   type        = string
   description = "The name of the ECS cluster to run this service in"
@@ -40,10 +45,11 @@ variable "cluster_name" {
 variable "service_definition" {
   # See services/inputs.tf for type structure
   type = object({
-    name    = string
-    port    = optional(number)
-    task    = any
-    service = any
+    name       = string
+    port       = optional(number)
+    task       = any
+    service    = any
+    cloudfront = optional(any)
   })
   description = "A partner portal service definition object"
 }

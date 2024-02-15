@@ -14,3 +14,7 @@ output "urls_by_listener" {
 output "url_list" {
   value = module.service.url_list
 }
+
+output "cloudfront_distribution" {
+  value = aws_cloudfront_distribution.service
+}

@@ -12,6 +12,8 @@ No providers.
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_alb_aliases"></a> [alb\_aliases](#module\_alb\_aliases) | ../dns/alias | n/a |
+| <a name="module_cloudfront"></a> [cloudfront](#module\_cloudfront) | ../cloudfront | n/a |
+| <a name="module_cloudfront_aliases"></a> [cloudfront\_aliases](#module\_cloudfront\_aliases) | ../dns/alias | n/a |
 | <a name="module_service"></a> [service](#module\_service) | ../ecs/service | n/a |
 | <a name="module_task"></a> [task](#module\_task) | ../ecs/task | n/a |
 
@@ -25,6 +27,8 @@ No resources.
 |------|-------------|------|---------|:--------:|
 | <a name="input_additional_tags"></a> [additional\_tags](#input\_additional\_tags) | Additional tags to apply to service resources | `map(string)` | `null` | no |
 | <a name="input_alb_map"></a> [alb\_map](#input\_alb\_map) | The available ALBs | <pre>map(object({<br>    arn      = string<br>    dns_name = string<br>    zone_id  = string<br>    security_group = object({<br>      id = string<br>    })<br>    listeners = map(object({<br>      arn       = string<br>      port      = number<br>      is_secure = bool<br>    }))<br>  }))</pre> | n/a | yes |
+| <a name="input_cert_map"></a> [cert\_map](#input\_cert\_map) | ARNs for TLS certificates to apply to secure listeners | `map(string)` | n/a | yes |
+| <a name="input_cloudfront"></a> [cloudfront](#input\_cloudfront) | The object defining settings for the CloudFront distribution | `any` | `null` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | The name of the ECS cluster to run this service in | `string` | n/a | yes |
 | <a name="input_dns"></a> [dns](#input\_dns) | Values from the dns module | <pre>object({<br>    default_ttl = number<br>    zone_map    = map(string)<br>  })</pre> | n/a | yes |
 | <a name="input_log_group_name"></a> [log\_group\_name](#input\_log\_group\_name) | The name of the CloudWatch Logs log group to use | `string` | n/a | yes |
@@ -40,6 +44,7 @@ No resources.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_cloudfront_distribution"></a> [cloudfront\_distribution](#output\_cloudfront\_distribution) | n/a |
 | <a name="output_security_group"></a> [security\_group](#output\_security\_group) | n/a |
 | <a name="output_target_group"></a> [target\_group](#output\_target\_group) | n/a |
 | <a name="output_url_list"></a> [url\_list](#output\_url\_list) | n/a |

@@ -1,3 +1,8 @@
+# WARNING!!!!! WARNING!!! WARNING!!!
+# The purpose of this buildspec is to DESTROY a doorway environment. 
+# This should only be used in ad-hoc dev environments or in the case of extreme emergency. 
+# YOU HAVE BEEN WARNED!
+# WARNING!!!!! WARNING!!! WARNING!!!
 
 version: 0.2
 env:
@@ -20,7 +25,7 @@ phases:
 
   build:
     commands:
-      # Verify the values of vars passed in via the project
+       # Verify the values of vars passed in via the project
       - echo "${TF_WORKSPACE}"
       - echo "${TF_ROOT_SOURCE_VAR_NAME}"
       - echo "${TF_ROOT_PATH}"
@@ -40,21 +45,11 @@ phases:
       - echo "${TFVARS_ROOT}"
       - TFVARS_FULL_PATH="${TFVARS_ROOT}/${TFVARS_PATH}"
       - echo "${TFVARS_FULL_PATH}"
-      
 
       # Verify which workspace is being used
-     
+      - terraform workspace show
       # Always have to `terraform init` since new modules may be installed
       # State may have moved, so also call with -migrate-state
-      - terraform workspace show
-
       - terraform init -migrate-state
+      - terraform apply -destroy  -auto-approve -var-file "${TFVARS_FULL_PATH}" "${TF_PLAN_FULL_PATH}" -no-color
 
-    
-      # Generate a plan output file for analysis and later deployment
-      # The plan file has to go to a reliable location to be picked up in the artifact section
-      - terraform plan -var-file "${TFVARS_FULL_PATH}" -out="${CODEBUILD_SRC_DIR}/plan.out" -no-color
-artifacts:
-  name: plan
-  files:
-    - plan.out

@@ -46,6 +46,11 @@ variable "alb_map" {
   description = "The available ALBs"
 }
 
+variable "cert_map" {
+  type        = map(string)
+  description = "ARNs for TLS certificates to apply to secure listeners"
+}
+
 variable "dns" {
   type = object({
     default_ttl = number
@@ -78,6 +83,12 @@ variable "service" {
 variable "cluster_name" {
   type        = string
   description = "The name of the ECS cluster to run this service in"
+}
+
+variable "cloudfront" {
+  type        = any
+  default     = null
+  description = "The object defining settings for the CloudFront distribution"
 }
 
 variable "additional_tags" {
