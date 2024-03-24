@@ -111,10 +111,11 @@ resource "aws_cloudfront_distribution" "main" {
   }
 
   default_cache_behavior {
-    target_origin_id       = local.origin_id
-    allowed_methods        = local.allowed_method_map[local.default_cache.allowed_method_set]
-    cached_methods         = local.cached_method_map[local.default_cache.cached_method_set]
-    viewer_protocol_policy = local.default_cache.viewer_protocol_policy
+    target_origin_id         = local.origin_id
+    allowed_methods          = local.allowed_method_map[local.default_cache.allowed_method_set]
+    cached_methods           = local.cached_method_map[local.default_cache.cached_method_set]
+    viewer_protocol_policy   = local.default_cache.viewer_protocol_policy
+    origin_request_policy_id = aws_cloudfront_origin_request_policy.origin_request_policy.id
 
     cache_policy_id = local.policy_ids.default
   }
@@ -141,4 +142,22 @@ resource "aws_cloudfront_distribution" "main" {
       cache_policy_id = local.policy_ids[cache.value.path_pattern]
     }
   }
+}
+resource "aws_cloudfront_origin_request_policy" "origin_request_policy" {
+  name = "${var.name_prefix}-origin-request-policy"
+  cookies_config {
+    cookie_behavior = "all"
+
+  }
+  headers_config {
+    header_behavior = "whitelist"
+    headers {
+      items = ["Host"]
+    }
+
+  }
+  query_strings_config {
+    query_string_behavior = "all"
+  }
+
 }
