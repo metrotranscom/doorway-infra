@@ -117,7 +117,7 @@ resource "aws_cloudfront_distribution" "main" {
     viewer_protocol_policy   = local.default_cache.viewer_protocol_policy
     origin_request_policy_id = aws_cloudfront_origin_request_policy.origin_request_policy.id
 
-    cache_policy_id = aws_cloudfront_cache_policy.default_cache_policy.id
+    cache_policy_id = module.policies.default_cache_policy_id
   }
 
   dynamic "ordered_cache_behavior" {
