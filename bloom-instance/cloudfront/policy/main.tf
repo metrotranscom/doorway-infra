@@ -38,31 +38,4 @@ resource "aws_cloudfront_cache_policy" "policy" {
   }
 }
 
-resource "aws_cloudfront_cache_policy" "default_cache_policy" {
-  name    = "${var.name_prefix}-default-policy"
-  comment = "Default caching policy for ${var.name_prefix} - pass directly to origin. "
 
-  default_ttl = 0
-  max_ttl     = 0
-  min_ttl     = 0
-
-  parameters_in_cache_key_and_forwarded_to_origin {
-
-    cookies_config {
-      cookie_behavior = "all"
-
-    }
-
-    headers_config {
-      header_behavior = "whitelist"
-      headers {
-        items = ["Host"]
-
-      }
-    }
-
-    query_strings_config {
-      query_string_behavior = "all"
-    }
-  }
-}

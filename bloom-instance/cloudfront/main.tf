@@ -117,7 +117,7 @@ resource "aws_cloudfront_distribution" "main" {
     viewer_protocol_policy   = local.default_cache.viewer_protocol_policy
     origin_request_policy_id = aws_cloudfront_origin_request_policy.origin_request_policy.id
 
-    cache_policy_id = module.policies.default_cache_policy_id
+    cache_policy_id = aws_cloudfront_cache_policy.default_cache_policy.id
   }
 
   dynamic "ordered_cache_behavior" {
@@ -160,4 +160,32 @@ resource "aws_cloudfront_origin_request_policy" "origin_request_policy" {
     query_string_behavior = "all"
   }
 
+}
+resource "aws_cloudfront_cache_policy" "default_cache_policy" {
+  name    = "${var.name_prefix}-default-policy"
+  comment = "Default caching policy for ${var.name_prefix} - pass directly to origin. "
+
+  default_ttl = 0
+  max_ttl     = 0
+  min_ttl     = 0
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+
+    cookies_config {
+      cookie_behavior = "all"
+
+    }
+
+    headers_config {
+      header_behavior = "whitelist"
+      headers {
+        items = ["Host"]
+
+      }
+    }
+
+    query_strings_config {
+      query_string_behavior = "all"
+    }
+  }
 }
