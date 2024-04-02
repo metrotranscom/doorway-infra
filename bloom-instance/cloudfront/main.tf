@@ -86,7 +86,7 @@ resource "aws_cloudfront_distribution" "main" {
 
   # Configurable
   enabled     = local.distribution.enabled
-  aliases     = local.distribution.domains
+  aliases     = var.domains
   price_class = local.distribution.price_class
 
   # TODO: add logging config

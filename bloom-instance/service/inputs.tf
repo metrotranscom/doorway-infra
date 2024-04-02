@@ -85,11 +85,7 @@ variable "cluster_name" {
   description = "The name of the ECS cluster to run this service in"
 }
 
-variable "cloudfront" {
-  type        = any
-  default     = null
-  description = "The object defining settings for the CloudFront distribution"
-}
+
 
 variable "additional_tags" {
   type        = map(string)
@@ -100,4 +96,9 @@ variable "additional_tags" {
 variable "task_role_arn" {
   type        = string
   description = "The IAM role for the task to assume"
+}
+variable "cloudfront" {
+  type        = any
+  default     = null
+  description = "The object defining settings for the CloudFront distribution"
 }
