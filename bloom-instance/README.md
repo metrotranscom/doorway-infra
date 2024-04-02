@@ -20,6 +20,8 @@
 | <a name="module_albs"></a> [albs](#module\_albs) | ./alb | n/a |
 | <a name="module_backend_api"></a> [backend\_api](#module\_backend\_api) | ./service/backend | n/a |
 | <a name="module_certs"></a> [certs](#module\_certs) | ./cert | n/a |
+| <a name="module_cloudfront"></a> [cloudfront](#module\_cloudfront) | ./cloudfront | n/a |
+| <a name="module_cloudfront_aliases"></a> [cloudfront\_aliases](#module\_cloudfront\_aliases) | ./dns/alias | n/a |
 | <a name="module_db"></a> [db](#module\_db) | ./db | n/a |
 | <a name="module_dns"></a> [dns](#module\_dns) | ./dns | n/a |
 | <a name="module_import_listings"></a> [import\_listings](#module\_import\_listings) | ./cronjob/import-listings | n/a |
@@ -49,7 +51,9 @@
 | <a name="input_application_name"></a> [application\_name](#input\_application\_name) | The name for the application deployed | `string` | n/a | yes |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The region to use when deploying regional resources | `string` | n/a | yes |
 | <a name="input_backend_api"></a> [backend\_api](#input\_backend\_api) | A service definition for the backend API | `any` | n/a | yes |
+| <a name="input_backend_api_domain"></a> [backend\_api\_domain](#input\_backend\_api\_domain) | The domain name of the API. | `string` | n/a | yes |
 | <a name="input_certs"></a> [certs](#input\_certs) | The certificates to use | <pre>map(object({<br>    domain        = string<br>    auto_validate = optional(bool)<br>    alt_names     = optional(list(string))<br>  }))</pre> | n/a | yes |
+| <a name="input_cloudfront"></a> [cloudfront](#input\_cloudfront) | The object defining settings for the CloudFront distribution | `any` | `null` | no |
 | <a name="input_database"></a> [database](#input\_database) | Database settings | `any` | n/a | yes |
 | <a name="input_dns"></a> [dns](#input\_dns) | Settings for managing DNS zones and records | `any` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | The stage of the software development lifecycle this deployement represents | `string` | `"dev"` | no |
@@ -57,8 +61,10 @@
 | <a name="input_network"></a> [network](#input\_network) | n/a | <pre>object({<br>    vpc_cidr = string<br><br>    # See ./network/inputs.tf for object structure<br>    subnet_groups = any<br>  })</pre> | n/a | yes |
 | <a name="input_owner"></a> [owner](#input\_owner) | The owner of the resources created via these templates | `string` | n/a | yes |
 | <a name="input_partner_site"></a> [partner\_site](#input\_partner\_site) | A service definition for the partner site | `any` | n/a | yes |
+| <a name="input_partners_portal_domain"></a> [partners\_portal\_domain](#input\_partners\_portal\_domain) | The domain name of the partner portal. | `string` | n/a | yes |
 | <a name="input_project_id"></a> [project\_id](#input\_project\_id) | A unique, immutable identifier for this project | `string` | n/a | yes |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | A human-readable name for this project. Can be changed if needed | `string` | n/a | yes |
+| <a name="input_public_portal_domain"></a> [public\_portal\_domain](#input\_public\_portal\_domain) | The domain name of the public portal. | `string` | n/a | yes |
 | <a name="input_public_sites"></a> [public\_sites](#input\_public\_sites) | A list of public portal service definitions | `any` | n/a | yes |
 | <a name="input_s3_force_destroy"></a> [s3\_force\_destroy](#input\_s3\_force\_destroy) | n/a | `bool` | `false` | no |
 

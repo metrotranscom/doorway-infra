@@ -11,9 +11,6 @@ No providers.
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_alb_aliases"></a> [alb\_aliases](#module\_alb\_aliases) | ../dns/alias | n/a |
-| <a name="module_cloudfront"></a> [cloudfront](#module\_cloudfront) | ../cloudfront | n/a |
-| <a name="module_cloudfront_aliases"></a> [cloudfront\_aliases](#module\_cloudfront\_aliases) | ../dns/alias | n/a |
 | <a name="module_service"></a> [service](#module\_service) | ../ecs/service | n/a |
 | <a name="module_task"></a> [task](#module\_task) | ../ecs/task | n/a |
 
