@@ -25,7 +25,7 @@ variable "cert_map" {
   description = "ARNs for TLS certificates to apply to secure listeners"
 }
 variable "domains" {
-  type = set(string)
+  type = list(string)
 
 }
 variable "distribution" {
