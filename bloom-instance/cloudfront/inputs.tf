@@ -24,11 +24,13 @@ variable "cert_map" {
   type        = map(string)
   description = "ARNs for TLS certificates to apply to secure listeners"
 }
+variable "domains" {
+  type = set(string)
 
+}
 variable "distribution" {
   type = object({
     enabled     = optional(bool, true)
-    domains     = set(string)
     price_class = optional(string, "PriceClass_100")
 
     certificate = object({

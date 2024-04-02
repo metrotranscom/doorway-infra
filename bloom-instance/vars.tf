@@ -7,7 +7,21 @@ variable "project_name" {
     error_message = "project_name can only contain letters, numbers, spaces, periods, underscores, and hyphens"
   }
 }
+variable "partners_portal_domain" {
+  type        = string
+  description = "The domain name of the partner portal."
 
+}
+variable "public_portal_domain" {
+  type        = string
+  description = "The domain name of the public portal."
+
+}
+variable "backend_api_domain" {
+  type        = string
+  description = "The domain name of the API."
+
+}
 variable "application_name" {
   type        = string
   description = "The name for the application deployed"
@@ -79,7 +93,11 @@ variable "database" {
   type        = any
   description = "Database settings"
 }
-
+variable "cloudfront" {
+  type        = any
+  default     = null
+  description = "The object defining settings for the CloudFront distribution"
+}
 variable "albs" {
   type = map(object({
     # See alb/inputs.tf for more info

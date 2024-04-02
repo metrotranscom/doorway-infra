@@ -3,20 +3,24 @@ variable "zones" {
   type        = map(string)
   description = "A map of zone names to IDs"
 }
+variable "record_name" {
+  type        = string
+  description = "the host name for the DNS entry"
 
-variable "record" {
-  type = object({
-    # The DNS name for the record, ie google.com
-    name = string
+}
+variable "record_type" {
+  type        = string
+  default     = "A"
+  description = "DNS Record Type"
 
-    # The type of record to create (CNAME, A, TXT, etc)
-    type = string
+}
+variable "target_name" {
+  type    = string
+  default = "The target endpoint the DNS entry points to"
 
-    target = object({
-      dns_name = string
-      zone_id  = string
-    })
-  })
+}
+variable "zone_id" {
+  type        = string
+  description = "AWS zone of the endpoint"
 
-  description = "Attributes for the Alias to create"
 }

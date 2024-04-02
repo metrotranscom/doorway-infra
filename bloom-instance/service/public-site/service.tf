@@ -12,7 +12,7 @@ module "service" {
   port        = local.port
   task        = local.task
   service     = local.service
-  cloudfront  = var.service_definition.service.cloudfront
+
 
   task_role_arn  = aws_iam_role.service.arn
   log_group_name = var.log_group_name
