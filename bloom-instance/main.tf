@@ -56,7 +56,7 @@ locals {
   task_log_group_name = "${local.qualified_name_prefix}-tasks"
 
   cert_map           = { for name, cert in module.certs : name => cert.arn }
-  cloudfront_domains = toset([var.public_portal_domain, var.partners_portal_domain])
+  cloudfront_domains = toset([var.public_portal_domain, "*.${var.public_portal_domain}"])
 }
 
 # The default cluster for all ECS tasks and services
