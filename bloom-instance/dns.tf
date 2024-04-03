@@ -37,7 +37,7 @@ resource "aws_route53_record" "partners" {
 }
 resource "aws_route53_record" "api" {
   zone_id = data.aws_route53_zone.zone.zone_id
-  name    = var.api_domain_name
+  name    = var.backend_api_domain
   type    = "A"
   alias {
     name                   = module.albs["public"].dns_name
