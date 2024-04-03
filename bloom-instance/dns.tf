@@ -41,7 +41,7 @@ resource "aws_route53_record" "api" {
   type    = "A"
   alias {
     name                   = module.albs["public"].dns_name
-    zone_id                = module.albs["public"].dns_name.zone_id
+    zone_id                = module.albs["public"].zone_id
     evaluate_target_health = false
   }
 
