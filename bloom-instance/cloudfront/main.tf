@@ -93,7 +93,7 @@ resource "aws_cloudfront_distribution" "main" {
   price_class = local.distribution.price_class
 
   logging_config {
-    bucket          = module.log_bucket.bucket
+    bucket          = "${module.log_bucket.bucket}.s3.amazonaws.com"
     prefix          = "cloudfront/${local.qualified_name}"
     include_cookies = false
   }
