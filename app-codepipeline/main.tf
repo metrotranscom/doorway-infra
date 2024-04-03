@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.64"
+      version = "~> 5.0"
     }
   }
 
@@ -44,7 +44,7 @@ locals {
     : var.ecr.default_account
   )
 
-  # Here we can build a role/policy pair based on actions needing access to 
+  # Here we can build a role/policy pair based on actions needing access to
   # certain repos. These permissions would be added after the creation of the
   # pipeline via a aws_iam_role_policy_attachment resource.
 
@@ -67,7 +67,7 @@ locals {
   # Here we mutate stages/actions to add ecr repo permissions prior to pipeline creation
 
   # This could also be done after the pipeline is complete (see above), but is
-  # included here as an example of how to modify the stages/actions prior to 
+  # included here as an example of how to modify the stages/actions prior to
   # passing to the pipeline.  This approach can be used to inject env vars, etc.
   stages = concat([
     # For each stage...
