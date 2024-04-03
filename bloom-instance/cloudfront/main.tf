@@ -155,10 +155,8 @@ resource "aws_cloudfront_origin_request_policy" "origin_request_policy" {
 
   }
   headers_config {
-    header_behavior = "whitelist"
-    headers {
-      items = ["Host"]
-    }
+    header_behavior = "allViewer"
+
 
   }
   query_strings_config {
