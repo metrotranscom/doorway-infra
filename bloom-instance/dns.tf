@@ -34,6 +34,16 @@ resource "aws_route53_record" "partners" {
     zone_id                = module.cloudfront.hosted_zone_id
     evaluate_target_health = false
   }
+}
+resource "aws_route53_record" "api" {
+  zone_id = data.aws_route53_zone.zone.zone_id
+  name    = var.api_domain_name
+  type    = "A"
+  alias {
+    name                   = module.albs["public"].dns_name
+    zone_id                = module.albs["public"].dns_name.zone_id
+    evaluate_target_health = false
+  }
 
 }
 
