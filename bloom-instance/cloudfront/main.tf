@@ -67,7 +67,10 @@ module "policies" {
   policy      = each.value
 }
 
-
+module "log_bucket" {
+  source = "../s3"
+  name   = "${var.name_prefix}-${var.name}-logging"
+}
 resource "aws_cloudfront_distribution" "main" {
   origin {
     origin_id   = local.origin_id
@@ -89,12 +92,11 @@ resource "aws_cloudfront_distribution" "main" {
   aliases     = var.domains
   price_class = local.distribution.price_class
 
-  # TODO: add logging config
-  # logging_config {
-  #   bucket          = "<logging_bucket.s3.amazonaws.com>"
-  #   prefix          = "cloudfront/${local.qualified_name}"
-  #   include_cookies = false
-  # }
+  logging_config {
+    bucket          = module.log_bucket.bucket
+    prefix          = "cloudfront/${local.qualified_name}"
+    include_cookies = false
+  }
 
   viewer_certificate {
     acm_certificate_arn = local.cert_arn
