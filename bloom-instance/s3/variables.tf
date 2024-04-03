@@ -15,6 +15,12 @@ variable "ignore_public_acls" {
   description = "Whether Amazon S3 should ignore public ACLs for this bucket. "
 
 }
+variable "block_public_acls" {
+  type        = bool
+  default     = true
+  description = "Whether Amazon S3 should ignore public ACLs for this bucket. "
+
+}
 variable "block_public_policy" {
   type        = bool
   default     = true

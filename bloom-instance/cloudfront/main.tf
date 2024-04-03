@@ -68,8 +68,11 @@ module "policies" {
 }
 
 module "log_bucket" {
-  source = "../s3"
-  name   = "${var.name_prefix}-${var.name}-logging"
+  source             = "../s3"
+  name               = "${var.name_prefix}-${var.name}-logging"
+  ignore_public_acls = false
+  block_public_acls  = false
+
 }
 resource "aws_cloudfront_distribution" "main" {
   origin {
