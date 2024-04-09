@@ -47,7 +47,7 @@ locals {
 }
 
 resource "aws_lb_listener" "listener" {
-  load_balancer_arn = var.alb_arn
+  load_balancer_arn = var.nlb_arn
   port              = local.port
   protocol          = local.use_tls ? "HTTPS" : "HTTP"
   certificate_arn   = local.tls.default_cert != null ? var.cert_map[local.tls.default_cert] : null

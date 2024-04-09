@@ -3,7 +3,7 @@ resource "aws_lb" "nlb" {
   name               = "${var.name_prefix}-${var.name}"
   internal           = var.internal
   load_balancer_type = "network"
-  security_groups    = [aws_security_group.alb.id]
+  security_groups    = [aws_security_group.nlb.id]
 
   # Note that an NLB requires at least 2 subnets
   subnets = [for subnet in var.subnets[var.subnet_group] : subnet.id]

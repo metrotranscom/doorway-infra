@@ -1,7 +1,7 @@
 
-resource "aws_security_group" "alb" {
-  name        = "${var.name_prefix}-alb-${var.name}"
-  description = "Enable access to ${var.name} ALB"
+resource "aws_security_group" "nlb" {
+  name        = "${var.name_prefix}-nlb-${var.name}"
+  description = "Enable access to ${var.name} NLB"
   vpc_id      = var.vpc_id
 
   tags = var.additional_tags
@@ -10,7 +10,7 @@ resource "aws_security_group" "alb" {
 # Allow outbound TCP traffic to anywhere
 # TODO: Change to internal only?
 resource "aws_vpc_security_group_egress_rule" "https" {
-  security_group_id = aws_security_group.alb.id
+  security_group_id = aws_security_group.nlb.id
 
   cidr_ipv4   = "0.0.0.0/0"
   from_port   = 1

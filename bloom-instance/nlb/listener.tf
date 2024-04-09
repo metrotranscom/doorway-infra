@@ -9,8 +9,8 @@ module "listeners" {
   cert_map = var.cert_map
 
   # Module resources
-  alb_arn           = aws_lb.alb.arn
-  security_group_id = aws_security_group.alb.id
+  nlb_arn           = aws_lb.nlb.arn
+  security_group_id = aws_security_group.nlb.id
 
   # From config
   port            = each.value.port

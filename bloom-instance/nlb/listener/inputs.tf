@@ -12,9 +12,9 @@ variable "cert_map" {
   description = "ARNs for TLS certificates to apply to secure listeners"
 }
 
-variable "alb_arn" {
+variable "nlb_arn" {
   type        = string
-  description = "The ALB to attach the listener to"
+  description = "The NLB to attach the listener to"
 }
 
 variable "security_group_id" {
