@@ -29,7 +29,8 @@ variable "s3_force_destroy" {
 # ELBs have special rules for granting access for logging purposes
 # https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
 data "aws_elb_service_account" "current" {}
-
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
 locals {
   # This level of indirection helps when refactoring widely-used vars
   project_id = var.project_id
@@ -46,6 +47,8 @@ locals {
     Environment = var.environment
     Workspace   = terraform.workspace
   }
+  aws_account = data.aws_caller_identity.current.account_id
+  aws_region  = data.aws_region.current.name
 
 
 
