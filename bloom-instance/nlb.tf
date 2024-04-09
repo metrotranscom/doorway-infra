@@ -1,6 +1,6 @@
 
 module "nlbs" {
-  source   = "./alb"
+  source   = "./nlb"
   for_each = { for name, nlb in var.nlbs : name => nlb }
 
   vpc_id     = module.network.vpc.id
