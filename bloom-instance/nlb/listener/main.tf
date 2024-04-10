@@ -30,8 +30,6 @@ resource "aws_lb_listener" "listener" {
   load_balancer_arn = var.nlb_arn
   port              = 443
   protocol          = "TCP"
-  certificate_arn   = var.certificate_arn
-
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.nlb_to_alb.arn
