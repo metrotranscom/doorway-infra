@@ -38,7 +38,11 @@ resource "aws_lb_listener" "listener" {
   tags = var.additional_tags
 
 }
+resource "aws_lb_target_group_attachment" "attach_target" {
+  target_group_arn = aws_lb_target_group.nlb_to_alb
+  target_id        = var.target_group_arn
 
+}
 
 
 
