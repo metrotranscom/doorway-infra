@@ -5,7 +5,7 @@ resource "aws_s3_bucket" "logging_bucket" {
   #force_destroy = true
 
 }
-data "aws_iam_policy_document" "accessdocument" {
+data "aws_iam_policy_document" "access_document" {
   statement {
     sid = "BucketLoggingAccess"
     principals {
@@ -76,6 +76,6 @@ data "aws_iam_policy_document" "accessdocument" {
 resource "aws_s3_bucket_policy" "log_bucket_policy" {
   bucket = aws_s3_bucket.logging_bucket.id
 
-  policy = data.aws_iam_policy_document.accessdocument.json
+  policy = data.aws_iam_policy_document.access_document.json
 
 }
