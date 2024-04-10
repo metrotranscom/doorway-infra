@@ -4,9 +4,9 @@ output "arn" {
 }
 
 output "port" {
-  value = local.port
+  value = 443
 }
 
 output "is_secure" {
-  value = local.use_tls
+  value = true
 }

@@ -5,19 +5,21 @@ module "listeners" {
   for_each = { for k, v in var.listeners : k => v }
 
   # Passthru
-  subnets  = var.subnets
-  cert_map = var.cert_map
+  subnets = var.subnets
+
 
   # Module resources
   nlb_arn           = aws_lb.nlb.arn
   security_group_id = aws_security_group.nlb.id
 
   # From config
-  port            = each.value.port
-  tls             = each.value.tls
-  allowed_ips     = each.value.allowed_ips
-  allowed_subnets = each.value.allowed_subnets
-  default_action  = each.value.default_action
 
-  additional_tags = var.additional_tags
+  allowed_ips = each.value.allowed_ips
+  # allowed_subnets = each.value.allowed_subnets
+
+
+  additional_tags  = var.additional_tags
+  certificate_arn  = var.certificate_arn
+  allowed_subnets  = each.value.allowed_subnets
+  target_group_arn = var.target_group_arn
 }

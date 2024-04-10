@@ -132,24 +132,12 @@ variable "nlbs" {
     subnet_group   = string
     enable_logging = optional(bool, true)
     internal       = optional(bool)
+    default_cert   = string
 
     # See alb/listeners/inputs.tf for more info
     listeners = map(object({
-      port           = number
-      default_action = optional(string, "404")
 
-      allowed_ips     = optional(list(string))
-      allowed_subnets = optional(list(string))
-
-      tls = optional(object({
-        enable           = optional(bool, true)
-        default_cert     = string
-        additional_certs = optional(list(string))
-        }), {
-        enable           = false
-        default_cert     = null
-        additional_certs = []
-      })
+      allowed_ips = optional(list(string))
     }))
   }))
   description = "Settings for managing NLBs"

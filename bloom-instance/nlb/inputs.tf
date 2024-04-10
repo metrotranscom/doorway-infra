@@ -39,13 +39,9 @@ variable "subnet_group" {
 
 variable "listeners" {
   type = map(object({
-    port           = number
-    default_action = string
-
     allowed_ips     = optional(list(string))
     allowed_subnets = optional(list(string))
 
-    tls = optional(any)
   }))
   description = "The listeners to create"
 }
@@ -73,7 +69,14 @@ variable "additional_tags" {
   description = "Additional tags to apply to NLB resources"
 }
 
-variable "cert_map" {
-  type        = map(string)
-  description = "ARNs for TLS certificates to apply to secure listeners"
+
+variable "certificate_arn" {
+  type        = string
+  description = "ARN for the TLS cert"
+
+}
+variable "target_group_arn" {
+  type        = string
+  description = "The target group of the API ALB"
+
 }
