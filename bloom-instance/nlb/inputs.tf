@@ -75,8 +75,8 @@ variable "certificate_arn" {
   description = "ARN for the TLS cert"
 
 }
-variable "target_group_arn" {
+variable "alb_arn" {
   type        = string
-  description = "The target group of the API ALB"
+  description = "The API ALB"
 
 }

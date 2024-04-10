@@ -18,9 +18,9 @@ module "listeners" {
   # allowed_subnets = each.value.allowed_subnets
 
 
-  additional_tags  = var.additional_tags
-  certificate_arn  = var.certificate_arn
-  allowed_subnets  = each.value.allowed_subnets
-  target_group_arn = var.target_group_arn
-  vpc_id           = var.vpc_id
+  additional_tags = var.additional_tags
+  certificate_arn = var.certificate_arn
+  allowed_subnets = each.value.allowed_subnets
+  alb_arn         = var.alb_arn
+  vpc_id          = var.vpc_id
 }
