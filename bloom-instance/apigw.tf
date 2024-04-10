@@ -8,3 +8,14 @@ resource "aws_vpc_endpoint" "api_endpoint" {
 
 
 }
+resource "aws_api_gateway_rest_api" "internal_api" {
+  name = "${local.qualified_name_prefix}-internal"
+  endpoint_configuration {
+    types            = ["PRIVATE"]
+    vpc_endpoint_ids = [aws_vpc_endpoint.api_endpoint.id]
+
+  }
+
+
+
+}
