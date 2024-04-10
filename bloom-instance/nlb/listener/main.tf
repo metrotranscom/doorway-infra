@@ -47,7 +47,7 @@ resource "aws_vpc_security_group_ingress_rule" "ingress" {
   cidr_ipv4   = each.value
   from_port   = 443
   to_port     = 443
-  ip_protocol = "HTTPS"
+  ip_protocol = "TCP"
 
   tags = var.additional_tags
 }
