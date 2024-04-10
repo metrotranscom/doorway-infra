@@ -1,7 +1,9 @@
 
 resource "aws_vpc" "vpc" {
-  cidr_block = var.vpc_cidr
-  tags       = local.tags_with_name
+  cidr_block           = var.vpc_cidr
+  tags                 = local.tags_with_name
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 }
 
 # mandatory since we require exactly one set of public subnets
