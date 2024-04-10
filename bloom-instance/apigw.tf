@@ -22,7 +22,7 @@ resource "aws_api_gateway_rest_api" "internal_api" {
 }
 resource "aws_api_gateway_resource" "global" {
   parent_id   = aws_api_gateway_rest_api.internal_api.root_resource_id
-  path_part   = "/{proxy+}"
+  path_part   = "{proxy+}"
   rest_api_id = aws_api_gateway_rest_api.internal_api.id
 
 }
