@@ -42,29 +42,6 @@ data "aws_iam_policy_document" "accessdocument" {
 
   }
   statement {
-    sid = "AWSLogDeliveryAclCheck"
-    principals {
-      type        = "Service"
-      identifiers = ["delivery.logs.amazonaws.com"]
-    }
-    actions = ["s3:GetBucketAcl", ]
-    resources = [
-      aws_s3_bucket.logging_bucket.arn,
-      "${aws_s3_bucket.logging_bucket.arn}/*"
-    ]
-    condition {
-      test     = "StringEquals"
-      variable = "aws:SourceAccount"
-      values   = [local.aws_account]
-    }
-    condition {
-      test     = "ArnLike"
-      variable = "aws:SourceArn"
-      values   = ["arn:aws:logs:${local.aws_region}:${local.aws_account}:*"]
-    }
-
-  }
-  statement {
     sid = "AWSLogDeliveryWrite"
     principals {
       type        = "Service"
