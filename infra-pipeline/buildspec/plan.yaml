@@ -53,7 +53,8 @@ phases:
 
       # Generate a plan output file for analysis and later deployment
       # The plan file has to go to a reliable location to be picked up in the artifact section
-      - terraform state rm aws_s3_bucket_policy.log_policy
+     # - terraform state rm aws_s3_bucket_policy.log_policy
+      - terraform state list
       - terraform plan -var-file "${TFVARS_FULL_PATH}" -out="${CODEBUILD_SRC_DIR}/plan.out" -no-color
 artifacts:
   name: plan
