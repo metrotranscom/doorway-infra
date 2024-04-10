@@ -7,7 +7,10 @@ output "vpc" {
 output "public_subnets" {
   value = module.public_subnet_group.subnets
 }
+output "app_subnets" {
+  value = module.private_subnet_groups["app"].subnets
 
+}
 # a map of all subnets indexed by subnet group id (including public)
 output "subnets" {
   value = merge(

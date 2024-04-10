@@ -4,7 +4,7 @@ resource "aws_vpc_endpoint" "api_endpoint" {
   vpc_endpoint_type   = "Interface"
   security_group_ids  = [module.nlbs["api-nlb"].security_group.id]
   private_dns_enabled = true
-
+  subnet_ids          = [for subnet in module.network.app_subnets : subnet.id]
 
 
 }
