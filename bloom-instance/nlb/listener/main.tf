@@ -22,7 +22,7 @@ resource "aws_lb_target_group" "nlb_to_alb" {
   name        = "${var.name_prefix}-nlb-alb"
   target_type = "alb"
   port        = 443
-  protocol    = "HTTPS"
+  protocol    = "TCP"
   vpc_id      = var.vpc_id
 }
 
