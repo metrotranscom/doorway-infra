@@ -45,3 +45,11 @@ variable "target_group_arn" {
   type        = string
   description = "The target group of the API ALB"
 }
+variable "name_prefix" {
+  type = string
+
+}
+variable "vpc_id" {
+  type = string
+
+}

@@ -2,8 +2,8 @@
 module "listeners" {
   source = "./listener"
 
-  for_each = { for k, v in var.listeners : k => v }
-
+  for_each    = { for k, v in var.listeners : k => v }
+  name_prefix = var.name_prefix
   # Passthru
   subnets = var.subnets
 
@@ -22,4 +22,5 @@ module "listeners" {
   certificate_arn  = var.certificate_arn
   allowed_subnets  = each.value.allowed_subnets
   target_group_arn = var.target_group_arn
+  vpc_id           = var.vpc_id
 }
