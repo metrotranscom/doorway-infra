@@ -18,4 +18,27 @@ resource "aws_api_gateway_rest_api" "internal_api" {
 
 
 
+
+}
+resource "aws_api_gateway_resource" "global" {
+  parent_id   = aws_api_gateway_rest_api.internal_api.root_resource_id
+  path_part   = "/{proxy}"
+  rest_api_id = aws_api_gateway_rest_api.internal_api.id
+
+}
+resource "aws_api_gateway_method" "name" {
+  rest_api_id   = aws_api_gateway_rest_api.internal_api.id
+  resource_id   = aws_api_gateway_resource.global.id
+  http_method   = "ANY"
+  authorization = "NONE"
+
+
+}
+
+resource "aws_api_gateway_integration" "name" {
+  http_method = "ANY"
+  rest_api_id = aws_api_gateway_rest_api.internal_api.id
+  resource_id = aws_api_gateway_resource.global.id
+  type        = "HTTP_PROXY"
+  uri         = "https://backend.dev.housingbayarea.mtc.ca.gov"
 }
