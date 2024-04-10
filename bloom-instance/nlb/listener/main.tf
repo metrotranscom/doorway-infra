@@ -24,10 +24,6 @@ resource "aws_lb_target_group" "nlb_to_alb" {
   port        = 443
   protocol    = "HTTPS"
   vpc_id      = var.vpc_id
-
-
-
-
 }
 
 resource "aws_lb_listener" "listener" {
@@ -38,7 +34,7 @@ resource "aws_lb_listener" "listener" {
 
   default_action {
     type             = "forward"
-    target_group_arn = var.target_group_arn
+    target_group_arn = aws_lb_target_group.nlb_to_alb.arn
 
   }
   tags = var.additional_tags
