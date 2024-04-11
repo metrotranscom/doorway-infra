@@ -1,7 +1,7 @@
 
 resource "aws_lb" "nlb" {
   name               = "${var.name_prefix}-${var.name}"
-  internal           = var.internal
+  internal           = true
   load_balancer_type = "network"
   security_groups    = [aws_security_group.nlb.id]
 
