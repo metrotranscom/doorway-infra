@@ -24,6 +24,10 @@ resource "aws_lb_target_group" "nlb_to_alb" {
   port        = 443
   protocol    = "TCP"
   vpc_id      = var.vpc_id
+  health_check {
+    protocol = "HTTPS"
+
+  }
 }
 
 resource "aws_lb_listener" "listener" {
