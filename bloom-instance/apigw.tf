@@ -10,7 +10,7 @@ resource "aws_vpc_endpoint" "api_endpoint" {
 }
 resource "aws_vpc_endpoint_service" "route_to_nlb" {
   acceptance_required        = false
-  network_load_balancer_arns = [module.nlbs["api"].nlb.arn]
+  network_load_balancer_arns = [module.nlbs["api-nlb"].nlb.arn]
 
 }
 resource "aws_api_gateway_rest_api" "internal_api" {
