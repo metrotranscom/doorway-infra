@@ -33,8 +33,8 @@ resource "aws_route53_record" "api" {
   name    = var.backend_api_domain
   type    = "A"
   alias {
-    name                   = module.albs["public"].dns_name
-    zone_id                = module.albs["public"].zone_id
+    name                   = module.albs["api"].dns_name
+    zone_id                = module.albs["api"].zone_id
     evaluate_target_health = false
   }
 
