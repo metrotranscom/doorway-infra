@@ -29,7 +29,7 @@ resource "aws_route53_record" "partners" {
   }
 }
 resource "aws_route53_record" "api" {
-  zone_id = data.aws_route53_zone.zone_int.zone_id
+  zone_id = data.aws_route53_zone.zone.zone_id
   name    = var.backend_api_domain
   type    = "A"
   alias {
