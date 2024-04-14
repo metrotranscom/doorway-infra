@@ -29,6 +29,8 @@ resource "aws_api_gateway_resource" "global" {
   path_part   = "{proxy+}"
   rest_api_id = aws_api_gateway_rest_api.apigw.id
 
+
+
 }
 resource "aws_api_gateway_method" "name" {
   rest_api_id        = aws_api_gateway_rest_api.apigw.id
@@ -45,7 +47,7 @@ resource "aws_api_gateway_integration" "global_integration" {
   resource_id = aws_api_gateway_resource.global.id
 
   type                    = "HTTP"
-  uri                     = "https://backend.dev.housingbayarea.mtc.ca.gov"
+  uri                     = "${aws_api_gateway_domain_name.apigw.domain_name}/{proxy}"
   http_method             = "ANY"
   integration_http_method = "ANY"
   connection_type         = "VPC_LINK"
