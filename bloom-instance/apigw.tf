@@ -50,7 +50,7 @@ resource "aws_api_gateway_integration" "global_integration" {
   rest_api_id = aws_api_gateway_rest_api.apigw.id
   resource_id = aws_api_gateway_resource.global.id
 
-  type                    = "HTTP"
+  type                    = "HTTP_PROXY"
   uri                     = "${aws_api_gateway_domain_name.apigw.domain_name}/{proxy}"
   http_method             = "ANY"
   integration_http_method = "ANY"
