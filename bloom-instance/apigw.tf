@@ -20,7 +20,7 @@ resource "aws_api_gateway_rest_api" "apigw" {
 
 }
 resource "aws_api_gateway_domain_name" "apigw" {
-  domain_name              = module.albs["api"].dns_name
+  domain_name              = var.backend_api_domain
   regional_certificate_arn = data.aws_acm_certificate.cert.arn
   endpoint_configuration {
     types = ["REGIONAL"]
