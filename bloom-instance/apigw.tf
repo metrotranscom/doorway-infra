@@ -4,13 +4,23 @@ resource "aws_api_gateway_vpc_link" "vpclink" {
   target_arns = [module.nlbs["api-nlb"].nlb.arn]
 }
 resource "aws_api_gateway_rest_api" "apigw" {
-  name = "${local.qualified_name_prefix}-api"
+  name                         = "${local.qualified_name_prefix}-api"
+  disable_execute_api_endpoint = true
   endpoint_configuration {
     types = ["REGIONAL"]
 
   }
 
 
+
+
+}
+resource "aws_api_gateway_domain_name" "apigw" {
+  domain_name     = module.albs["api"].dns_name
+  certificate_arn = module.certs["housingbayarea"].arn
+  endpoint_configuration {
+    types = ["REGIONAL"]
+  }
 
 
 }
