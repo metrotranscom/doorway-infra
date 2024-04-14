@@ -1,3 +1,7 @@
+data "aws_acm_certificate" "cert" {
+  domain = var.public_portal_domain
+
+}
 resource "aws_api_gateway_vpc_link" "vpclink" {
   name        = "${local.qualified_name_prefix}-apilink"
   description = "VPC Link for the API"
@@ -17,7 +21,7 @@ resource "aws_api_gateway_rest_api" "apigw" {
 }
 resource "aws_api_gateway_domain_name" "apigw" {
   domain_name              = module.albs["api"].dns_name
-  regional_certificate_arn = module.certs["housingbayarea"].arn
+  regional_certificate_arn = data.aws_acm_certificate.cert.arn
   endpoint_configuration {
     types = ["REGIONAL"]
   }
