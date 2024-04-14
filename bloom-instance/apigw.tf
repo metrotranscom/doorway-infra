@@ -57,6 +57,9 @@ resource "aws_api_gateway_integration" "global_integration" {
   integration_http_method = "ANY"
   connection_type         = "VPC_LINK"
   connection_id           = aws_api_gateway_vpc_link.vpclink.id
+  request_parameters = {
+    "integration.request.path.proxy" = "method.request.path.proxy"
+  }
 
 }
 resource "aws_api_gateway_method_response" "good_response" {
