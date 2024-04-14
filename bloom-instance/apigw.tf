@@ -37,7 +37,7 @@ resource "aws_api_gateway_resource" "global" {
 
 
 }
-resource "aws_api_gateway_method" "name" {
+resource "aws_api_gateway_method" "method" {
   rest_api_id        = aws_api_gateway_rest_api.apigw.id
   resource_id        = aws_api_gateway_resource.global.id
   http_method        = "ANY"
@@ -46,7 +46,21 @@ resource "aws_api_gateway_method" "name" {
 
 
 }
+resource "aws_api_gateway_method_settings" "method_settings" {
+  method_path = "*/*"
+  rest_api_id = aws_api_gateway_rest_api.apigw.id
+  stage_name  = aws_api_gateway_stage.main.stage_name
 
+  settings {
+    logging_level      = "INFO"
+    metrics_enabled    = true
+    data_trace_enabled = true
+
+
+
+  }
+
+}
 resource "aws_api_gateway_integration" "global_integration" {
   rest_api_id = aws_api_gateway_rest_api.apigw.id
   resource_id = aws_api_gateway_resource.global.id
