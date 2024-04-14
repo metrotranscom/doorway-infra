@@ -51,7 +51,7 @@ resource "aws_api_gateway_integration" "global_integration" {
   resource_id = aws_api_gateway_resource.global.id
 
   type                    = "HTTP_PROXY"
-  uri                     = "${aws_api_gateway_domain_name.apigw.domain_name}/{proxy}"
+  uri                     = "https://${aws_api_gateway_domain_name.apigw.domain_name}/{proxy}"
   http_method             = "ANY"
   integration_http_method = "ANY"
   connection_type         = "VPC_LINK"
