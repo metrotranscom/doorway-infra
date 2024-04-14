@@ -76,6 +76,13 @@ resource "aws_api_gateway_integration" "global_integration" {
   }
 
 }
+resource "aws_api_gateway_integration_response" "integration_response" {
+  resource_id = aws_api_gateway_resource.global.id
+  http_method = "ANY"
+  rest_api_id = aws_api_gateway_rest_api.apigw.id
+  status_code = 200
+
+}
 resource "aws_api_gateway_method_response" "good_response" {
   resource_id = aws_api_gateway_resource.global.id
   rest_api_id = aws_api_gateway_rest_api.apigw.id
