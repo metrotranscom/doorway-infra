@@ -27,6 +27,7 @@ resource "aws_api_gateway_domain_name" "apigw" {
   }
 
 
+
 }
 resource "aws_api_gateway_resource" "global" {
   parent_id   = aws_api_gateway_rest_api.apigw.root_resource_id
@@ -63,5 +64,19 @@ resource "aws_api_gateway_method_response" "good_response" {
   rest_api_id = aws_api_gateway_rest_api.apigw.id
   http_method = "ANY"
   status_code = 200
+
+}
+resource "aws_api_gateway_deployment" "deployment" {
+  rest_api_id = aws_api_gateway_rest_api.apigw.id
+}
+resource "aws_api_gateway_stage" "main" {
+  deployment_id = aws_api_gateway_deployment.deployment.id
+  rest_api_id   = aws_api_gateway_rest_api.apigw.id
+  stage_name    = "main"
+}
+resource "aws_api_gateway_base_path_mapping" "mapping" {
+  api_id      = aws_api_gateway_rest_api.apigw.id
+  domain_name = aws_api_gateway_domain_name.apigw.domain_name
+  stage_name  = aws_api_gateway_stage.main.stage_name
 
 }
