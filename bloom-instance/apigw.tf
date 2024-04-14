@@ -16,8 +16,8 @@ resource "aws_api_gateway_rest_api" "apigw" {
 
 }
 resource "aws_api_gateway_domain_name" "apigw" {
-  domain_name     = module.albs["api"].dns_name
-  certificate_arn = module.certs["housingbayarea"].arn
+  domain_name              = module.albs["api"].dns_name
+  regional_certificate_arn = module.certs["housingbayarea"].arn
   endpoint_configuration {
     types = ["REGIONAL"]
   }
