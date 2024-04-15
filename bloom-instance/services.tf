@@ -82,6 +82,6 @@ module "backend_api" {
     ServiceName = var.backend_api.name
   }
   vpc_id   = module.network.vpc.id
-  alb_arn  = module.albs["public"].arn
+  alb_arn  = module.albs["api"].arn
   cert_arn = module.certs["housingbayarea"].arn
 }
