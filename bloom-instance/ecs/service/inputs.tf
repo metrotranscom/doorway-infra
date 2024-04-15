@@ -18,11 +18,6 @@ variable "alb_map" {
   type = map(object({
     arn      = string
     dns_name = string
-    listeners = map(object({
-      arn       = string
-      port      = number
-      is_secure = bool
-    }))
     security_group = object({
       id = string
     })
@@ -125,7 +120,7 @@ variable "service" {
     error_message = "health_check.protocol must be either HTTP or HTTPS"
   }
 
-  # TODO: add more health_check validation 
+  # TODO: add more health_check validation
 
   description = "An object containing information about the service"
 }
@@ -134,4 +129,8 @@ variable "additional_tags" {
   type        = map(string)
   default     = null
   description = "Additional tags to apply to service resources"
+}
+variable "vpc_id" {
+  type = string
+
 }

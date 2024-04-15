@@ -1,10 +1,9 @@
-
 resource "aws_lb_target_group" "service" {
   # Only alphanumeric characters and hyphens
   name        = local.default_name
-  port        = local.port
-  protocol    = local.protocol
-  vpc_id      = local.vpc_id
+  port        = var.service.port
+  protocol    = var.service.health_check.protocol
+  vpc_id      = var.vpc_id
   target_type = "ip"
 
   load_balancing_algorithm_type = "least_outstanding_requests"
@@ -21,25 +20,6 @@ resource "aws_lb_target_group" "service" {
 
     healthy_threshold   = local.health_check.healthy_threshold
     unhealthy_threshold = local.health_check.unhealthy_threshold
-  }
-
-  tags = var.additional_tags
-}
-
-resource "aws_lb_listener_rule" "service" {
-  for_each = local.rule_map
-
-  listener_arn = each.value.arn
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.service.arn
-  }
-
-  condition {
-    host_header {
-      values = each.value.domains
-    }
   }
 
   tags = var.additional_tags

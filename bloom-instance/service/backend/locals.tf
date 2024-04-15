@@ -81,10 +81,10 @@ locals {
   )
 
   # Find which URL to provide to other services
-  urls_by_listener  = module.service.urls_by_listener
+  #urls_by_listener  = module.service.urls_by_listener
   internal_alb      = var.internal_url_path[0]
   internal_listener = var.internal_url_path[1]
   internal_url_pos  = var.internal_url_path[2]
 
-  internal_url = local.urls_by_listener[local.internal_alb][local.internal_listener][local.internal_url_pos]
+  #internal_url = local.urls_by_listener[local.internal_alb][local.internal_listener][local.internal_url_pos]
 }

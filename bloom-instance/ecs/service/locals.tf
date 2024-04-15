@@ -24,45 +24,45 @@ locals {
 
   filtered_albs = { for alb_name, alb in var.alb_map : alb_name => alb if try(local.requested_albs[alb_name] != null, false) }
 
-  # Sort out domains by listener
-  domains_by_listener = { for alb_name, alb in local.requested_albs : alb_name => {
-    for listener_name, listener in alb.listeners :
-    # If listener.listen_on_alb_dns_name is true, add the ALB DNS name to the list of domains
-    listener_name => listener.listen_on_alb_dns_name ?
-    concat(listener.domains, [var.alb_map[alb_name].dns_name]) :
-    listener.domains
-  } }
+  # # Sort out domains by listener
+  # domains_by_listener = { for alb_name, alb in local.requested_albs : alb_name => {
+  #   for listener_name, listener in alb.listeners :
+  #   # If listener.listen_on_alb_dns_name is true, add the ALB DNS name to the list of domains
+  #   listener_name => listener.listen_on_alb_dns_name ?
+  #   concat(listener.domains, [var.alb_map[alb_name].dns_name]) :
+  #   listener.domains
+  # } }
 
-  rule_map = merge([for alb_name, alb in local.requested_albs : {
-    for listener_name, listener in alb.listeners : "${alb_name}-${listener_name}" => {
-      arn = var.alb_map[alb_name].listeners[listener_name].arn
-      # Use domains_by_listener so we make sure to include ALB DNS name if needed
-      domains = local.domains_by_listener[alb_name][listener_name]
-    }
-  }]...)
+  # rule_map = merge([for alb_name, alb in local.requested_albs : {
+  #   for listener_name, listener in alb.listeners : "${alb_name}-${listener_name}" => {
+  #     arn = var.alb_map[alb_name].listeners[listener_name].arn
+  #     # Use domains_by_listener so we make sure to include ALB DNS name if needed
+  #     domains = local.domains_by_listener[alb_name][listener_name]
+  #   }
+  # }]...)
 
   # Generate URLs that can be used to access this service
-  urls_by_listener = { for alb_name, alb in local.filtered_albs : alb_name => {
-    for listener_name, listener in local.requested_albs[alb_name].listeners : listener_name => [
-      for domain in local.domains_by_listener[alb_name][listener_name] : join("", [
-        # We need to look up info about the listener to determine how to put together our URL
-        # If is_secure is true, use the https proto, otherwise use http
-        alb.listeners[listener_name].is_secure ? "https" : "http",
-        "://",
-        domain,
-        # Add the port if non-standard
-        (alb.listeners[listener_name].port == 443 &&
-        alb.listeners[listener_name].is_secure) ||
-        alb.listeners[listener_name].port == 80
-        ? "" : ":${alb.listeners[listener_name].port}"
-      ])
-    ]
-  } }
+  # urls_by_listener = { for alb_name, alb in local.filtered_albs : alb_name => {
+  #   for listener_name, listener in local.requested_albs[alb_name].listeners : listener_name => [
+  #     for domain in local.domains_by_listener[alb_name][listener_name] : join("", [
+  #       # We need to look up info about the listener to determine how to put together our URL
+  #       # If is_secure is true, use the https proto, otherwise use http
+  #       alb.listeners[listener_name].is_secure ? "https" : "http",
+  #       "://",
+  #       domain,
+  #       # Add the port if non-standard
+  #       (alb.listeners[listener_name].port == 443 &&
+  #       alb.listeners[listener_name].is_secure) ||
+  #       alb.listeners[listener_name].port == 80
+  #       ? "" : ":${alb.listeners[listener_name].port}"
+  #     ])
+  #   ]
+  # } }
 
   # Collapse all URLs into a single list
-  url_list = flatten([for alb_name, by_listener in local.urls_by_listener : [
-    for urls in by_listener : urls
-  ]])
+  # url_list = flatten([for alb_name, by_listener in local.urls_by_listener : [
+  #   for urls in by_listener : urls
+  # ]])
 
   security_group_ids = toset([for alb in local.filtered_albs : alb.security_group.id])
 

@@ -40,4 +40,5 @@ module "service" {
   )
 
   additional_tags = var.additional_tags
+  vpc_id          = var.vpc_id
 }

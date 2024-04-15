@@ -36,11 +36,7 @@ variable "alb_map" {
     security_group = object({
       id = string
     })
-    listeners = map(object({
-      arn       = string
-      port      = number
-      is_secure = bool
-    }))
+
   }))
 
   description = "The available ALBs"
@@ -101,4 +97,8 @@ variable "cloudfront" {
   type        = any
   default     = null
   description = "The object defining settings for the CloudFront distribution"
+}
+variable "vpc_id" {
+  type = string
+
 }

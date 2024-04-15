@@ -5,9 +5,9 @@ output "cert_validation_records_not_created" {
 
 output "urls" {
   value = {
-    public   = [for site in module.public_sites : site.url_list]
-    partners = module.partner_site.url_list
-    backend  = module.backend_api.url_list
+    public   = var.public_portal_domain
+    partners = var.partners_portal_domain
+    backend  = var.backend_api_domain
   }
 }
 

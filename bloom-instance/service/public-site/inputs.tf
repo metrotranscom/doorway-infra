@@ -58,3 +58,19 @@ variable "additional_tags" {
   default     = null
   description = "Additional tags to apply to public site resources"
 }
+variable "alb_arn" {
+  type = string
+
+}
+variable "site_urls" {
+  type = list(string)
+
+}
+variable "cert_arn" {
+  type = string
+
+}
+variable "vpc_id" {
+  type = string
+
+}

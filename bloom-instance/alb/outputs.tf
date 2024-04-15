@@ -14,10 +14,10 @@ output "security_group" {
   }
 }
 
-output "listeners" {
-  #value = aws_lb_listener.alb_listeners
-  value = module.listeners
-}
+# output "listeners" {
+#   #value = aws_lb_listener.alb_listeners
+#   value = module.listeners
+# }
 
 # Used for generating log bucket policy
 output "log_prefix" {

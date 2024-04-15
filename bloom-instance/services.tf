@@ -15,13 +15,17 @@ module "public_sites" {
   dns          = module.dns
   cert_map     = local.cert_map
 
-  # Just a placeholder for now
-  backend_api_base = module.backend_api.internal_url
 
+  # Just a placeholder for now
+  backend_api_base = "https://${var.backend_api_domain}"
   additional_tags = {
     ServiceType = "public-site"
     ServiceName = each.value.name
   }
+  vpc_id    = module.network.vpc.id
+  alb_arn   = module.albs["public"].arn
+  cert_arn  = module.certs["housingbayarea"].arn
+  site_urls = [var.public_portal_domain]
 }
 
 # So far, there only seems to be a need for a single partner site
@@ -40,12 +44,16 @@ module "partner_site" {
   cert_map     = local.cert_map
 
   # Just a placeholder for now
-  backend_api_base = module.backend_api.internal_url
+  backend_api_base = "https://${var.backend_api_domain}"
 
   additional_tags = {
     ServiceType = "partner-site"
     ServiceName = var.partner_site.name
   }
+  vpc_id    = module.network.vpc.id
+  alb_arn   = module.albs["public"].arn
+  cert_arn  = module.certs["housingbayarea"].arn
+  site_urls = [var.public_portal_domain]
 }
 
 module "backend_api" {
@@ -73,4 +81,7 @@ module "backend_api" {
     ServiceType = "backend-api"
     ServiceName = var.backend_api.name
   }
+  vpc_id   = module.network.vpc.id
+  alb_arn  = module.albs["public"].arn
+  cert_arn = module.certs["housingbayarea"].arn
 }
