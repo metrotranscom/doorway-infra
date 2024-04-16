@@ -94,9 +94,22 @@ resource "aws_security_group" "db_sg" {
   }
 }
 # Create ingress rules for each set of allowed CIDR blocks
-resource "aws_vpc_security_group_egress_rule" "ecs_egress" {
+resource "aws_vpc_security_group_egress_rule" "db_egress" {
   security_group_id = aws_security_group.ecs_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
+
+}
+# Create ingress rules for each set of allowed CIDR blocks
+resource "aws_vpc_security_group_ingress_rule" "db_ingress" {
+  for_each = { for cidr in local.local_cidrs : cidr => cidr }
+
+  security_group_id = aws_security_group.ecs_sg.id
+
+  cidr_ipv4   = each.value
+  from_port   = 5432
+  to_port     = 5432
+  ip_protocol = "TCP"
+
 
 }
