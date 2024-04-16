@@ -1,6 +1,6 @@
 resource "aws_lb_listener" "listener" {
   load_balancer_arn = var.alb_arn
-  port              = local.port
+  port              = 443
   protocol          = "HTTPS"
   certificate_arn   = var.cert_arn
 
