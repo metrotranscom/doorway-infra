@@ -33,7 +33,7 @@ resource "aws_rds_cluster" "aurora" {
 
   # Security
   iam_database_authentication_enabled = true # Intentionally hardcoded
-  vpc_security_group_ids              = [aws_security_group.db.id]
+  vpc_security_group_ids              = [var.security_group_id]
   master_username                     = var.settings.username
   master_password                     = local.password
 
