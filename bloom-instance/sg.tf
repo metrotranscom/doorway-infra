@@ -1,10 +1,10 @@
 resource "aws_security_group" "local_https_only" {
-  name        = "local_https"
+  name        = "${local.qualified_name_prefix}_local_https"
   description = "Allow TLS inbound traffic and all outbound traffic"
   vpc_id      = module.network.vpc.id
 
   tags = {
-    Name = "local_https"
+    Name = "${local.qualified_name_prefix}_local_https"
   }
 }
 # Create ingress rules for each set of allowed CIDR blocks
@@ -29,12 +29,12 @@ resource "aws_vpc_security_group_egress_rule" "local_https_egress" {
 }
 
 resource "aws_security_group" "ecs_sg" {
-  name        = "ecs_sg"
+  name        = "${local.qualified_name_prefix}__ecs_sg"
   description = "Allow TLS inbound traffic and all outbound traffic"
   vpc_id      = module.network.vpc.id
 
   tags = {
-    Name = "ecs_sg"
+    Name = "${local.qualified_name_prefix}__ecs_sg"
   }
 }
 # Create ingress rules for each set of allowed CIDR blocks
