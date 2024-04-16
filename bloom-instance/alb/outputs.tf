@@ -8,11 +8,11 @@ output "arn" {
 }
 
 # Used by services to allow the ALB to forward requests
-output "security_group" {
-  value = {
-    id = aws_security_group.alb.id
-  }
-}
+# output "security_group" {
+#   value = {
+#     id = aws_security_group.alb.id
+#   }
+# }
 
 # output "listeners" {
 #   #value = aws_lb_listener.alb_listeners

@@ -18,9 +18,6 @@ variable "alb_map" {
   type = map(object({
     arn      = string
     dns_name = string
-    security_group = object({
-      id = string
-    })
   }))
 
   description = "The available ALBs"

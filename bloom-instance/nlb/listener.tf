@@ -10,7 +10,7 @@ module "listeners" {
 
   # Module resources
   nlb_arn           = aws_lb.nlb.arn
-  security_group_id = aws_security_group.nlb.id
+  security_group_id = var.security_group_id
 
   # From config
 

@@ -64,7 +64,7 @@ locals {
   #   for urls in by_listener : urls
   # ]])
 
-  security_group_ids = toset([for alb in local.filtered_albs : alb.security_group.id])
+  # security_group_ids = toset([for alb in local.filtered_albs : alb.security_group.id])
 
   subnet_ids = [for subnet in var.subnet_map[var.service.subnet_group] : subnet.id]
 

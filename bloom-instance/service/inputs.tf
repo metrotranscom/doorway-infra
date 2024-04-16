@@ -33,9 +33,6 @@ variable "alb_map" {
     arn      = string
     dns_name = string
     zone_id  = string
-    security_group = object({
-      id = string
-    })
 
   }))
 

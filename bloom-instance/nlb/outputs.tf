@@ -7,12 +7,12 @@ output "arn" {
   value = aws_lb.nlb.arn
 }
 
-# Used by services to allow the NLB to forward requests
-output "security_group" {
-  value = {
-    id = aws_security_group.nlb.id
-  }
-}
+# # Used by services to allow the NLB to forward requests
+# output "security_group" {
+#   value = {
+#     id = aws_security_group.nlb.id
+#   }
+# }
 
 output "listeners" {
   #value = aws_lb_listener.nlb_listeners
