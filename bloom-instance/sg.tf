@@ -123,7 +123,7 @@ resource "aws_security_group" "public_https" {
   }
 }
 # Create ingress rules for each set of allowed CIDR blocks
-resource "aws_vpc_security_group_ingress_rule" "local_https_ingress" {
+resource "aws_vpc_security_group_ingress_rule" "public_https_ingress" {
   security_group_id = aws_security_group.public_https.id
 
   cidr_ipv4   = "0.0.0.0/0"
