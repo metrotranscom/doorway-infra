@@ -51,16 +51,3 @@ resource "aws_lb_target_group_attachment" "attach_target" {
 
 
 
-# Create ingress rules for each set of allowed CIDR blocks
-resource "aws_vpc_security_group_ingress_rule" "ingress" {
-  for_each = { for cidr in local.all_allowed_ips : cidr => cidr }
-
-  security_group_id = var.security_group_id
-
-  cidr_ipv4   = each.value
-  from_port   = 443
-  to_port     = 443
-  ip_protocol = "TCP"
-
-  tags = var.additional_tags
-}
