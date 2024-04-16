@@ -81,3 +81,7 @@ variable "settings" {
 
   description = "Database settings"
 }
+variable "security_group_id" {
+  type = string
+
+}

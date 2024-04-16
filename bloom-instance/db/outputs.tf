@@ -19,9 +19,9 @@ output "secret_arn" {
   value = aws_secretsmanager_secret.conn_string.arn
 }
 
-output "security_group_id" {
-  value = aws_security_group.db.id
-}
+# output "security_group_id" {
+#   value = aws_security_group.db.id
+# }
 
 output "connection_string" {
   value = local.conn_string

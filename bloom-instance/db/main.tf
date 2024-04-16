@@ -45,8 +45,4 @@ resource "aws_db_subnet_group" "db" {
   depends_on = [aws_iam_service_linked_role.rds]
 }
 
-resource "aws_security_group" "db" {
-  name        = "${local.name_prefix}-db"
-  description = "Enable access to ${local.name_prefix} database"
-  vpc_id      = local.vpc_id
-}
+
