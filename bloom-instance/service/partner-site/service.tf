@@ -18,7 +18,8 @@ module "service" {
   log_group_name = var.log_group_name
   cluster_name   = var.cluster_name
 
-  additional_tags = var.additional_tags
-  vpc_id          = var.vpc_id
+  additional_tags   = var.additional_tags
+  vpc_id            = var.vpc_id
+  security_group_id = var.security_group_id
 }
 

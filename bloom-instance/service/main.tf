@@ -39,6 +39,7 @@ module "service" {
     }
   )
 
-  additional_tags = var.additional_tags
-  vpc_id          = var.vpc_id
+  additional_tags   = var.additional_tags
+  vpc_id            = var.vpc_id
+  security_group_id = var.security_group_id
 }

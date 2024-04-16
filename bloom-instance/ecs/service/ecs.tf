@@ -22,7 +22,7 @@ resource "aws_ecs_service" "service" {
 
   network_configuration {
     assign_public_ip = false
-    security_groups  = [aws_security_group.service.id]
+    security_groups  = [var.security_group_id]
     subnets          = local.subnet_ids
   }
 

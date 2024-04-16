@@ -22,10 +22,11 @@ module "public_sites" {
     ServiceType = "public-site"
     ServiceName = each.value.name
   }
-  vpc_id    = module.network.vpc.id
-  alb_arn   = module.albs["public"].arn
-  cert_arn  = module.certs["housingbayarea"].arn
-  site_urls = [var.public_portal_domain]
+  vpc_id            = module.network.vpc.id
+  alb_arn           = module.albs["public"].arn
+  cert_arn          = module.certs["housingbayarea"].arn
+  site_urls         = [var.public_portal_domain]
+  security_group_id = aws_security_group.ecs_sg.id
 }
 
 # So far, there only seems to be a need for a single partner site
@@ -50,10 +51,11 @@ module "partner_site" {
     ServiceType = "partner-site"
     ServiceName = var.partner_site.name
   }
-  vpc_id    = module.network.vpc.id
-  alb_arn   = module.albs["public"].arn
-  cert_arn  = module.certs["housingbayarea"].arn
-  site_urls = [var.public_portal_domain]
+  vpc_id            = module.network.vpc.id
+  alb_arn           = module.albs["public"].arn
+  cert_arn          = module.certs["housingbayarea"].arn
+  site_urls         = [var.public_portal_domain]
+  security_group_id = aws_security_group.ecs_sg.id
 }
 
 module "backend_api" {
@@ -81,7 +83,8 @@ module "backend_api" {
     ServiceType = "backend-api"
     ServiceName = var.backend_api.name
   }
-  vpc_id   = module.network.vpc.id
-  alb_arn  = module.albs["api"].arn
-  cert_arn = module.certs["housingbayarea"].arn
+  vpc_id            = module.network.vpc.id
+  alb_arn           = module.albs["api"].arn
+  cert_arn          = module.certs["housingbayarea"].arn
+  security_group_id = aws_security_group.ecs_sg.id
 }
