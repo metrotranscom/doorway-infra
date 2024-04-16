@@ -96,14 +96,14 @@ resource "aws_vpc_security_group_egress_rule" "db" {
   ip_protocol = "tcp"
 }
 
-# Enable inbound connections to DB from task
-resource "aws_vpc_security_group_ingress_rule" "import_listings_to_db" {
-  security_group_id = var.db.security_group_id
+# # Enable inbound connections to DB from task
+# resource "aws_vpc_security_group_ingress_rule" "import_listings_to_db" {
+#   security_group_id = var.db.security_group_id
 
-  description = "Allow ${local.task_name} task to access database"
-  from_port   = var.db.port
-  to_port     = var.db.port
-  ip_protocol = "tcp"
+#   description = "Allow ${local.task_name} task to access database"
+#   from_port   = var.db.port
+#   to_port     = var.db.port
+#   ip_protocol = "tcp"
 
-  referenced_security_group_id = aws_security_group.task.id
-}
+#   referenced_security_group_id = aws_security_group.task.id
+# }

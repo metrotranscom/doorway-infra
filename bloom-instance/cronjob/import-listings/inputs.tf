@@ -39,9 +39,8 @@ variable "network" {
 # This should match the outputs needed from the db module
 variable "db" {
   type = object({
-    secret_arn        = string
-    security_group_id = string
-    port              = number
+    secret_arn = string
+    port       = number
   })
 
   description = "Outputs from the database module"
