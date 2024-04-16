@@ -70,14 +70,10 @@ resource "aws_api_gateway_integration_response" "cors_int_response" {
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
     "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
-    "method.response.header.Access-Control-Allow-Origin"  = "'*.${var.public_portal_domain}'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
 
   }
 }
-
-
-
-
 
 resource "aws_api_gateway_integration" "global_integration" {
   rest_api_id = aws_api_gateway_rest_api.apigw.id
