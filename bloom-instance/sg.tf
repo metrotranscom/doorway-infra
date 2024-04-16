@@ -52,7 +52,7 @@ resource "aws_vpc_security_group_ingress_rule" "local_ecs_public_service_ingress
 
 }
 # Create ingress rules for each set of allowed CIDR blocks
-resource "aws_vpc_security_group_ingress_rule" "local_ecs_public_service_ingress" {
+resource "aws_vpc_security_group_ingress_rule" "local_ecs__partners_service_ingress" {
   for_each = { for cidr in local.local_cidrs : cidr => cidr }
 
   security_group_id = aws_security_group.ecs_sg.id
@@ -65,7 +65,7 @@ resource "aws_vpc_security_group_ingress_rule" "local_ecs_public_service_ingress
 
 }
 # Create ingress rules for each set of allowed CIDR blocks
-resource "aws_vpc_security_group_ingress_rule" "local_ecs_public_service_ingress" {
+resource "aws_vpc_security_group_ingress_rule" "local_ecs_api_service_ingress" {
   for_each = { for cidr in local.local_cidrs : cidr => cidr }
 
   security_group_id = aws_security_group.ecs_sg.id
