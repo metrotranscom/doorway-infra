@@ -17,8 +17,8 @@ resource "aws_vpc_security_group_ingress_rule" "from_alb" {
   security_group_id = var.db.security_group_id
 
   description = "Allow service ${local.name} to access database"
-  from_port   = var.db.port
-  to_port     = var.db.port
+  from_port   = 443
+  to_port     = 443
   ip_protocol = "tcp"
   #referenced_security_group_id = module.service.security_group.id
   cidr_ipv4 = "0.0.0.0/0"

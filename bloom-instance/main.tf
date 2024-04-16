@@ -58,8 +58,15 @@ locals {
   # Defining this here ensures that all of our task logs get grouped together
   task_log_group_name = "${local.qualified_name_prefix}-tasks"
 
-  cert_map           = { for name, cert in module.certs : name => cert.arn }
-  cloudfront_domains = toset([var.public_portal_domain, var.partners_portal_domain])
+  cert_map = { for name, cert in module.certs : name => cert.arn }
+  # Combine all allowed_ips and subnets cidrs from allowed_subnets
+  local_cidrs = concat(
+    flatten([for group in module.network.subnets : [
+      for subnet in group : subnet.cidr
+    ]])
+  )
+
+
 }
 
 # The default cluster for all ECS tasks and services
