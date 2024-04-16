@@ -11,12 +11,13 @@ module "nlbs" {
   subnets = module.network.subnets
 
 
-  name_prefix     = local.qualified_name_prefix
-  name            = each.key
-  enable_logging  = each.value.enable_logging
-  internal        = each.value.internal
-  listeners       = each.value.listeners
-  subnet_group    = each.value.subnet_group
-  certificate_arn = module.certs[each.value.default_cert].arn
-  alb_arn         = module.albs["api"].alb.arn
+  name_prefix       = local.qualified_name_prefix
+  name              = each.key
+  enable_logging    = each.value.enable_logging
+  internal          = each.value.internal
+  listeners         = each.value.listeners
+  subnet_group      = each.value.subnet_group
+  certificate_arn   = module.certs[each.value.default_cert].arn
+  alb_arn           = module.albs["api"].alb.arn
+  security_group_id = aws_security_group.public_https.id
 }

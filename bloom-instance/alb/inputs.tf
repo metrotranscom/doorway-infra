@@ -77,3 +77,7 @@ variable "cert_map" {
   type        = map(string)
   description = "ARNs for TLS certificates to apply to secure listeners"
 }
+variable "security_group_id" {
+
+  type = string
+}

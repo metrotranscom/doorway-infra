@@ -3,7 +3,7 @@ resource "aws_lb" "alb" {
   name               = "${var.name_prefix}-${var.name}"
   internal           = var.internal
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb.id]
+  security_groups    = [var.security_group_id]
 
   # Note that an ALB requires at least 2 subnets
   subnets = [for subnet in var.subnets[var.subnet_group] : subnet.id]

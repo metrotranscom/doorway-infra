@@ -80,3 +80,6 @@ variable "alb_arn" {
   description = "The API ALB"
 
 }
+variable "security_group_id" {
+  type = string
+}

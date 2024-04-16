@@ -113,3 +113,29 @@ resource "aws_vpc_security_group_ingress_rule" "db_ingress" {
 
 
 }
+resource "aws_security_group" "public_https" {
+  name        = "${local.qualified_name_prefix}_public_https"
+  description = "Allow TLS inbound traffic and all outbound traffic"
+  vpc_id      = module.network.vpc.id
+
+  tags = {
+    Name = "${local.qualified_name_prefix}_public_https"
+  }
+}
+# Create ingress rules for each set of allowed CIDR blocks
+resource "aws_vpc_security_group_ingress_rule" "local_https_ingress" {
+  security_group_id = aws_security_group.public_https.id
+
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 443
+  to_port     = 443
+  ip_protocol = "TCP"
+
+
+}
+resource "aws_vpc_security_group_egress_rule" "public_https_egress" {
+  security_group_id = aws_security_group.public_https.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+
+}
