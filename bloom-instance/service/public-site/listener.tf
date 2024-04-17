@@ -33,3 +33,21 @@ resource "aws_lb_listener_rule" "static" {
     }
   }
 }
+resource "aws_lb_listener" "listener" {
+  load_balancer_arn = var.alb_arn
+  port              = 80
+  protocol          = "HTTP"
+  certificate_arn   = var.cert_arn
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+
+  tags = var.additional_tags
+}
