@@ -37,7 +37,6 @@ resource "aws_lb_listener" "listener_80" {
   load_balancer_arn = var.alb_arn
   port              = 80
   protocol          = "HTTP"
-  certificate_arn   = var.cert_arn
 
   default_action {
     type = "redirect"
