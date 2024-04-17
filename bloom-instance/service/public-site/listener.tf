@@ -33,7 +33,7 @@ resource "aws_lb_listener_rule" "static" {
     }
   }
 }
-resource "aws_lb_listener" "listener" {
+resource "aws_lb_listener" "listener_80" {
   load_balancer_arn = var.alb_arn
   port              = 80
   protocol          = "HTTP"
