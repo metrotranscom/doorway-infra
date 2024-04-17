@@ -133,6 +133,16 @@ resource "aws_vpc_security_group_ingress_rule" "public_https_ingress" {
 
 
 }
+resource "aws_vpc_security_group_ingress_rule" "public_http_ingress" {
+  security_group_id = aws_security_group.public_https.id
+
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 80
+  to_port     = 80
+  ip_protocol = "TCP"
+
+
+}
 resource "aws_vpc_security_group_egress_rule" "public_https_egress" {
   security_group_id = aws_security_group.public_https.id
   cidr_ipv4         = "0.0.0.0/0"
