@@ -54,7 +54,7 @@ module "partner_site" {
   vpc_id            = module.network.vpc.id
   alb_arn           = module.albs["public"].arn
   cert_arn          = module.certs["housingbayarea"].arn
-  site_urls         = [var.public_portal_domain]
+  site_urls         = [var.partners_portal_domain]
   security_group_id = aws_security_group.ecs_sg.id
 }
 
