@@ -48,13 +48,11 @@ resource "aws_api_gateway_method_settings" "method_settings" {
 
 }
 resource "aws_api_gateway_method_response" "enable_cors" {
-  status_code = 200
+  for_each    = local.http_rc_map
+  status_code = each.key
   rest_api_id = aws_api_gateway_rest_api.apigw.id
   resource_id = aws_api_gateway_resource.global.id
   http_method = "ANY"
-  response_models = {
-    "application/json" = "Empty"
-  }
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = true,
     "method.response.header.Access-Control-Allow-Methods" = true,
@@ -63,10 +61,11 @@ resource "aws_api_gateway_method_response" "enable_cors" {
   }
 }
 resource "aws_api_gateway_integration_response" "cors_int_response" {
+  for_each    = local.http_rc_map
   resource_id = aws_api_gateway_resource.global.id
   rest_api_id = aws_api_gateway_rest_api.apigw.id
   http_method = "ANY"
-  status_code = 200
+  status_code = each.key
   response_parameters = {
     "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
     "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
