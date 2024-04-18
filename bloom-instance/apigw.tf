@@ -54,9 +54,10 @@ resource "aws_api_gateway_method_response" "enable_cors" {
   resource_id = aws_api_gateway_resource.global.id
   http_method = "ANY"
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = true,
-    "method.response.header.Access-Control-Allow-Methods" = true,
-    "method.response.header.Access-Control-Allow-Origin"  = true
+    "method.response.header.Access-Control-Allow-Headers"     = true,
+    "method.response.header.Access-Control-Allow-Methods"     = true,
+    "method.response.header.Access-Control-Allow-Origin"      = true,
+    "method.response.header.Access-Control-Allow-Credentials" = true
 
   }
 }
@@ -68,9 +69,10 @@ resource "aws_api_gateway_integration_response" "cors_int_response" {
   status_code       = each.key
   selection_pattern = each.key
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
-    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+    "method.response.header.Access-Control-Allow-Headers"     = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Methods"     = "'GET,OPTIONS,POST,PUT'",
+    "method.response.header.Access-Control-Allow-Origin"      = "'*'"
+    "method.response.header.Access-Control-Allow-Credentials" = true
 
   }
 }
