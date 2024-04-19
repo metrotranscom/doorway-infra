@@ -1,0 +1,19 @@
+POST /api/adapter/auth/login HTTP/2
+Host: partners.staging.housingbayarea.mtc.ca.gov
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:124.0) Gecko/20100101 Firefox/124.0
+Accept: application/json, text/plain, */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate, br
+Content-Type: application/json
+language: en
+jurisdictionName: undefined
+appUrl: https://partners.staging.housingbayarea.mtc.ca.gov
+Content-Length: 101
+Origin: https://partners.staging.housingbayarea.mtc.ca.gov
+Connection: keep-alive
+Referer: https://partners.staging.housingbayarea.mtc.ca.gov/sign-in
+Cookie: _ga=GA1.2.193326775.1713462111; _gid=GA1.2.406788248.1713462111; _ga_2WQMFT5BES=GS1.2.1713462111.1.1.1713462116.0.0.0; access-token=; refresh-token=; access-token-available=
+Sec-Fetch-Dest: empty
+Sec-Fetch-Mode: cors
+Sec-Fetch-Site: same-origin
+TE: trailers

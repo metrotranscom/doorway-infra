@@ -30,11 +30,16 @@ resource "aws_api_gateway_resource" "global" {
   rest_api_id = aws_api_gateway_rest_api.apigw.id
 }
 resource "aws_api_gateway_method" "method" {
-  rest_api_id        = aws_api_gateway_rest_api.apigw.id
-  resource_id        = aws_api_gateway_resource.global.id
-  http_method        = "ANY"
-  authorization      = "NONE"
-  request_parameters = { "method.request.path.proxy" = true }
+  rest_api_id   = aws_api_gateway_rest_api.apigw.id
+  resource_id   = aws_api_gateway_resource.global.id
+  http_method   = "ANY"
+  authorization = "NONE"
+  request_parameters = {
+    "method.request.path.proxy"              = true
+    "method.request.header.jurisdictionName" = true
+    "method.request.header.Host"             = true
+    "method.request.header.appUrl"           = true
+  }
 }
 resource "aws_api_gateway_method_settings" "method_settings" {
   method_path = "*/*"
@@ -49,6 +54,7 @@ resource "aws_api_gateway_method_settings" "method_settings" {
   }
 
 }
+
 resource "aws_api_gateway_method_response" "enable_cors" {
   for_each    = local.http_rc_map
   status_code = each.key
@@ -90,7 +96,9 @@ resource "aws_api_gateway_integration" "global_integration" {
   connection_type         = "VPC_LINK"
   connection_id           = aws_api_gateway_vpc_link.vpclink.id
   request_parameters = {
-    "integration.request.path.proxy" = "method.request.path.proxy"
+    "integration.request.path.proxy"              = "method.request.path.proxy"
+    "integration.request.header.jurisdictionName" = "method.request.header.jurisdictionName"
+    "integration.request.header.Host"             = "method.request.header.Host"
   }
 
 }
