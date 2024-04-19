@@ -11,4 +11,5 @@ module "cloudfront" {
   cert_map = local.cert_map
 
   distribution = var.cloudfront
+  web_acl_id   = aws_wafv2_web_acl.cloudfront_acl.arn
 }

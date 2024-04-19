@@ -54,7 +54,4 @@ resource "aws_wafv2_web_acl" "cloudfront_acl" {
   }
   provider = aws.use1
 }
-resource "aws_wafv2_web_acl_association" "example" {
-  resource_arn = module.cloudfront.arn
-  web_acl_arn  = aws_wafv2_web_acl.cloudfront_acl.arn
-}
+

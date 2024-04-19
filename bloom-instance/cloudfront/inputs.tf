@@ -28,6 +28,11 @@ variable "domains" {
   type = list(string)
 
 }
+variable "web_acl_id" {
+  type        = string
+  description = "The ID of the Web Application Firewall Access Control List (ACL)"
+
+}
 variable "distribution" {
   type = object({
     enabled     = optional(bool, true)

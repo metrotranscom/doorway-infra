@@ -79,6 +79,7 @@ resource "aws_cloudfront_distribution" "main" {
     origin_id   = local.origin_id
     domain_name = local.origin_alb.dns_name
 
+
     custom_origin_config {
       http_port              = 80
       https_port             = 443
@@ -88,7 +89,8 @@ resource "aws_cloudfront_distribution" "main" {
   }
 
   # Derived from known values
-  comment = local.qualified_name
+  comment    = local.qualified_name
+  web_acl_id = var.web_acl_id
 
   # Configurable
   enabled     = local.distribution.enabled
