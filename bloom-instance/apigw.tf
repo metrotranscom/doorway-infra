@@ -55,35 +55,6 @@ resource "aws_api_gateway_method_settings" "method_settings" {
 
 }
 
-# resource "aws_api_gateway_method_response" "enable_cors" {
-#   for_each    = local.http_rc_map
-#   status_code = each.key
-#   rest_api_id = aws_api_gateway_rest_api.apigw.id
-#   resource_id = aws_api_gateway_resource.global.id
-#   http_method = "ANY"
-#   response_parameters = {
-#     "method.response.header.Access-Control-Allow-Headers"     = true,
-#     "method.response.header.Access-Control-Allow-Methods"     = true,
-#     "method.response.header.Access-Control-Allow-Origin"      = true,
-#     "method.response.header.Access-Control-Allow-Credentials" = true
-
-#   }
-# }
-# resource "aws_api_gateway_integration_response" "cors_int_response" {
-#   for_each          = local.http_rc_map
-#   resource_id       = aws_api_gateway_resource.global.id
-#   rest_api_id       = aws_api_gateway_rest_api.apigw.id
-#   http_method       = "ANY"
-#   status_code       = each.key
-#   selection_pattern = each.key
-#   response_parameters = {
-#     "method.response.header.Access-Control-Allow-Headers"     = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Set-Cookie'",
-#     "method.response.header.Access-Control-Allow-Methods"     = "'GET,OPTIONS,POST,PUT'",
-#     "method.response.header.Access-Control-Allow-Origin"      = "'*'"
-#     "method.response.header.Access-Control-Allow-Credentials" = "'true'"
-
-#   }
-# }
 
 resource "aws_api_gateway_integration" "global_integration" {
   rest_api_id = aws_api_gateway_rest_api.apigw.id
@@ -107,25 +78,22 @@ resource "aws_api_gateway_integration" "global_integration" {
 resource "aws_api_gateway_deployment" "deployment" {
 
   rest_api_id = aws_api_gateway_rest_api.apigw.id
-  # #TODO: This auto-deploy code still has issues. hoping to get it fixed soon.
-  # triggers = {
-  #   # NOTE: The configuration below will satisfy ordering considerations,
-  #   #       but not pick up all future REST API changes. More advanced patterns
-  #   #       are possible, such as using the filesha1() function against the
-  #   #       Terraform configuration file(s) or removing the .id references to
-  #   #       calculate a hash against whole resources. Be aware that using whole
-  #   #       resources will show a difference after the initial implementation.
-  #   #       It will stabilize to only change when resources change afterwards.
-  #   redeployment = sha1(jsonencode([
+  #TODO: This auto-deploy code still has issues. hoping to get it fixed soon.
+  triggers = {
+    # NOTE: The configuration below will satisfy ordering considerations,
+    #       but not pick up all future REST API changes. More advanced patterns
+    #       are possible, such as using the filesha1() function against the
+    #       Terraform configuration file(s) or removing the .id references to
+    #       calculate a hash against whole resources. Be aware that using whole
+    #       resources will show a difference after the initial implementation.
+    #       It will stabilize to only change when resources change afterwards.
+    redeployment = sha1(jsonencode([
 
-  #     aws_api_gateway_resource.global.id,
-  #     aws_api_gateway_method.method.id,
-  #     aws_api_gateway_integration.global_integration.id,
-
-  #     aws_api_gateway_method_response.enable_cors.id,
-  #     aws_api_gateway_integration_response.cors_int_response.id,
-  #   ]))
-  # }
+      aws_api_gateway_resource.global.id,
+      aws_api_gateway_method.method.id,
+      aws_api_gateway_integration.global_integration.id
+    ]))
+  }
 }
 resource "aws_api_gateway_stage" "main" {
   deployment_id = aws_api_gateway_deployment.deployment.id
