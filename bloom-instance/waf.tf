@@ -16,9 +16,6 @@ resource "aws_wafv2_web_acl" "cloudfront_acl" {
     name     = "common-rule-set"
     priority = 1
 
-    override_action {
-      count {}
-    }
 
     statement {
       managed_rule_group_statement {
@@ -62,10 +59,6 @@ resource "aws_wafv2_web_acl" "apigw_acl" {
   rule {
     name     = "common-rule-set"
     priority = 1
-
-    override_action {
-      count {}
-    }
 
     statement {
       managed_rule_group_statement {
