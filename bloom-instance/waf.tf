@@ -13,7 +13,7 @@ resource "aws_wafv2_web_acl" "cloudfront_acl" {
   }
 
   rule {
-    name     = "common-rule-set"
+    name     = "common-rule-set-cf"
     priority = 1
 
 
@@ -57,7 +57,7 @@ resource "aws_wafv2_web_acl" "apigw_acl" {
   }
 
   rule {
-    name     = "common-rule-set"
+    name     = "common-rule-set-waf"
     priority = 1
 
     statement {
@@ -77,7 +77,7 @@ resource "aws_wafv2_web_acl" "apigw_acl" {
 
     visibility_config {
       cloudwatch_metrics_enabled = true
-      metric_name                = "${local.qualified_name_prefix}-cloudfront-acl-common_ruleset"
+      metric_name                = "${local.qualified_name_prefix}-waf-acl-common_ruleset"
       sampled_requests_enabled   = true
     }
   }
@@ -85,7 +85,7 @@ resource "aws_wafv2_web_acl" "apigw_acl" {
 
   visibility_config {
     cloudwatch_metrics_enabled = true
-    metric_name                = "${local.qualified_name_prefix}-cloudfront-acl"
+    metric_name                = "${local.qualified_name_prefix}-waf-acl"
     sampled_requests_enabled   = true
   }
   provider = aws
