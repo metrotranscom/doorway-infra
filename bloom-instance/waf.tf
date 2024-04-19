@@ -5,8 +5,8 @@ provider "aws" {
 }
 resource "aws_wafv2_web_acl" "cloudfront_acl" {
   name        = "${local.qualified_name_prefix}-cloudfront-acl"
-  description = "Example of a managed rule."
-  scope       = "REGIONAL"
+  description = "ACL for the cloudfront distribution"
+  scope       = "CLOUDFRONT"
 
   default_action {
     allow {}
