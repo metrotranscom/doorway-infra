@@ -15,9 +15,11 @@ resource "aws_wafv2_web_acl" "cloudfront_acl" {
   rule {
     name     = "common-rule-set"
     priority = 1
-    action {
-      block {}
+
+    override_action {
+      count {}
     }
+
     statement {
       managed_rule_group_statement {
         name        = "AWSManagedRulesCommonRuleSet"
@@ -61,15 +63,14 @@ resource "aws_wafv2_web_acl" "apigw_acl" {
     name     = "common-rule-set"
     priority = 1
 
-    action {
-      block {}
+    override_action {
+      count {}
     }
 
     statement {
       managed_rule_group_statement {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
-
 
         scope_down_statement {
           geo_match_statement {
@@ -83,7 +84,7 @@ resource "aws_wafv2_web_acl" "apigw_acl" {
 
     visibility_config {
       cloudwatch_metrics_enabled = true
-      metric_name                = "${local.qualified_name_prefix}-cloudfront-acl-common_ruleset"
+      metric_name                = "${local.qualified_name_prefix}-api-acl-common_ruleset"
       sampled_requests_enabled   = true
     }
   }
@@ -91,7 +92,7 @@ resource "aws_wafv2_web_acl" "apigw_acl" {
 
   visibility_config {
     cloudwatch_metrics_enabled = true
-    metric_name                = "${local.qualified_name_prefix}-cloudfront-acl"
+    metric_name                = "${local.qualified_name_prefix}-api-acl"
     sampled_requests_enabled   = true
   }
   provider = aws
