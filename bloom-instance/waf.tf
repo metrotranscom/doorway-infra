@@ -16,7 +16,7 @@ resource "aws_wafv2_web_acl" "cloudfront_acl" {
     for_each = local.global_managed_waf_rules
     content {
       name     = rule.value
-      priority = 1
+      priority = index(local.global_managed_waf_rules, rule.value)
 
       override_action {
         count {}
@@ -70,7 +70,7 @@ resource "aws_wafv2_web_acl" "apigw_acl" {
     for_each = local.global_managed_waf_rules
     content {
       name     = rule.value
-      priority = 1
+      priority = index(local.global_managed_waf_rules, rule.value)
 
       override_action {
         count {}
