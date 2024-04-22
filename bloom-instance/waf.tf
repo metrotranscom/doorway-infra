@@ -12,34 +12,41 @@ resource "aws_wafv2_web_acl" "cloudfront_acl" {
     allow {}
   }
 
-  rule {
-    name     = "common-rule-set"
-    priority = 1
+  dynamic "rule" {
+    for_each = local.global_managed_waf_rules
+    content {
+      name     = rule.value
+      priority = 1
 
-    override_action {
-      count {}
-    }
+      override_action {
+        count {}
+      }
 
-    statement {
-      managed_rule_group_statement {
-        name        = "AWSManagedRulesCommonRuleSet"
-        vendor_name = "AWS"
+      statement {
+        managed_rule_group_statement {
+          name        = rule.value
+          vendor_name = "AWS"
 
-        scope_down_statement {
-          geo_match_statement {
-            country_codes = ["US"]
+          scope_down_statement {
+            geo_match_statement {
+              country_codes = ["US"]
+            }
           }
         }
+
+
       }
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "${local.qualified_name_prefix}-${rule.value}_ruleset_cf"
+        sampled_requests_enabled   = true
+      }
+
     }
 
 
 
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "${local.qualified_name_prefix}-cloudfront-acl-common_ruleset"
-      sampled_requests_enabled   = true
-    }
+
   }
 
   visibility_config {
@@ -59,36 +66,37 @@ resource "aws_wafv2_web_acl" "apigw_acl" {
     allow {}
   }
 
-  rule {
-    name     = "common-rule-set"
-    priority = 1
+  dynamic "rule" {
+    for_each = local.global_managed_waf_rules
+    content {
+      name     = rule.value
+      priority = 1
 
-    override_action {
-      count {}
-    }
+      override_action {
+        count {}
+      }
 
-    statement {
-      managed_rule_group_statement {
-        name        = "AWSManagedRulesCommonRuleSet"
-        vendor_name = "AWS"
+      statement {
+        managed_rule_group_statement {
+          name        = rule.value
+          vendor_name = "AWS"
 
-        scope_down_statement {
-          geo_match_statement {
-            country_codes = ["US"]
+          scope_down_statement {
+            geo_match_statement {
+              country_codes = ["US"]
+            }
           }
         }
+
+
+      }
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "${local.qualified_name_prefix}-${rule.value}_ruleset_api"
+        sampled_requests_enabled   = true
       }
     }
-
-
-
-    visibility_config {
-      cloudwatch_metrics_enabled = true
-      metric_name                = "${local.qualified_name_prefix}-api-acl-common_ruleset"
-      sampled_requests_enabled   = true
-    }
   }
-
 
   visibility_config {
     cloudwatch_metrics_enabled = true

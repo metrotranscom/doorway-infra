@@ -65,7 +65,7 @@ locals {
       for subnet in group : subnet.cidr
     ]])
   )
-
+  global_managed_waf_rules = ["AWSManagedRulesCommonRuleSet", "AWSManagedRulesKnownBadInputsRuleSet", "AWSManagedRulesSQLiRuleSet"]
 
 }
 
