@@ -39,6 +39,7 @@ No requirements.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_app_subnets"></a> [app\_subnets](#output\_app\_subnets) | n/a |
 | <a name="output_public_subnets"></a> [public\_subnets](#output\_public\_subnets) | a list of just the public subnets |
 | <a name="output_subnets"></a> [subnets](#output\_subnets) | a map of all subnets indexed by subnet group id (including public) |
 | <a name="output_vpc"></a> [vpc](#output\_vpc) | n/a |

@@ -11,17 +11,13 @@ No requirements.
 
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_listeners"></a> [listeners](#module\_listeners) | ./listener | n/a |
+No modules.
 
 ## Resources
 
 | Name | Type |
 |------|------|
 | [aws_lb.alb](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb) | resource |
-| [aws_security_group.alb](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
-| [aws_vpc_security_group_egress_rule.https](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc_security_group_egress_rule) | resource |
 
 ## Inputs
 
@@ -35,6 +31,7 @@ No requirements.
 | <a name="input_log_bucket"></a> [log\_bucket](#input\_log\_bucket) | The S3 bucket to write ALB logs to | `string` | n/a | yes |
 | <a name="input_name"></a> [name](#input\_name) | The name to give to give to this ALB and its related resources | `string` | n/a | yes |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | The prefix to prepend to resource names | `string` | n/a | yes |
+| <a name="input_security_group_id"></a> [security\_group\_id](#input\_security\_group\_id) | n/a | `string` | n/a | yes |
 | <a name="input_subnet_group"></a> [subnet\_group](#input\_subnet\_group) | The identifier for the subnet group to place the ALB into | `string` | n/a | yes |
 | <a name="input_subnets"></a> [subnets](#input\_subnets) | A map of the available subnets | <pre>map(list(object({<br>    id   = string<br>    cidr = string<br>  })))</pre> | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the VPC to create ALB resources in | `string` | n/a | yes |
@@ -46,8 +43,6 @@ No requirements.
 | <a name="output_alb"></a> [alb](#output\_alb) | n/a |
 | <a name="output_arn"></a> [arn](#output\_arn) | n/a |
 | <a name="output_dns_name"></a> [dns\_name](#output\_dns\_name) | n/a |
-| <a name="output_listeners"></a> [listeners](#output\_listeners) | n/a |
 | <a name="output_log_prefix"></a> [log\_prefix](#output\_log\_prefix) | Used for generating log bucket policy |
-| <a name="output_security_group"></a> [security\_group](#output\_security\_group) | Used by services to allow the ALB to forward requests |
 | <a name="output_zone_id"></a> [zone\_id](#output\_zone\_id) | n/a |
 <!-- END_TF_DOCS -->
