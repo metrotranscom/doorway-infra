@@ -1,6 +1,4 @@
 
-
-
 resource "aws_lb_listener_rule" "static" {
   listener_arn = var.alb_arn
   priority     = 300
