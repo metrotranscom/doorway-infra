@@ -3,6 +3,16 @@ data "aws_route53_zone" "zone" {
   name = "housingbayarea.mtc.ca.gov."
 
 }
+data "aws_route53_zone" "internal_zone" {
+  name         = "housingbayarea.int."
+  private_zone = true
+
+}
+resource "aws_route53_zone_association" "internal_zone_association" {
+  zone_id = data.aws_route53_zone.internal_zone.id
+  vpc_id  = module.network.vpc.id
+
+}
 
 resource "aws_route53_record" "public" {
   zone_id = data.aws_route53_zone.zone.zone_id
