@@ -1,25 +1,7 @@
-resource "aws_lb_listener" "listener" {
-  load_balancer_arn = var.alb_arn
-  port              = 443
-  protocol          = "HTTPS"
-  certificate_arn   = var.cert_arn
-
-  default_action {
-    type = "fixed-response"
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "Fixed response content"
-      status_code  = "200"
-    }
-
-  }
-
-  tags = var.additional_tags
-}
 
 
 resource "aws_lb_listener_rule" "static" {
-  listener_arn = aws_lb_listener.listener.arn
+  listener_arn = var.alb_arn
   priority     = 100
 
   action {
@@ -32,21 +14,4 @@ resource "aws_lb_listener_rule" "static" {
       values = var.site_urls
     }
   }
-}
-resource "aws_lb_listener" "listener_80" {
-  load_balancer_arn = var.alb_arn
-  port              = 80
-  protocol          = "HTTP"
-
-  default_action {
-    type = "redirect"
-
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
-
-  tags = var.additional_tags
 }
