@@ -126,22 +126,22 @@ variable "albs" {
   }))
   description = "Settings for managing ALBs"
 }
-variable "nlbs" {
-  type = map(object({
-    # See alb/inputs.tf for more info
-    subnet_group   = string
-    enable_logging = optional(bool, true)
-    internal       = optional(bool)
-    default_cert   = string
+# variable "nlbs" {
+#   type = map(object({
+#     # See alb/inputs.tf for more info
+#     subnet_group   = string
+#     enable_logging = optional(bool, true)
+#     internal       = optional(bool)
+#     default_cert   = string
 
-    # See alb/listeners/inputs.tf for more info
-    listeners = map(object({
+#     # See alb/listeners/inputs.tf for more info
+#     listeners = map(object({
 
-      allowed_ips = optional(list(string))
-    }))
-  }))
-  description = "Settings for managing NLBs"
-}
+#       allowed_ips = optional(list(string))
+#     }))
+#   }))
+#   description = "Settings for managing NLBs"
+# }
 variable "public_sites" {
   # See service/inputs.tf for object structure
   type        = any
