@@ -24,7 +24,7 @@ locals {
 
   filtered_albs = { for alb_name, alb in var.alb_map : alb_name => alb if try(local.requested_albs[alb_name] != null, false) }
 
-  # # Sort out domains by listener
+  # # # Sort out domains by listener
   # domains_by_listener = { for alb_name, alb in local.requested_albs : alb_name => {
   #   for listener_name, listener in alb.listeners :
   #   # If listener.listen_on_alb_dns_name is true, add the ALB DNS name to the list of domains
@@ -41,7 +41,7 @@ locals {
   #   }
   # }]...)
 
-  # Generate URLs that can be used to access this service
+  # #Generate URLs that can be used to access this service
   # urls_by_listener = { for alb_name, alb in local.filtered_albs : alb_name => {
   #   for listener_name, listener in local.requested_albs[alb_name].listeners : listener_name => [
   #     for domain in local.domains_by_listener[alb_name][listener_name] : join("", [

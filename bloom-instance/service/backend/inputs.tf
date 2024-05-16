@@ -50,7 +50,10 @@ variable "partners_portal_url" {
   type        = string
   description = "The URL to the partners portal, for injecting into email templates"
 }
+variable "api_url" {
+  type = string
 
+}
 variable "public_upload_bucket" {
   type        = string
   description = "The name of the bucket to use for publicly available file uploads"

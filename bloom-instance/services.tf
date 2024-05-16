@@ -59,7 +59,8 @@ module "partner_site" {
 }
 
 module "backend_api" {
-  source = "./service/backend"
+  source  = "./service/backend"
+  api_url = var.backend_api_domain
 
   name_prefix        = local.qualified_name_prefix
   service_definition = var.backend_api

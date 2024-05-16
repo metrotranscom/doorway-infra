@@ -15,8 +15,8 @@ output "arn" {
 # }
 
 # output "listeners" {
-#   #value = aws_lb_listener.alb_listeners
-#   value = module.listeners
+#   value = aws_lb_listener.alb_listeners
+#   #value = module.listeners
 # }
 
 # Used for generating log bucket policy
