@@ -34,6 +34,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | The prefix to prepend to resource names | `string` | n/a | yes |
+| <a name="input_security_group_id"></a> [security\_group\_id](#input\_security\_group\_id) | n/a | `string` | n/a | yes |
 | <a name="input_settings"></a> [settings](#input\_settings) | Database settings | <pre>object({<br>    db_name                   = string<br>    type                      = string<br>    subnet_group              = string<br>    engine_version            = string<br>    instance_class            = string<br>    port                      = optional(number, 5432) # Default to postgres port<br>    prevent_deletion          = optional(bool, true)   # We usually want to default to preserving the database<br>    apply_changes_immediately = optional(bool, false)<br>    username                  = string<br>    password                  = optional(string)<br><br>    maintenance_window = string<br><br>    # Only valid for type "rds"<br>    storage = optional(object({<br>      min = number<br>      max = optional(number, 0)<br>      #encrypt = optional(bool, false)<br>      }), {<br>      min = 20<br>      max = 0<br>    })<br><br>    backups = object({<br>      retention = number<br>      window    = string<br>    })<br><br>    # Only valid for type "aurora-serverless"<br>    serverless_capacity = optional(object({<br>      min = number<br>      max = number<br>    }))<br>  })</pre> | n/a | yes |
 | <a name="input_subnet_map"></a> [subnet\_map](#input\_subnet\_map) | A map of the available subnets | <pre>map(list(object({<br>    id     = string<br>    vpc_id = string<br>  })))</pre> | n/a | yes |
 
@@ -46,6 +47,5 @@ No modules.
 | <a name="output_host"></a> [host](#output\_host) | n/a |
 | <a name="output_port"></a> [port](#output\_port) | n/a |
 | <a name="output_secret_arn"></a> [secret\_arn](#output\_secret\_arn) | n/a |
-| <a name="output_security_group_id"></a> [security\_group\_id](#output\_security\_group\_id) | n/a |
 | <a name="output_username"></a> [username](#output\_username) | n/a |
 <!-- END_TF_DOCS -->
