@@ -38,6 +38,7 @@ module "partner_site" {
   service_definition = var.partner_site
   log_group_name     = local.task_log_group_name
   #cloudfront         = try(var.partner_site.cloudfront, null)
+  https_listener_arn = module.albs["public"].https_listener_arn
 
   alb_map      = module.albs
   subnet_map   = module.network.subnets
@@ -60,8 +61,9 @@ module "partner_site" {
 }
 
 module "backend_api" {
-  source  = "./service/backend"
-  api_url = var.backend_api_domain
+  source             = "./service/backend"
+  api_url            = var.backend_api_domain
+  https_listener_arn = module.albs["public"].https_listener_arn
 
   name_prefix        = local.qualified_name_prefix
   service_definition = var.backend_api

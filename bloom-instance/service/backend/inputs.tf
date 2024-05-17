@@ -19,6 +19,10 @@ variable "alb_map" {
   type        = any
   description = "A map of available ALBs"
 }
+variable "https_listener_arn" {
+  type = string
+
+}
 
 variable "dns" {
   # See ../service/inputs.tf for type structure

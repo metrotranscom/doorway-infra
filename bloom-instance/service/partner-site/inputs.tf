@@ -31,7 +31,10 @@ variable "subnet_map" {
   type        = any
   description = "A map of available subnets"
 }
+variable "https_listener_arn" {
+  type = string
 
+}
 variable "cert_map" {
   type        = map(string)
   description = "ARNs for TLS certificates to apply to secure listeners"
