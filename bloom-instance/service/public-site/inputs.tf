@@ -8,7 +8,10 @@ variable "name_prefix" {
     error_message = "name_prefix can only contain letters, numbers, and hyphens"
   }
 }
+variable "https_listener_arn" {
+  type = string
 
+}
 variable "log_group_name" {
   type        = string
   description = "The name of the CloudWatch Logs log group to use"

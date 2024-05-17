@@ -1,7 +1,7 @@
 
 
 resource "aws_lb_listener_rule" "static" {
-  listener_arn = var.alb_arn
+  listener_arn = var.https_listener_arn
   priority     = 100
 
   action {
