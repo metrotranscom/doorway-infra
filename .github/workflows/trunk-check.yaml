@@ -12,6 +12,7 @@ jobs:
       network: ${{ steps.filter.outputs.network }}
     steps:
     # For pull requests it's not necessary to checkout the code
+    - uses: actions/checkout@v4
     - uses: dorny/paths-filter@v3
       id: filter
       with:
@@ -24,8 +25,6 @@ jobs:
     if: ${{ needs.changes.outputs.network == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
       - name: Trunk install
         uses: trunk-io/trunk-action/setup@v1
       - name: Trunk Check
