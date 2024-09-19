@@ -25,8 +25,8 @@ jobs:
     if: ${{ needs.changes.outputs.network == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: Trunk install
-        uses: trunk-io/trunk-action/setup@v1
       - name: Trunk Check
         run:
+            curl https://get.trunk.io -fsSL | bash
+            cd ./doorway-network
             trunk check
