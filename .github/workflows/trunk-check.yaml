@@ -1,4 +1,4 @@
-name: Check terraform file formatting
+name: Trunk Check
 on: [push]
 jobs:
   # JOB to run change detection
@@ -18,17 +18,17 @@ jobs:
         filters: |
           network:
             - 'doorway-network/**'
-   # JOB to build and test doorway-network code
-  network:
+  # JOB to build and test backend code
+  backend:
     needs: changes
     if: ${{ needs.changes.outputs.network == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Trunk install
         uses: trunk-io/trunk-action/setup@v1
       - name: Trunk Check
         working-directory: ./doorway-network
         run:
-          trunk check
+            trunk check
