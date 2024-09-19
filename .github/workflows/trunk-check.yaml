@@ -28,5 +28,4 @@ jobs:
       - name: Trunk Install
         run: curl https://get.trunk.io -fsSL | bash
       - name: Trunk Check
-        working-directory: ./doorway-network
-        run: ls -latr
+        run: trunk check
