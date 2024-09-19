@@ -25,6 +25,7 @@ jobs:
     if: ${{ needs.changes.outputs.network == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - name: Trunk Check
         run:
             curl https://get.trunk.io -fsSL | bash
