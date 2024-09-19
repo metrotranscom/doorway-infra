@@ -1,9 +1,9 @@
-name: Trunk Check
+name: CDK Synth
 on: [push]
 # Required permissions
 permissions: read-all
 jobs:
-  install:
+  synth:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
