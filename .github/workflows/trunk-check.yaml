@@ -1,31 +1,18 @@
 name: Trunk Check
 on: [push]
-# Required permissions
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 permissions: read-all
 jobs:
-  # JOB to run change detection
-  changes:
+  trunk_check:
+    name: Trunk Check Runner
     runs-on: ubuntu-latest
-    # Set job outputs to values from filter step
-    outputs:
-      network: ${{ steps.filter.outputs.network }}
+    permissions:
+      checks: write # For trunk to post annotations
+      contents: read # For repo checkout
     steps:
-      # For pull requests it's not necessary to checkout the code
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            network:
-              - 'doorway-network/**'
-  # JOB to build and test backend code
-  network:
-    needs: changes
-    if: ${{ needs.changes.outputs.network == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Trunk Install
-        run: curl https://get.trunk.io -fsSL | bash
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Trunk Check
-        run: trunk check
+        uses: trunk-io/trunk-action@v1
