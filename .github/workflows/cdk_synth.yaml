@@ -1,0 +1,34 @@
+name: Trunk Check
+on: [push]
+# Required permissions
+permissions: read-all
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: install cdk
+        run: npm install -g aws-cdk
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            network:
+              - 'doorway-network/**'
+      - name: yarn install
+        if: steps.filter.outputs.network == 'true'
+        working-directory: ./doorway-network
+        run: yarn install
+      - name: network-synth
+        if: steps.filter.outputs.network == 'true'
+        run: cdk synth
+        working-directory: ./doorway-network
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-west-1
+          ENVIRONMENT: dev
