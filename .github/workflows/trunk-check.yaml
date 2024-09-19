@@ -19,7 +19,7 @@ jobs:
           network:
             - 'doorway-network/**'
   # JOB to build and test backend code
-  backend:
+  network:
     needs: changes
     if: ${{ needs.changes.outputs.network == 'true' }}
     runs-on: ubuntu-latest
