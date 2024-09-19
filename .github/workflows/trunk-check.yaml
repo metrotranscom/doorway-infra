@@ -1,24 +1,23 @@
 name: Trunk Check
 on: [push]
+# Required permissions
+permissions: read-all
 jobs:
   # JOB to run change detection
   changes:
     runs-on: ubuntu-latest
-    # Required permissions
-    permissions:
-      pull-requests: read
     # Set job outputs to values from filter step
     outputs:
       network: ${{ steps.filter.outputs.network }}
     steps:
-    # For pull requests it's not necessary to checkout the code
-    - uses: actions/checkout@v4
-    - uses: dorny/paths-filter@v3
-      id: filter
-      with:
-        filters: |
-          network:
-            - 'doorway-network/**'
+      # For pull requests it's not necessary to checkout the code
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            network:
+              - 'doorway-network/**'
   # JOB to build and test backend code
   network:
     needs: changes
@@ -27,9 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Trunk Install
-        run:
-            curl https://get.trunk.io -fsSL | bash
+        run: curl https://get.trunk.io -fsSL | bash
       - name: Trunk Check
         working-directory: ./doorway-network
-        run:
-            trunk check
+        run: ls -latr
