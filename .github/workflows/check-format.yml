@@ -1,24 +1,34 @@
 name: Check terraform file formatting
-
-on:
-  # Trigger the workflow on pull request,
-  # but only for the main branch
-  pull_request:
-    branches:
-      - main
-
+on: [push]
 jobs:
-  check_format:
-    defaults:
-      run:
-        working-directory: ./bloom-instance
+  # JOB to run change detection
+  changes:
     runs-on: ubuntu-latest
-    name: Check terraform file are formatted correctly
+    # Required permissions
+    permissions:
+      pull-requests: read
+    # Set job outputs to values from filter step
+    outputs:
+      network: ${{ steps.filter.outputs.network }}
     steps:
-      - name: Checkout
+    # For pull requests it's not necessary to checkout the code
+    - uses: dorny/paths-filter@v3
+      id: filter
+      with:
+        filters: |
+          network:
+            - 'doorway-network/**'
+   # JOB to build and test doorway-network code
+  network:
+    needs: changes
+    if: ${{ needs.changes.outputs.network == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
         uses: actions/checkout@v3
-
-      - name: terraform fmt
-        uses: dflook/terraform-fmt-check@v1
-        with:
-          path: bloom-instance
+      - name: Trunk install
+        uses: trunk-io/trunk-action/setup@v1
+      - name: Trunk Check
+        working-directory: ./doorway-network
+        run:
+          trunk check
