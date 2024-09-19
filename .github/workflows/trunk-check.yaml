@@ -26,8 +26,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Trunk Check
+      - name: Trunk Install
         run:
             curl https://get.trunk.io -fsSL | bash
-            cd ./doorway-network
+      - name: Trunk Check
+        working-directory: ./doorway-network
+        run:
             trunk check
