@@ -2,7 +2,7 @@
 
 This sets up various parameter stores for Doorway based on the environment
 Generally this is run manually by someone with admin rights
-The (AWS CDK Runtime)[https://aws.amazon.com/cdk/] must be installed to run the cdk commands.
+The [https://aws.amazon.com/cdk/](AWS CDK Runtime) must be installed to run the cdk commands.
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
 ## Useful commands
