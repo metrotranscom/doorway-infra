@@ -1,4 +1,4 @@
-name: CDK Synth
+name: Deploy Dev
 on: [push]
 # Required permissions
 permissions: read-all
