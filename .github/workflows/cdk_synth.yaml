@@ -19,7 +19,9 @@ jobs:
           filters: |
             network:
               - 'doorway-network/**'
-      - name: yarn install
+            app:
+              - 'doorway-app-servers/**'
+      - name: yarn-install-network
         if: steps.filter.outputs.network == 'true'
         working-directory: ./doorway-network
         run: yarn install
@@ -27,6 +29,19 @@ jobs:
         if: steps.filter.outputs.network == 'true'
         run: cdk synth
         working-directory: ./doorway-network
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-west-1
+          ENVIRONMENT: dev
+      - name: yarn-install-app
+        if: steps.filter.outputs.app == 'true'
+        working-directory: ./doorway-app-servers
+        run: yarn install
+      - name: network-synth
+        if: steps.filter.outputs.app == 'true'
+        run: cdk synth
+        working-directory: ./doorway-app-servers
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
