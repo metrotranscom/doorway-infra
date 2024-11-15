@@ -1,5 +1,6 @@
-import { SecretValue, Stack, StackProps } from "aws-cdk-lib";
+import { Stack, StackProps } from "aws-cdk-lib";
 import { PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import {
   CodeBuildStep,
   CodePipeline,
@@ -8,14 +9,13 @@ import {
 import { Construct } from "constructs";
 import { ParametersBuildStage } from "./parameters-stage";
 export class DoorwayServicesInfraPipelineStack extends Stack {
-  constructor(scope: Construct, id: string, props: PipelineProps) {
-    super(scope, id, {
-      ...props,
-      env: {
-        account: process.env.CDK_DEFAULT_ACCOUNT!,
-        region: "us-west-1",
-      },
-    });
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id);
+    const githubSecret = Secret.fromSecretNameV2(
+      this,
+      "githubSecret",
+      "/doorway/githubSecret",
+    ).secretValue;
     const pipelineRole = new Role(this, "doorway-services-pipeline-role", {
       assumedBy: new ServicePrincipal("codepipeline.amazonaws.com"),
     });
@@ -31,13 +31,18 @@ export class DoorwayServicesInfraPipelineStack extends Stack {
       role: pipelineRole,
       synth: new CodeBuildStep("Synth", {
         input: CodePipelineSource.gitHub(
-          "metrotranscom/doorway-lambdas",
-          "main",
+          "metrotranscom/doorway-infra",
+          "cdk-main",
           {
-            authentication: props.githubSecret,
+            authentication: githubSecret,
           },
         ),
-        commands: ["yarn install", "yarn build", "yarn cdk synth"],
+        commands: [
+          "cd doorway-services",
+          "yarn install",
+          "yarn build",
+          "yarn cdk synth",
+        ],
         primaryOutputDirectory: "./cdk.out",
         rolePolicyStatements: [
           new PolicyStatement({
@@ -53,7 +58,4 @@ export class DoorwayServicesInfraPipelineStack extends Stack {
       }),
     );
   }
-}
-export interface PipelineProps extends StackProps {
-  githubSecret: SecretValue;
 }
