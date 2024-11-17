@@ -1,8 +1,8 @@
 {
-  "name": "doorway-app-servers",
+  "name": "doorway-services",
   "version": "0.1.0",
   "bin": {
-    "doorway-app-servers": "bin/doorway-app-servers.js"
+    "doorway-services": "bin/doorway-services.js"
   },
   "scripts": {
     "build": "tsc",

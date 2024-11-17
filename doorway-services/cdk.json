@@ -1,5 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/doorway-app-servers.ts",
+  "app": "npx ts-node --prefer-ts-exts bin/doorway-services.ts",
   "watch": {
     "include": ["**"],
     "exclude": [
