@@ -39,7 +39,7 @@ jobs:
       - name: network-synth
         if: steps.filter.outputs.services == 'true'
         run: cdk synth
-        working-directory: ./doorway-app-servers
+        working-directory: ./doorway-services
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
