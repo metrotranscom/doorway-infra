@@ -13,9 +13,13 @@ import { LogGroup } from "aws-cdk-lib/aws-logs";
 import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
 import { LoadBalancerTarget } from "aws-cdk-lib/aws-route53-targets";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
-import { StringListParameter, StringParameter } from "aws-cdk-lib/aws-ssm";
+import { StringParameter } from "aws-cdk-lib/aws-ssm";
 export interface DoorwayApiServiceStackProps extends cdk.StackProps {
   environment: string;
+  env: {
+    account: string;
+    region: string;
+  };
   /**
    * Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]
    * @default '/cdk-bootstrap/hnb659fds/version'
@@ -26,7 +30,13 @@ export class DoorwayApiServiceStack extends cdk.Stack {
   public constructor(
     scope: cdk.App,
     id: string,
-    props: DoorwayApiServiceStackProps = { environment: "dev" },
+    props: DoorwayApiServiceStackProps = {
+      environment: "dev",
+      env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT || "none",
+        region: process.env.CDK_DEFAULT_REGION || "none",
+      },
+    },
   ) {
     super(scope, id, props);
     // Applying default props
@@ -48,13 +58,13 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       vpcId: vpcId,
       availabilityZones: ["us-west-1a", "us-west-1c"],
     });
-    const appSubnetIds: string[] =
-      StringListParameter.fromListParameterAttributes(this, "appSubnets", {
-        parameterName: `/doorway/${props.environment}/vpc/appSubnets`,
-      }).stringListValue;
+    const appSubnetIds: string[] = StringParameter.valueFromLookup(
+      this,
+      `/doorway/${props.environment}/vpc/appSubnets`,
+    ).split(",");
     const appSubnets: ISubnet[] = [];
     appSubnetIds.forEach((id) => {
-      appSubnets.push(Subnet.fromSubnetId(this, "subnet", id));
+      appSubnets.push(Subnet.fromSubnetId(this, id, id));
     });
     const appTierPrivateSG = new SecurityGroup(
       this,
