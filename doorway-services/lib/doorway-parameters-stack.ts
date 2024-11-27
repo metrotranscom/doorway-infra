@@ -101,6 +101,11 @@ export class DoorwayParametersStack extends cdk.Stack {
     apiMinTasks.applyRemovalPolicy(
       cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
     );
+    const logLevel = new StringParameter(this, "logLevel", {
+      parameterName: `/doorway/${props.environment}/internal-api/LOG_LEVEL`,
+      stringValue: "info",
+    });
+    logLevel.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE);
     const tempFileClearCron = new StringParameter(this, "tempFileClearCron", {
       parameterName: `/doorway/${props.environment}/internal-api/TEMP_FILE_CLEAR_CRON_STRING`,
       stringValue: "30 * * * *",
