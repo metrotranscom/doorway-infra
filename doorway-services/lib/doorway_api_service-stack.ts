@@ -191,7 +191,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           Secret.fromSecretNameV2(
             this,
             "dbUrl",
-            StringParameter.fromSecureStringParameterAttributes(
+            StringParameter.fromStringParameterAttributes(
               this,
               "dbSecretName",
               {
