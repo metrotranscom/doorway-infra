@@ -25,7 +25,7 @@ jobs:
           AWS_DEFAULT_REGION: us-west-1
           ENVIRONMENT: dev
       - name: Deploy
-        run: cdk deploy --all
+        run: cdk deploy --all --require-approval never
         working-directory: ./doorway-services
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
