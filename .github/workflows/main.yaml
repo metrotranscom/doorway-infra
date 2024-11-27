@@ -19,6 +19,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: install cdk
+        run: npm install -g aws-cdk
       - name: yarn-install-services
         working-directory: ./doorway-services
         run: yarn install
