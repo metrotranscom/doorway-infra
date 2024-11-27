@@ -229,12 +229,12 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        LOTTERY_PUBLISH__PROCESSING_CRON_STRING: ecs.Secret.fromSsmParameter(
+        LOTTERY_PUBLISH_PROCESSING_CRON_STRING: ecs.Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
-            "LOTTERY_PUBLISH__PROCESSING_CRON_STRING",
+            "LOTTERY_PUBLISH_PROCESSING_CRON_STRING",
             {
-              parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PUBLISH__PROCESSING_CRON_STRING`,
+              parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PUBLISH_PROCESSING_CRON_STRING`,
             },
           ),
         ),
@@ -301,12 +301,12 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        PARTNERS_PORTAL_BASE_URL: ecs.Secret.fromSsmParameter(
+        PARTNERS_BASE_URL: ecs.Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "PARTNERS_PORTAL_BASE_URL",
             {
-              parameterName: `/doorway/${props.environment}/internal-api/PARTNERS_PORTAL_BASE_URL`,
+              parameterName: `/doorway/${props.environment}/internal-api/PARTNERS_BASE_URL`,
             },
           ),
         ),
@@ -370,7 +370,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             this,
             "ASSET_FS_CONFIG_s3_BUCKET",
             {
-              parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_BUCKET`,
+              parameterName: `/doorway/${props.environment}/s3/uploadsBucketName`,
             },
           ),
         ),
