@@ -24,7 +24,7 @@ jobs:
       - id: deploy
         uses: ./.github/actions/doorway_environment_infra
         with:
-          environment: ${{env.ENVIRONMENT}}
+          ENVIRONMENT: dev
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
   deploy-staging:
@@ -37,6 +37,6 @@ jobs:
       - id: deploy
         uses: ./.github/actions/doorway_environment_infra
         with:
-          environment: ${{env.ENVIRONMENT}}
+          ENVIRONMENT: staging
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
