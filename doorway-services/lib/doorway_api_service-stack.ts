@@ -197,6 +197,11 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           ),
           "uri",
         ),
+        THROTTLE_LIMIT: ecs.Secret.fromSsmParameter(
+          StringParameter.fromStringParameterAttributes(this, "throttleLimit", {
+            parameterName: `/doorway/${props.environment}/internal-api/THROTTLE_LIMIT`,
+          }),
+        ),
       },
       environment: {
         ASSET_FILE_SERVICE: "s3",
@@ -249,10 +254,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         PARTNERS_BASE_URL: StringParameter.valueFromLookup(
           this,
           `/doorway/${props.environment}/internal-api/PARTNERS_BASE_URL`,
-        ),
-        THROTTLE_LIMIT: StringParameter.valueFromLookup(
-          this,
-          `/doorway/${props.environment}/internal-api/THROTTLE_LIMIT`,
         ),
         THROTTLE_TTL: StringParameter.valueFromLookup(
           this,
