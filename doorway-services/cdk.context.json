@@ -1,3 +1,5 @@
 {
-  "ssm:account=364076391763:parameterName=/doorway/dev/vpc/appSubnets:region=us-west-1": "subnet-0672e2f14ebf58064,subnet-0fd7d2a6c1e96edea"
+  "ssm:account=364076391763:parameterName=/doorway/dev/vpc/appSubnets:region=us-west-1": "subnet-0672e2f14ebf58064,subnet-0fd7d2a6c1e96edea",
+  "ssm:account=364076391763:parameterName=/doorway/prod/vpc/appSubnets:region=us-west-1": "subnet-0cc003b8490ec6362,subnet-089ba928efdadc4ea",
+  "ssm:account=364076391763:parameterName=/doorway/staging/vpc/appSubnets:region=us-west-1": "subnet-09c69417c809ab6bf,subnet-04608648fb68b5014"
 }

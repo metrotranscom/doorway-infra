@@ -147,11 +147,38 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             `app-secret-${props.environment}`,
           ),
         ),
+        CLOUDINARY_KEY: ecs.Secret.fromSecretsManager(
+          Secret.fromSecretNameV2(this, "cloudinarykey", `CLOUDINARY_KEY`),
+        ),
         GOOGLE_API_ID: ecs.Secret.fromSecretsManager(
           Secret.fromSecretNameV2(this, "googleApiId", "GOOGLE_API_ID"),
         ),
         GOOGLE_API_EMAIL: ecs.Secret.fromSecretsManager(
           Secret.fromSecretNameV2(this, "googleApiEmail", "GOOGLE_API_EMAIL"),
+        ),
+        GOOGLE_API_KEY: ecs.Secret.fromSecretsManager(
+          Secret.fromSecretNameV2(this, "googleApiKey", "GOOGLE_API_KEY"),
+        ),
+        GOVDELIVERY_API_URL: ecs.Secret.fromSecretsManager(
+          Secret.fromSecretNameV2(
+            this,
+            "govdeliveryApiUrl",
+            "GOVDELIVERY_API_URL",
+          ),
+        ),
+        GOVDELIVERY_PASSWORD: ecs.Secret.fromSecretsManager(
+          Secret.fromSecretNameV2(
+            this,
+            "govdeliveryPassword",
+            "GOVDELIVERY_PASSWORD",
+          ),
+        ),
+        GOVDELIVERY_USERNAME: ecs.Secret.fromSecretsManager(
+          Secret.fromSecretNameV2(
+            this,
+            "govdeliveryUsername",
+            "GOVDELIVERY_USERNAME",
+          ),
         ),
         EMAIL_API_KEY: ecs.Secret.fromSecretsManager(
           Secret.fromSecretNameV2(this, "emailKey", "EMAIL_API_KEY"),
@@ -185,6 +212,43 @@ export class DoorwayApiServiceStack extends cdk.Stack {
               parameterName: `/doorway/${props.environment}/internal-api/LISTING_PROCESSING_CRON_STRING`,
             },
           ).stringValue,
+        LOTTERY_PROCESSING_CRON_STRING:
+          StringParameter.fromStringParameterAttributes(
+            this,
+            "lotteryProcessingCronString",
+            {
+              parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PROCESSING_CRON_STRING`,
+            },
+          ).stringValue,
+        LOTTERY_PUBLISH__PROCESSING_CRON_STRING:
+          StringParameter.fromStringParameterAttributes(
+            this,
+            "lotteryPublishCronString",
+            {
+              parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PUBLISH_PROCESSING_CRON_STRING`,
+            },
+          ).stringValue,
+        LOTTERY_DAYS_TILL_EXPIRY: StringParameter.fromStringParameterAttributes(
+          this,
+          "lotteryDaysTillExpiry",
+          {
+            parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_DAYS_TILL_EXPIRY`,
+          },
+        ).stringValue,
+        MFA_CODE_LENGTH: StringParameter.fromStringParameterAttributes(
+          this,
+          "mfaCodeLength",
+          {
+            parameterName: `/doorway/${props.environment}/internal-api/MFA_CODE_LENGTH`,
+          },
+        ).stringValue,
+        MFA_CODE_VALID: StringParameter.fromStringParameterAttributes(
+          this,
+          "mfaCodeValid",
+          {
+            parameterName: `/doorway/${props.environment}/internal-api/MFA_CODE_VALID`,
+          },
+        ).stringValue,
         AFS_PROCESSING_CRON_STRING:
           StringParameter.fromStringParameterAttributes(
             this,
@@ -193,6 +257,13 @@ export class DoorwayApiServiceStack extends cdk.Stack {
               parameterName: `/doorway/${props.environment}/internal-api/AFS_PROCESSING_CRON_STRING`,
             },
           ).stringValue,
+        GOVDELIVERY_TOPIC: StringParameter.fromStringParameterAttributes(
+          this,
+          "GOVDELIVERY_TOPIC",
+          {
+            parameterName: `/doorway/${props.environment}/internal-api/GOVDELIVERY_TOPIC`,
+          },
+        ).stringValue,
         TEMP_FILE_CLEAR_CRON_STRING:
           StringParameter.fromStringParameterAttributes(
             this,
@@ -216,6 +287,20 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             parameterName: `/doorway/${props.environment}/internal-api/PARTNERS_BASE_URL`,
           },
         ).stringValue,
+        THROTTLE_LIMIT: StringParameter.fromStringParameterAttributes(
+          this,
+          "throttleLimit",
+          {
+            parameterName: `/doorway/${props.environment}/internal-api/THROTTLE_LIMIT`,
+          },
+        ).stringValue,
+        THROTTLE_TTL: StringParameter.fromStringParameterAttributes(
+          this,
+          "throttleTtl",
+          {
+            parameterName: `/doorway/${props.environment}/internal-api/THROTTLE_TTL`,
+          },
+        ).stringValue,
         ASSET_FS_CONFIG_s3_REGION:
           StringParameter.fromStringParameterAttributes(this, "s3Region", {
             parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_REGION`,
@@ -224,9 +309,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           StringParameter.fromStringParameterAttributes(this, "s3Format", {
             parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_URL_FORMAT`,
           }).stringValue,
-        GOVDELIVERY_USERNAME: "dev-services@exygy.com", // this value may be irrelevant since we don't use gov delivery anymore
         NO_COLOR: "TRUE",
-        GOVDELIVERY_TOPIC: "doorway-listings", // Also possibly irrelevant
         ASSET_UPLOAD_MAX_SIZE: StringParameter.fromStringParameterAttributes(
           this,
           "uploadMaxSize",
@@ -241,11 +324,41 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             parameterName: `/doorway/${props.environment}/internal-api/AUTH_LOCK_LOGIN_COOLDOWN`,
           },
         ).stringValue,
+        AUTH_LOCK_LOGIN_AFTER_FAILED_ATTEMPTS:
+          StringParameter.fromStringParameterAttributes(
+            this,
+            "authLockAfterFailedAttempts",
+            {
+              parameterName: `/doorway/${props.environment}/internal-api/AUTH_LOCK_LOGIN_AFTER_FAILED_ATTEMPTS`,
+            },
+          ).stringValue,
+        CORS_ORIGINS: StringParameter.fromStringParameterAttributes(
+          this,
+          "corsOrigins",
+          {
+            parameterName: `/doorway/${props.environment}/internal-api/CORS_ORIGINS`,
+          },
+        ).stringValue,
         ASSET_FS_CONFIG_s3_PATH_PREFIX: "",
         ASSET_FS_CONFIG_s3_BUCKET:
           StringParameter.fromStringParameterAttributes(this, "s3Bucket", {
             parameterName: `/doorway/${props.environment}/s3/uploadsBucketName`,
           }).stringValue,
+        DUPLICATES_CLOSE_DATE: StringParameter.fromStringParameterAttributes(
+          this,
+          "duplicatesCloseDate",
+          {
+            parameterName: `/doorway/${props.environment}/internal-api/DUPLICATES_CLOSE_DATE`,
+          },
+        ).stringValue,
+        DUPLICATES_PROCESSING_CRON_STRING:
+          StringParameter.fromStringParameterAttributes(
+            this,
+            "duplicatesProcessingCronString",
+            {
+              parameterName: `/doorway/${props.environment}/internal-api/DUPLICATES_PROCESSING_CRON_STRING`,
+            },
+          ).stringValue,
       },
       entryPoint: [],
       portMappings: [
