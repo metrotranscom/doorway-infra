@@ -51,9 +51,13 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
       }).valueAsString,
     };
-    const vpcId = StringParameter.fromStringParameterAttributes(this, "vpcId", {
-      parameterName: `/doorway/${props.environment}/vpc/id`,
-    }).stringValue;
+    const vpcId = StringParameter.fromSecureStringParameterAttributes(
+      this,
+      "vpcId",
+      {
+        parameterName: `/doorway/${props.environment}/vpc/id`,
+      },
+    ).stringValue;
     const vpc = cdk.aws_ec2.Vpc.fromVpcAttributes(this, "vpc", {
       vpcId: vpcId,
       availabilityZones: ["us-west-1a", "us-west-1c"],
@@ -187,7 +191,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           Secret.fromSecretNameV2(
             this,
             "dbUrl",
-            StringParameter.fromStringParameterAttributes(
+            StringParameter.fromSecureStringParameterAttributes(
               this,
               "dbSecretName",
               {
@@ -204,161 +208,98 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         PORT: "3100",
         SHOW_LM_LINKS: "TRUE",
         TIME_ZONE: "America/Los_Angeles",
-        LISTING_PROCESSING_CRON_STRING:
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "listingsProcessingCronString",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/LISTING_PROCESSING_CRON_STRING`,
-            },
-          ).stringValue,
-        LOTTERY_PROCESSING_CRON_STRING:
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "lotteryProcessingCronString",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PROCESSING_CRON_STRING`,
-            },
-          ).stringValue,
+        LISTING_PROCESSING_CRON_STRING: StringParameter.valueFromLookup(
+          this,
+          `/doorway/${props.environment}/internal-api/LISTING_PROCESSING_CRON_STRING`,
+        ),
+        LOTTERY_PROCESSING_CRON_STRING: StringParameter.valueFromLookup(
+          this,
+          `/doorway/${props.environment}/internal-api/LOTTERY_PROCESSING_CRON_STRING`,
+        ),
         LOTTERY_PUBLISH__PROCESSING_CRON_STRING:
-          StringParameter.fromStringParameterAttributes(
+          StringParameter.valueFromLookup(
             this,
-            "lotteryPublishCronString",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PUBLISH_PROCESSING_CRON_STRING`,
-            },
-          ).stringValue,
-        LOTTERY_DAYS_TILL_EXPIRY: StringParameter.fromStringParameterAttributes(
+            `/doorway/${props.environment}/internal-api/LOTTERY_PUBLISH_PROCESSING_CRON_STRING`,
+          ),
+        LOTTERY_DAYS_TILL_EXPIRY: StringParameter.valueFromLookup(
           this,
-          "lotteryDaysTillExpiry",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_DAYS_TILL_EXPIRY`,
-          },
-        ).stringValue,
-        MFA_CODE_LENGTH: StringParameter.fromStringParameterAttributes(
+          `/doorway/${props.environment}/internal-api/LOTTERY_DAYS_TILL_EXPIRY`,
+        ),
+        MFA_CODE_LENGTH: StringParameter.valueFromLookup(
           this,
-          "mfaCodeLength",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/MFA_CODE_LENGTH`,
-          },
-        ).stringValue,
-        MFA_CODE_VALID: StringParameter.fromStringParameterAttributes(
+          `/doorway/${props.environment}/internal-api/MFA_CODE_LENGTH`,
+        ),
+        MFA_CODE_VALID: StringParameter.valueFromLookup(
           this,
-          "mfaCodeValid",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/MFA_CODE_VALID`,
-          },
-        ).stringValue,
-        AFS_PROCESSING_CRON_STRING:
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "afsProcessingCronString",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/AFS_PROCESSING_CRON_STRING`,
-            },
-          ).stringValue,
-        GOVDELIVERY_TOPIC: StringParameter.fromStringParameterAttributes(
+          `/doorway/${props.environment}/internal-api/MFA_CODE_VALID`,
+        ),
+        AFS_PROCESSING_CRON_STRING: StringParameter.valueFromLookup(
           this,
-          "GOVDELIVERY_TOPIC",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/GOVDELIVERY_TOPIC`,
-          },
-        ).stringValue,
-        TEMP_FILE_CLEAR_CRON_STRING:
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "tempFileCronString",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/TEMP_FILE_CLEAR_CRON_STRING`,
-            },
-          ).stringValue,
+          `/doorway/${props.environment}/internal-api/AFS_PROCESSING_CRON_STRING`,
+        ),
+        GOVDELIVERY_TOPIC: StringParameter.valueFromLookup(
+          this,
+          `/doorway/${props.environment}/internal-api/GOVDELIVERY_TOPIC`,
+        ),
+        TEMP_FILE_CLEAR_CRON_STRING: StringParameter.valueFromLookup(
+          this,
+          `/doorway/${props.environment}/internal-api/TEMP_FILE_CLEAR_CRON_STRING`,
+        ),
         SHOW_DUPLICATES: "FALSE",
-        PARTNERS_PORTAL_URL: StringParameter.fromStringParameterAttributes(
+        PARTNERS_PORTAL_URL: StringParameter.valueFromLookup(
           this,
-          "partnersPortalURL",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/PARTNERS_PORTAL_URL`,
-          },
-        ).stringValue,
-        PARTNERS_BASE_URL: StringParameter.fromStringParameterAttributes(
+          `/doorway/${props.environment}/internal-api/PARTNERS_PORTAL_URL`,
+        ),
+        PARTNERS_BASE_URL: StringParameter.valueFromLookup(
           this,
-          "partnersBaseURL",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/PARTNERS_BASE_URL`,
-          },
-        ).stringValue,
-        THROTTLE_LIMIT: StringParameter.fromStringParameterAttributes(
+          `/doorway/${props.environment}/internal-api/PARTNERS_BASE_URL`,
+        ),
+        THROTTLE_LIMIT: StringParameter.valueFromLookup(
           this,
-          "throttleLimit",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/THROTTLE_LIMIT`,
-          },
-        ).stringValue,
-        THROTTLE_TTL: StringParameter.fromStringParameterAttributes(
+          `/doorway/${props.environment}/internal-api/THROTTLE_LIMIT`,
+        ),
+        THROTTLE_TTL: StringParameter.valueFromLookup(
           this,
-          "throttleTtl",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/THROTTLE_TTL`,
-          },
-        ).stringValue,
-        ASSET_FS_CONFIG_s3_REGION:
-          StringParameter.fromStringParameterAttributes(this, "s3Region", {
-            parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_REGION`,
-          }).stringValue,
-        ASSET_FS_CONFIG_s3_URL_FORMAT:
-          StringParameter.fromStringParameterAttributes(this, "s3Format", {
-            parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_URL_FORMAT`,
-          }).stringValue,
+          `/doorway/${props.environment}/internal-api/THROTTLE_TTL`,
+        ),
+        ASSET_FS_CONFIG_s3_REGION: StringParameter.valueFromLookup(
+          this,
+          `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_REGION`,
+        ),
+        ASSET_FS_CONFIG_s3_URL_FORMAT: StringParameter.valueFromLookup(
+          this,
+          `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_URL_FORMAT`,
+        ),
         NO_COLOR: "TRUE",
-        ASSET_UPLOAD_MAX_SIZE: StringParameter.fromStringParameterAttributes(
+        ASSET_UPLOAD_MAX_SIZE: StringParameter.valueFromLookup(
           this,
-          "uploadMaxSize",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/ASSET_UPLOAD_MAX_SIZE`,
-          },
-        ).stringValue,
-        AUTH_LOCK_LOGIN_COOLDOWN: StringParameter.fromStringParameterAttributes(
+          `/doorway/${props.environment}/internal-api/ASSET_UPLOAD_MAX_SIZE`,
+        ),
+        AUTH_LOCK_LOGIN_COOLDOWN: StringParameter.valueFromLookup(
           this,
-          "authLockCooldown",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/AUTH_LOCK_LOGIN_COOLDOWN`,
-          },
-        ).stringValue,
-        AUTH_LOCK_LOGIN_AFTER_FAILED_ATTEMPTS:
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "authLockAfterFailedAttempts",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/AUTH_LOCK_LOGIN_AFTER_FAILED_ATTEMPTS`,
-            },
-          ).stringValue,
-        CORS_ORIGINS: StringParameter.fromStringParameterAttributes(
+          `/doorway/${props.environment}/internal-api/AUTH_LOCK_LOGIN_COOLDOWN`,
+        ),
+        AUTH_LOCK_LOGIN_AFTER_FAILED_ATTEMPTS: StringParameter.valueFromLookup(
           this,
-          "corsOrigins",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/CORS_ORIGINS`,
-          },
-        ).stringValue,
+          `/doorway/${props.environment}/internal-api/AUTH_LOCK_LOGIN_AFTER_FAILED_ATTEMPTS`,
+        ),
+        CORS_ORIGINS: StringParameter.valueFromLookup(
+          this,
+          `/doorway/${props.environment}/internal-api/CORS_ORIGINS`,
+        ),
         ASSET_FS_CONFIG_s3_PATH_PREFIX: "",
-        ASSET_FS_CONFIG_s3_BUCKET:
-          StringParameter.fromStringParameterAttributes(this, "s3Bucket", {
-            parameterName: `/doorway/${props.environment}/s3/uploadsBucketName`,
-          }).stringValue,
-        DUPLICATES_CLOSE_DATE: StringParameter.fromStringParameterAttributes(
+        ASSET_FS_CONFIG_s3_BUCKET: StringParameter.valueFromLookup(
           this,
-          "duplicatesCloseDate",
-          {
-            parameterName: `/doorway/${props.environment}/internal-api/DUPLICATES_CLOSE_DATE`,
-          },
-        ).stringValue,
-        DUPLICATES_PROCESSING_CRON_STRING:
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "duplicatesProcessingCronString",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/DUPLICATES_PROCESSING_CRON_STRING`,
-            },
-          ).stringValue,
+          `/doorway/${props.environment}/s3/uploadsBucketName`,
+        ),
+        DUPLICATES_CLOSE_DATE: StringParameter.valueFromLookup(
+          this,
+          `/doorway/${props.environment}/internal-api/DUPLICATES_CLOSE_DATE`,
+        ),
+        DUPLICATES_PROCESSING_CRON_STRING: StringParameter.valueFromLookup(
+          this,
+          `/doorway/${props.environment}/internal-api/DUPLICATES_PROCESSING_CRON_STRING`,
+        ),
       },
       entryPoint: [],
       portMappings: [
