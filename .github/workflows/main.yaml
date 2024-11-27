@@ -1,22 +1,26 @@
-name: Deploy Dev
+name: CDK Synth
 on: [push]
 # Required permissions
 permissions: read-all
 jobs:
-  synth:
+  trunk_check:
+    name: Trunk Check Runner
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write # For trunk to post annotations
+      contents: read # For repo checkout
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Trunk Check
+        uses: trunk-io/trunk-action@v1
+  deploy-dev:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-      - name: install cdk
-        run: npm install -g aws-cdk
-      - name: yarn-install
+      - name: yarn-install-services
         working-directory: ./doorway-services
         run: yarn install
-      - name: Synth
+      - name: synth-services
         run: cdk synth
         working-directory: ./doorway-services
         env:
@@ -24,7 +28,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-west-1
           ENVIRONMENT: dev
-      - name: Deploy
+      - name: deploy-services
         run: cdk deploy --all --require-approval never
         working-directory: ./doorway-services
         env:
