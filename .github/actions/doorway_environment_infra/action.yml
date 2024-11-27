@@ -1,5 +1,5 @@
-name: Doorway Services Deploy
-description: Creates the Doorway ECS Services Infrastructure
+name: Doorway Environment Infra
+description: Generic CDK deployment for doorway environments
 inputs:
   ENVIRONMENT:
     description: The environment to deploy to

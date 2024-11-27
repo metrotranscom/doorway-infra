@@ -1,4 +1,4 @@
-name: CDK Synth
+name: Main
 on: [push]
 # Required permissions
 permissions: read-all
@@ -22,6 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - id: deploy
-        uses: ./.github/actions/deploy_services.yaml
+        uses: ./.github/actions/doorway_environment_infra
         with:
           environment: $ENVIRONMENT
