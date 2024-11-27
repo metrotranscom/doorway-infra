@@ -51,13 +51,9 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
       }).valueAsString,
     };
-    const vpcId = StringParameter.fromSecureStringParameterAttributes(
-      this,
-      "vpcId",
-      {
-        parameterName: `/doorway/${props.environment}/vpc/id`,
-      },
-    ).stringValue;
+    const vpcId = StringParameter.fromStringParameterAttributes(this, "vpcId", {
+      parameterName: `/doorway/${props.environment}/vpc/id`,
+    }).stringValue;
     const vpc = cdk.aws_ec2.Vpc.fromVpcAttributes(this, "vpc", {
       vpcId: vpcId,
       availabilityZones: ["us-west-1a", "us-west-1c"],
