@@ -41,5 +41,7 @@ jobs:
     needs: [trunk_check, cdk_synth]
     environment: dev
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - id: deploy
         uses: ./.github/actions/deploy_services.yaml
