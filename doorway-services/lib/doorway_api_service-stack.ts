@@ -145,6 +145,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       cpu: "512",
       memoryMiB: "1024",
       executionRole: executionRole,
+      taskRole: executionRole,
       networkMode: ecs.NetworkMode.AWS_VPC,
     });
     const container = task.addContainer("internal-api", {
