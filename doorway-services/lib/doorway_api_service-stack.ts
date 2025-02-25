@@ -133,6 +133,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       uploadsBucketArn,
     );
     uploadsBucket.grantReadWrite(executionRole);
+    uploadsBucket.grantPut(executionRole);
     const sesIdentity = EmailIdentity.fromEmailIdentityName(
       this,
       "sesIdentity",
