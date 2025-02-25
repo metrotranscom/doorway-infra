@@ -12,7 +12,9 @@ import { ManagedPolicy, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
 import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
 import { LoadBalancerTarget } from "aws-cdk-lib/aws-route53-targets";
+import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
+import { EmailIdentity } from "aws-cdk-lib/aws-ses";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 export interface DoorwayApiServiceStackProps extends cdk.StackProps {
   environment: string;
@@ -98,6 +100,13 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         loadBalancerName: `doorway-${props.environment}-private-lb`,
       },
     );
+    const uploadsBucketName = StringParameter.fromStringParameterAttributes(
+      this,
+      "uploadsBucketName",
+      {
+        parameterName: `/doorway/${props.environment}/s3/uploadsBucketName`,
+      },
+    ).stringValue;
     const executionRole = new Role(this, "executionRole", {
       assumedBy: new ServicePrincipal("ecs-tasks.amazonaws.com"),
     });
@@ -117,6 +126,19 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         "AmazonEC2ContainerRegistryReadOnly",
       ),
     );
+    const uploadsBucketArn = `arn:aws:s3:::${uploadsBucketName}`;
+    const uploadsBucket = Bucket.fromBucketArn(
+      this,
+      "uploadsBucket",
+      uploadsBucketArn,
+    );
+    uploadsBucket.grantReadWrite(executionRole);
+    const sesIdentity = EmailIdentity.fromEmailIdentityName(
+      this,
+      "sesIdentity",
+      "housingbayarea.org",
+    );
+    sesIdentity.grantSendEmail(executionRole);
     const task = new ecs.TaskDefinition(this, "task", {
       compatibility: ecs.Compatibility.FARGATE,
       cpu: "512",
