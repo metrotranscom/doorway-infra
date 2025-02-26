@@ -140,7 +140,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       "housingbayarea.org",
     );
     sesIdentity.grantSendEmail(executionRole);
-
     const minTasks = StringParameter.fromStringParameterAttributes(
       this,
       "minTasks",
@@ -444,7 +443,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         },
       ],
     });
-
     const service = new ecs.FargateService(
       this,
       `doorway-${props.environment}-internal-api`,
@@ -458,7 +456,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         vpcSubnets: {
           subnets: appSubnets,
         },
-        desiredCount: Number(minTasks),
+        desiredCount: +minTasks,
       },
     );
     const tg = new ApplicationTargetGroup(this, "tg", {
