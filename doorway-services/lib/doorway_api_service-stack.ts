@@ -140,15 +140,23 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       "housingbayarea.org",
     );
     sesIdentity.grantSendEmail(executionRole);
+
+    const minTasks = StringParameter.fromStringParameterAttributes(
+      this,
+      "minTasks",
+      {
+        parameterName: `/doorway/${props.environment}/internal-api/minimumTasks`,
+      },
+    ).stringValue;
     const task = new ecs.TaskDefinition(this, "task", {
       compatibility: ecs.Compatibility.FARGATE,
-      cpu: "3",
-      memoryMiB: "1024",
+      cpu: "1024",
+      memoryMiB: "2048",
       executionRole: executionRole,
       taskRole: executionRole,
       networkMode: ecs.NetworkMode.AWS_VPC,
     });
-    const container = task.addContainer("internal-api", {
+    task.addContainer("internal-api", {
       image: ecs.ContainerImage.fromRegistry(
         `364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway-${props.environment}/backend:run`,
       ),
@@ -436,13 +444,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         },
       ],
     });
-    const minTasks = StringParameter.fromStringParameterAttributes(
-      this,
-      "minTasks",
-      {
-        parameterName: `/doorway/${props.environment}/internal-api/minimumTasks`,
-      },
-    ).stringValue;
+
     const service = new ecs.FargateService(
       this,
       `doorway-${props.environment}-internal-api`,
@@ -456,7 +458,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         vpcSubnets: {
           subnets: appSubnets,
         },
-        desiredCount: 1,
+        desiredCount: Number(minTasks),
       },
     );
     const tg = new ApplicationTargetGroup(this, "tg", {
