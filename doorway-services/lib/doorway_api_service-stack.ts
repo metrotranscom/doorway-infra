@@ -142,7 +142,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
     sesIdentity.grantSendEmail(executionRole);
     const task = new ecs.TaskDefinition(this, "task", {
       compatibility: ecs.Compatibility.FARGATE,
-      cpu: "1",
+      cpu: "3",
       memoryMiB: "1024",
       executionRole: executionRole,
       taskRole: executionRole,
@@ -152,7 +152,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       image: ecs.ContainerImage.fromRegistry(
         `364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway-${props.environment}/backend:run`,
       ),
-      cpu: 512,
+      cpu: 1,
       memoryLimitMiB: 1024,
       essential: true,
       logging: ecs.LogDrivers.awsLogs({
