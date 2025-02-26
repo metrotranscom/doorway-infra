@@ -456,7 +456,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         vpcSubnets: {
           subnets: appSubnets,
         },
-        desiredCount: +minTasks,
+        desiredCount: minTasks != undefined ? +minTasks : 3,
       },
     );
     const tg = new ApplicationTargetGroup(this, "tg", {
