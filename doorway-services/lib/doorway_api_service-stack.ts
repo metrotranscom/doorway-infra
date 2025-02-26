@@ -142,7 +142,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
     sesIdentity.grantSendEmail(executionRole);
     const task = new ecs.TaskDefinition(this, "task", {
       compatibility: ecs.Compatibility.FARGATE,
-      cpu: "512",
+      cpu: "1",
       memoryMiB: "1024",
       executionRole: executionRole,
       taskRole: executionRole,
