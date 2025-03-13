@@ -508,7 +508,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         vpc: vpc,
         port: 3100,
         protocol: Protocol.TCP,
-        targetType: TargetType.IP,
+        targetType: TargetType.ALB,
         healthCheck: {
           protocol: Protocol.HTTP,
           port: "3100",
