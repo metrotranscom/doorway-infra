@@ -1,13 +1,17 @@
 import * as cdk from "aws-cdk-lib";
+import { VpcLink } from "aws-cdk-lib/aws-apigateway";
 import { ISubnet, SecurityGroup, Subnet } from "aws-cdk-lib/aws-ec2";
 import * as ecs from "aws-cdk-lib/aws-ecs";
 import {
   ApplicationLoadBalancer,
   ApplicationProtocol,
   ApplicationTargetGroup,
+  NetworkLoadBalancer,
+  NetworkTargetGroup,
   Protocol,
   TargetType,
 } from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import { AlbListenerTarget } from "aws-cdk-lib/aws-elasticloadbalancingv2-targets";
 import { ManagedPolicy, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
 import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
@@ -485,6 +489,46 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       zone: hostedZone,
       recordName: `backend.${props.environment}`,
       target: RecordTarget.fromAlias(new LoadBalancerTarget(privateLB)),
+    });
+    const privateNLB = new NetworkLoadBalancer(
+      this,
+      `privateNLB-${props.environment}`,
+      {
+        vpc: vpc,
+        internetFacing: false,
+        vpcSubnets: {
+          subnets: appSubnets,
+        },
+      },
+    );
+    const nlbTargetGroup = new NetworkTargetGroup(
+      this,
+      `nlbTargetGroup-${props.environment}`,
+      {
+        vpc: vpc,
+        port: 3100,
+        protocol: Protocol.TCP,
+        targetType: TargetType.IP,
+        healthCheck: {
+          protocol: Protocol.HTTP,
+          port: "3100",
+          path: "/",
+          timeout: cdk.Duration.seconds(5),
+          interval: cdk.Duration.seconds(30),
+          healthyThresholdCount: 5,
+          unhealthyThresholdCount: 2,
+        },
+        targets: [new AlbListenerTarget(listener)],
+      },
+    );
+    const privateNLBListener = privateNLB.addListener("privateNLBListener", {
+      port: 80,
+      protocol: Protocol.TCP,
+      defaultTargetGroups: [nlbTargetGroup],
+    });
+    const vpcLink = new VpcLink(this, `doorway-vpclink-${props.environment}`, {
+      targets: [privateNLB],
+      description: `Vpc link for Doorway ${props.environment} API`,
     });
   }
 }
