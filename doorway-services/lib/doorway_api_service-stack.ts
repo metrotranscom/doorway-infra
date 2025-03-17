@@ -1,19 +1,24 @@
 import * as cdk from "aws-cdk-lib";
 import { ISubnet, SecurityGroup, Subnet } from "aws-cdk-lib/aws-ec2";
-import * as ecs from "aws-cdk-lib/aws-ecs";
 import {
-  ApplicationLoadBalancer,
-  ApplicationProtocol,
-  ApplicationTargetGroup,
+  Cluster,
+  Compatibility,
+  ContainerImage,
+  FargateService,
+  LogDrivers,
+  NetworkMode,
   Protocol,
-  TargetType,
-} from "aws-cdk-lib/aws-elasticloadbalancingv2";
+  Secret,
+  TaskDefinition,
+} from "aws-cdk-lib/aws-ecs";
+//import * as ecs from "aws-cdk-lib/aws-ecs";
+import * as elb from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { ManagedPolicy, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
 import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
 import { LoadBalancerTarget } from "aws-cdk-lib/aws-route53-targets";
 import { Bucket } from "aws-cdk-lib/aws-s3";
-import { Secret } from "aws-cdk-lib/aws-secretsmanager";
+import * as secret from "aws-cdk-lib/aws-secretsmanager";
 import { EmailIdentity } from "aws-cdk-lib/aws-ses";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 export interface DoorwayApiServiceStackProps extends cdk.StackProps {
@@ -87,7 +92,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         zoneName: "housingbayarea.int",
       },
     );
-    const privateLB = new ApplicationLoadBalancer(
+    const privateLB = new elb.ApplicationLoadBalancer(
       this,
       `doorway-${props.environment}-private`,
       {
@@ -147,22 +152,22 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         parameterName: `/doorway/${props.environment}/internal-api/minimumTasks`,
       },
     ).stringValue;
-    const task = new ecs.TaskDefinition(this, "task", {
-      compatibility: ecs.Compatibility.FARGATE,
-      cpu: "1024",
-      memoryMiB: "2048",
+    const task = new TaskDefinition(this, "task", {
+      compatibility: Compatibility.FARGATE,
+      cpu: "2048",
+      memoryMiB: "4096",
       executionRole: executionRole,
       taskRole: executionRole,
-      networkMode: ecs.NetworkMode.AWS_VPC,
+      networkMode: NetworkMode.AWS_VPC,
     });
     task.addContainer("internal-api", {
-      image: ecs.ContainerImage.fromRegistry(
+      image: ContainerImage.fromRegistry(
         `364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway-${props.environment}/backend:run`,
       ),
       cpu: 1,
       memoryLimitMiB: 1024,
       essential: true,
-      logging: ecs.LogDrivers.awsLogs({
+      logging: LogDrivers.awsLogs({
         streamPrefix: "internal-api",
         logGroup: LogGroup.fromLogGroupName(
           this,
@@ -171,51 +176,63 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         ),
       }),
       secrets: {
-        APP_SECRET: ecs.Secret.fromSecretsManager(
-          Secret.fromSecretNameV2(
+        APP_SECRET: Secret.fromSecretsManager(
+          secret.Secret.fromSecretNameV2(
             this,
-            "appsecret",
-            `app-secret-${props.environment}`,
+            "appSecret",
+            `appSecret-${props.environment}`,
           ),
         ),
-        CLOUDINARY_KEY: ecs.Secret.fromSecretsManager(
-          Secret.fromSecretNameV2(this, "cloudinarykey", `CLOUDINARY_KEY`),
+        CLOUDINARY_KEY: Secret.fromSecretsManager(
+          secret.Secret.fromSecretNameV2(
+            this,
+            "cloudinarykey",
+            `CLOUDINARY_KEY`,
+          ),
         ),
-        GOOGLE_API_ID: ecs.Secret.fromSecretsManager(
-          Secret.fromSecretNameV2(this, "googleApiId", "GOOGLE_API_ID"),
+        GOOGLE_API_ID: Secret.fromSecretsManager(
+          secret.Secret.fromSecretNameV2(this, "googleApiId", "GOOGLE_API_ID"),
         ),
-        GOOGLE_API_EMAIL: ecs.Secret.fromSecretsManager(
-          Secret.fromSecretNameV2(this, "googleApiEmail", "GOOGLE_API_EMAIL"),
+        GOOGLE_API_EMAIL: Secret.fromSecretsManager(
+          secret.Secret.fromSecretNameV2(
+            this,
+            "googleApiEmail",
+            "GOOGLE_API_EMAIL",
+          ),
         ),
-        GOOGLE_API_KEY: ecs.Secret.fromSecretsManager(
-          Secret.fromSecretNameV2(this, "googleApiKey", "GOOGLE_API_KEY"),
+        GOOGLE_API_KEY: Secret.fromSecretsManager(
+          secret.Secret.fromSecretNameV2(
+            this,
+            "googleApiKey",
+            "GOOGLE_API_KEY",
+          ),
         ),
-        GOVDELIVERY_API_URL: ecs.Secret.fromSecretsManager(
-          Secret.fromSecretNameV2(
+        GOVDELIVERY_API_URL: Secret.fromSecretsManager(
+          secret.Secret.fromSecretNameV2(
             this,
             "govdeliveryApiUrl",
             "GOVDELIVERY_API_URL",
           ),
         ),
-        GOVDELIVERY_PASSWORD: ecs.Secret.fromSecretsManager(
-          Secret.fromSecretNameV2(
+        GOVDELIVERY_PASSWORD: Secret.fromSecretsManager(
+          secret.Secret.fromSecretNameV2(
             this,
             "govdeliveryPassword",
             "GOVDELIVERY_PASSWORD",
           ),
         ),
-        GOVDELIVERY_USERNAME: ecs.Secret.fromSecretsManager(
-          Secret.fromSecretNameV2(
+        GOVDELIVERY_USERNAME: Secret.fromSecretsManager(
+          secret.Secret.fromSecretNameV2(
             this,
             "govdeliveryUsername",
             "GOVDELIVERY_USERNAME",
           ),
         ),
-        EMAIL_API_KEY: ecs.Secret.fromSecretsManager(
-          Secret.fromSecretNameV2(this, "emailKey", "EMAIL_API_KEY"),
+        EMAIL_API_KEY: Secret.fromSecretsManager(
+          secret.Secret.fromSecretNameV2(this, "emailKey", "EMAIL_API_KEY"),
         ),
-        DATABASE_URL: ecs.Secret.fromSecretsManager(
-          Secret.fromSecretNameV2(
+        DATABASE_URL: Secret.fromSecretsManager(
+          secret.Secret.fromSecretNameV2(
             this,
             "dbUrl",
             StringParameter.fromStringParameterAttributes(
@@ -228,7 +245,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           ),
           "uri",
         ),
-        THROTTLE_LIMIT: ecs.Secret.fromSsmParameter(
+        THROTTLE_LIMIT: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "THROTTLE_LIMIT",
@@ -237,12 +254,12 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        LOG_LEVEL: ecs.Secret.fromSsmParameter(
+        LOG_LEVEL: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(this, "LOG_LEVEL", {
             parameterName: `/doorway/${props.environment}/internal-api/LOG_LEVEL`,
           }),
         ),
-        LISTING_PROCESSING_CRON_STRING: ecs.Secret.fromSsmParameter(
+        LISTING_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "LISTING_PROCESSING_CRON_STRING",
@@ -251,7 +268,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        LOTTERY_PROCESSING_CRON_STRING: ecs.Secret.fromSsmParameter(
+        LOTTERY_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "LOTTERY_PROCESSING_CRON_STRING",
@@ -260,7 +277,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        LOTTERY_PUBLISH_PROCESSING_CRON_STRING: ecs.Secret.fromSsmParameter(
+        LOTTERY_PUBLISH_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "LOTTERY_PUBLISH_PROCESSING_CRON_STRING",
@@ -269,7 +286,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        LOTTERY_DAYS_TILL_EXPIRY: ecs.Secret.fromSsmParameter(
+        LOTTERY_DAYS_TILL_EXPIRY: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "LOTTERY_DAYS_TILL_EXPIRY",
@@ -278,7 +295,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        MFA_CODE_LENGTH: ecs.Secret.fromSsmParameter(
+        MFA_CODE_LENGTH: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "MFA_CODE_LENGTH",
@@ -287,7 +304,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        MFA_CODE_VALID: ecs.Secret.fromSsmParameter(
+        MFA_CODE_VALID: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "MFA_CODE_VALID",
@@ -296,7 +313,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        AFS_PROCESSING_CRON_STRING: ecs.Secret.fromSsmParameter(
+        AFS_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "AFS_PROCESSING_CRON_STRING",
@@ -305,7 +322,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        GOVDELIVERY_TOPIC: ecs.Secret.fromSsmParameter(
+        GOVDELIVERY_TOPIC: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "GOVDELIVERY_TOPIC",
@@ -314,7 +331,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        TEMP_FILE_CLEAR_CRON_STRING: ecs.Secret.fromSsmParameter(
+        TEMP_FILE_CLEAR_CRON_STRING: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "TEMP_FILE_CLEAR_CRON_STRING",
@@ -323,7 +340,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        PARTNERS_PORTAL_URL: ecs.Secret.fromSsmParameter(
+        PARTNERS_PORTAL_URL: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "PARTNERS_PORTAL_URL",
@@ -332,7 +349,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        PARTNERS_BASE_URL: ecs.Secret.fromSsmParameter(
+        PARTNERS_BASE_URL: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "PARTNERS_PORTAL_BASE_URL",
@@ -341,12 +358,12 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        THROTTLE_TTL: ecs.Secret.fromSsmParameter(
+        THROTTLE_TTL: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(this, "THROTTLE_TTL", {
             parameterName: `/doorway/${props.environment}/internal-api/THROTTLE_TTL`,
           }),
         ),
-        ASSET_FS_CONFIG_s3_REGION: ecs.Secret.fromSsmParameter(
+        ASSET_FS_CONFIG_s3_REGION: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "ASSET_FS_CONFIG_s3_REGION",
@@ -355,7 +372,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        ASSET_FS_CONFIG_s3_URL_FORMAT: ecs.Secret.fromSsmParameter(
+        ASSET_FS_CONFIG_s3_URL_FORMAT: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "ASSET_FS_CONFIG_s3_URL_FORMAT",
@@ -364,7 +381,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        ASSET_UPLOAD_MAX_SIZE: ecs.Secret.fromSsmParameter(
+        ASSET_UPLOAD_MAX_SIZE: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "ASSET_UPLOAD_MAX_SIZE",
@@ -373,7 +390,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        AUTH_LOCK_LOGIN_COOLDOWN: ecs.Secret.fromSsmParameter(
+        AUTH_LOCK_LOGIN_COOLDOWN: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "AUTH_LOCK_LOGIN_COOLDOWN",
@@ -382,7 +399,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        AUTH_LOCK_LOGIN_AFTER_FAILED_ATTEMPTS: ecs.Secret.fromSsmParameter(
+        AUTH_LOCK_LOGIN_AFTER_FAILED_ATTEMPTS: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "AUTH_LOCK_LOGIN_AFTER_FAILED_ATTEMPTS",
@@ -391,12 +408,12 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        CORS_ORIGINS: ecs.Secret.fromSsmParameter(
+        CORS_ORIGINS: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(this, "CORS_ORIGINS", {
             parameterName: `/doorway/${props.environment}/internal-api/CORS_ORIGINS`,
           }),
         ),
-        ASSET_FS_CONFIG_s3_BUCKET: ecs.Secret.fromSsmParameter(
+        ASSET_FS_CONFIG_s3_BUCKET: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "ASSET_FS_CONFIG_s3_BUCKET",
@@ -405,7 +422,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        DUPLICATES_CLOSE_DATE: ecs.Secret.fromSsmParameter(
+        DUPLICATES_CLOSE_DATE: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "DUPLICATES_CLOSE_DATE",
@@ -414,7 +431,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        DUPLICATES_PROCESSING_CRON_STRING: ecs.Secret.fromSsmParameter(
+        DUPLICATES_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
             "DUPLICATES_PROCESSING_CRON_STRING",
@@ -438,35 +455,35 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       portMappings: [
         {
           containerPort: 3100,
-          protocol: ecs.Protocol.TCP,
+          protocol: Protocol.TCP,
           hostPort: 3100,
         },
       ],
     });
-    const service = new ecs.FargateService(
+    const service = new FargateService(
       this,
       `doorway-${props.environment}-internal-api`,
       {
         taskDefinition: task,
         serviceName: `doorway-${props.environment}-internal-api`,
-        cluster: ecs.Cluster.fromClusterAttributes(this, "default-cluster", {
+        cluster: Cluster.fromClusterAttributes(this, "default-cluster", {
           clusterName: `doorway-${props.environment}-default`,
           vpc: vpc,
         }),
         vpcSubnets: {
           subnets: appSubnets,
         },
-        desiredCount: 3,
+        desiredCount: 2,
       },
     );
-    const tg = new ApplicationTargetGroup(this, "tg", {
+    const tg = new elb.ApplicationTargetGroup(this, "tg", {
       vpc: vpc,
       port: 3100,
-      protocol: ApplicationProtocol.HTTP,
-      targetType: TargetType.IP,
+      protocol: elb.ApplicationProtocol.HTTP,
+      targetType: elb.TargetType.IP,
       healthCheck: {
         path: "/",
-        protocol: Protocol.HTTP,
+        protocol: elb.Protocol.HTTP,
         timeout: cdk.Duration.seconds(5),
         interval: cdk.Duration.seconds(30),
         healthyThresholdCount: 5,
@@ -474,9 +491,18 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       },
     });
     service.attachToApplicationTargetGroup(tg);
+    const scaling = service.autoScaleTaskCount({
+      minCapacity: 2,
+      maxCapacity: 10,
+    });
+    scaling.scaleOnCpuUtilization("CpuScaling", {
+      targetUtilizationPercent: 80,
+      scaleInCooldown: cdk.Duration.seconds(60),
+      scaleOutCooldown: cdk.Duration.seconds(60),
+    });
     const listener = privateLB.addListener("privateLbListener", {
       port: 80,
-      protocol: ApplicationProtocol.HTTP,
+      protocol: elb.ApplicationProtocol.HTTP,
     });
     listener.addTargetGroups("privateLBTG", {
       targetGroups: [tg],
