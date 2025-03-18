@@ -179,8 +179,8 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         APP_SECRET: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(
             this,
-            "appSecret",
-            `appSecret-${props.environment}`,
+            "app-secret",
+            `app-secret-${props.environment}`,
           ),
         ),
         CLOUDINARY_KEY: Secret.fromSecretsManager(
