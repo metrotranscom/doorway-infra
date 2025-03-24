@@ -446,8 +446,8 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           }),
         ),
         SAME_SITE: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(this, "SAME_SITE", {
-            parameterName: `/doorway/${props.environment}/internal-api/SAME_SITE`,
+          StringParameter.fromStringParameterAttributes(this, "NO_SAME_SITE", {
+            parameterName: `/doorway/${props.environment}/internal-api/NO_SAME_SITE`,
           }),
         ),
         COOKIE_DOMAIN: Secret.fromSsmParameter(
