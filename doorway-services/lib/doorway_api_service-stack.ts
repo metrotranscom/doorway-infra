@@ -440,6 +440,16 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
+        HTTPS_ONLY: Secret.fromSsmParameter(
+          StringParameter.fromStringParameterAttributes(this, "HTTPS_ONLY", {
+            parameterName: `/doorway/${props.environment}/internal-api/HTTPS_ONLY`,
+          }),
+        ),
+        SAME_SITE: Secret.fromSsmParameter(
+          StringParameter.fromStringParameterAttributes(this, "SAME_SITE", {
+            parameterName: `/doorway/${props.environment}/internal-api/SAME_SITE`,
+          }),
+        ),
       },
       environment: {
         ASSET_FILE_SERVICE: "s3",
