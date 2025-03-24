@@ -440,9 +440,9 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        HTTPS_ONLY: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(this, "HTTPS_ONLY", {
-            parameterName: `/doorway/${props.environment}/internal-api/HTTPS_ONLY`,
+        HTTPS_OFF: Secret.fromSsmParameter(
+          StringParameter.fromStringParameterAttributes(this, "HTTPS_OFF", {
+            parameterName: `/doorway/${props.environment}/internal-api/HTTPS_OFF`,
           }),
         ),
         NO_SAME_SITE: Secret.fromSsmParameter(

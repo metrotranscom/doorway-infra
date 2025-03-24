@@ -259,11 +259,11 @@ export class DoorwayParametersStack extends cdk.Stack {
     authLockCooldown.applyRemovalPolicy(
       cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
     );
-    const httpsOnly = new StringParameter(this, "httpsOnly", {
-      parameterName: `/doorway/${props.environment}/internal-api/HTTPS_ONLY`,
+    const httpsOff = new StringParameter(this, "httpsOff", {
+      parameterName: `/doorway/${props.environment}/internal-api/HTTPS_OFF`,
       stringValue: "false",
     });
-    httpsOnly.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE);
+    httpsOff.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE);
     const noSameSite = new StringParameter(this, "noSameSite", {
       parameterName: `/doorway/${props.environment}/internal-api/NO_SAME_SITE`,
       stringValue: "true",
