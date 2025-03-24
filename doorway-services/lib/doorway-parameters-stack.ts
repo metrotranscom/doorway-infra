@@ -269,6 +269,14 @@ export class DoorwayParametersStack extends cdk.Stack {
       stringValue: "true",
     });
     sameSite.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE);
+    const cookieDomain = new StringParameter(this, "cookieDomain", {
+      parameterName: `/doorway/${props.environment}/internal-api/COOKIE_DOMAIN`,
+      stringValue: `${props.environment}.housingbayarea.mtc.ca.gov`,
+    });
+    cookieDomain.applyRemovalPolicy(
+      cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+    );
+
     const appSecret = new Secret(this, "appSecret", {
       secretName: `app-secret-${props.environment}`,
       secretStringValue: cdk.SecretValue.unsafePlainText(
