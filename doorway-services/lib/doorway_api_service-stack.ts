@@ -259,33 +259,42 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             parameterName: `/doorway/${props.environment}/internal-api/LOG_LEVEL`,
           }),
         ),
-        LISTING_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "LISTING_PROCESSING_CRON_STRING",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/LISTING_PROCESSING_CRON_STRING`,
-            },
-          ),
-        ),
-        LOTTERY_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "LOTTERY_PROCESSING_CRON_STRING",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PROCESSING_CRON_STRING`,
-            },
-          ),
-        ),
-        LOTTERY_PUBLISH_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "LOTTERY_PUBLISH_PROCESSING_CRON_STRING",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PUBLISH_PROCESSING_CRON_STRING`,
-            },
-          ),
-        ),
+        // LISTING_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
+        //   StringParameter.fromStringParameterAttributes(
+        //     this,
+        //     "LISTING_PROCESSING_CRON_STRING",
+        //     {
+        //       parameterName: `/doorway/${props.environment}/internal-api/LISTING_PROCESSING_CRON_STRING`,
+        //     },
+        //   ),
+        // ),
+        // LOTTERY_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
+        //   StringParameter.fromStringParameterAttributes(
+        //     this,
+        //     "LOTTERY_PROCESSING_CRON_STRING",
+        //     {
+        //       parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PROCESSING_CRON_STRING`,
+        //     },
+        //   ),
+        // ),
+        // LOTTERY_PUBLISH_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
+        //   StringParameter.fromStringParameterAttributes(
+        //     this,
+        //     "LOTTERY_PUBLISH_PROCESSING_CRON_STRING",
+        //     {
+        //       parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PUBLISH_PROCESSING_CRON_STRING`,
+        //     },
+        //   ),
+        // ),
+        // AFS_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
+        //   StringParameter.fromStringParameterAttributes(
+        //     this,
+        //     "AFS_PROCESSING_CRON_STRING",
+        //     {
+        //       parameterName: `/doorway/${props.environment}/internal-api/AFS_PROCESSING_CRON_STRING`,
+        //     },
+        //   ),
+        // ),
         LOTTERY_DAYS_TILL_EXPIRY: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
@@ -313,15 +322,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        AFS_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "AFS_PROCESSING_CRON_STRING",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/AFS_PROCESSING_CRON_STRING`,
-            },
-          ),
-        ),
+
         GOVDELIVERY_TOPIC: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
