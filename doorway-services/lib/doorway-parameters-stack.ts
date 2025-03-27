@@ -271,7 +271,7 @@ export class DoorwayParametersStack extends cdk.Stack {
     sameSite.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE);
     const cookieDomain = new StringParameter(this, "cookieDomain", {
       parameterName: `/doorway/${props.environment}/internal-api/COOKIE_DOMAIN`,
-      stringValue: `${props.environment}.housingbayarea.mtc.ca.gov`,
+      stringValue: `.${props.environment}.housingbayarea.mtc.ca.gov`,
     });
     cookieDomain.applyRemovalPolicy(
       cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
