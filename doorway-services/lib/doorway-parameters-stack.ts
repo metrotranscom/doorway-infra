@@ -264,11 +264,11 @@ export class DoorwayParametersStack extends cdk.Stack {
       stringValue: "false",
     });
     httpsOff.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE);
-    const noSameSite = new StringParameter(this, "noSameSite", {
-      parameterName: `/doorway/${props.environment}/internal-api/NO_SAME_SITE`,
+    const sameSite = new StringParameter(this, "sameSite", {
+      parameterName: `/doorway/${props.environment}/internal-api/SAME_SITE`,
       stringValue: "true",
     });
-    noSameSite.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE);
+    sameSite.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE);
     const cookieDomain = new StringParameter(this, "cookieDomain", {
       parameterName: `/doorway/${props.environment}/internal-api/COOKIE_DOMAIN`,
       stringValue: `${props.environment}.housingbayarea.mtc.ca.gov`,
