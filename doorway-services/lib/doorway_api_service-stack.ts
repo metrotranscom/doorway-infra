@@ -451,11 +451,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             parameterName: `/doorway/${props.environment}/internal-api/SAME_SITE`,
           }),
         ),
-        COOKIE_DOMAIN: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(this, "COOKIE_DOMAIN", {
-            parameterName: `/doorway/${props.environment}/internal-api/COOKIE_DOMAIN`,
-          }),
-        ),
       },
       environment: {
         ASSET_FILE_SERVICE: "s3",
