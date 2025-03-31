@@ -163,12 +163,8 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       resources: [
         sesIdentity.emailIdentityArn,
         `arn:aws:ses:${props.env.region}:${props.env.account}:configuration-set/dway-config-set`,
+        `arn:aws:ses:${props.env.region}:${props.env.account}:identity/*`,
       ],
-      conditions: {
-        StringLike: {
-          "ses:ConfigurationSetName": "dway-config-set",
-        },
-      },
     });
     executionRole.addToPolicy(policy);
 
