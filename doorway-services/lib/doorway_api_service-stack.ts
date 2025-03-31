@@ -13,7 +13,12 @@ import {
 } from "aws-cdk-lib/aws-ecs";
 //import * as ecs from "aws-cdk-lib/aws-ecs";
 import * as elb from "aws-cdk-lib/aws-elasticloadbalancingv2";
-import { ManagedPolicy, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import {
+  ManagedPolicy,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from "aws-cdk-lib/aws-iam";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
 import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
 import { LoadBalancerTarget } from "aws-cdk-lib/aws-route53-targets";
@@ -145,6 +150,26 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       "housingbayarea.org",
     );
     sesIdentity.grantSendEmail(executionRole);
+
+    const policy = new PolicyStatement({
+      actions: [
+        "ses:SendEmail",
+        "ses:SendRawEmail",
+        "ses:SendTemplatedEmail",
+        "ses:SendRawTemplatedEmail",
+        "ses:SendBulkTemplatedEmail",
+        "ses:SendBulkTemplatedEmail",
+        "ses:SendBulkTemplatedEmail",
+      ],
+      resources: [sesIdentity.emailIdentityArn],
+      conditions: {
+        StringLike: {
+          "ses:ConfigurationSetName": "dway-config-set",
+        },
+      },
+    });
+    executionRole.addToPolicy(policy);
+
     const minTasks = StringParameter.fromStringParameterAttributes(
       this,
       "minTasks",
