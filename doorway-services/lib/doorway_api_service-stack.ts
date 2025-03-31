@@ -158,10 +158,12 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         "ses:SendTemplatedEmail",
         "ses:SendRawTemplatedEmail",
         "ses:SendBulkTemplatedEmail",
-        "ses:SendBulkTemplatedEmail",
-        "ses:SendBulkTemplatedEmail",
+        "ses:UseConfiguration",
       ],
-      resources: [sesIdentity.emailIdentityArn],
+      resources: [
+        sesIdentity.emailIdentityArn,
+        `arn:aws:ses:${props.env.region}:${props.env.account}:configuration-set/dway-config-set`,
+      ],
       conditions: {
         StringLike: {
           "ses:ConfigurationSetName": "dway-config-set",
