@@ -159,6 +159,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         "ses:SendRawTemplatedEmail",
         "ses:SendBulkTemplatedEmail",
         "ses:UseConfiguration",
+        "ses:SendBulkEmail",
       ],
       resources: [
         sesIdentity.emailIdentityArn,
