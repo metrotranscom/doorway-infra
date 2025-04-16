@@ -13,10 +13,10 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v4
       - name: yarn install
-        working-directory: .
+        working-directory: ./cdk/doorway-services
         run: yarn install
       - name: yarn build
-        working-directory: .
+        working-directory: ./cdk/doorway-services
         run: yarn build
       - name: cdk synth
         run: cdk synth
