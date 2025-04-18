@@ -1,0 +1,31 @@
+{
+  "ssm:account=364076391763:parameterName=/doorway/dev/vpc/appSubnets:region=us-west-1": "subnet-0672e2f14ebf58064,subnet-0fd7d2a6c1e96edea",
+  "ssm:account=364076391763:parameterName=/doorway/prod/vpc/appSubnets:region=us-west-1": "subnet-0cc003b8490ec6362,subnet-089ba928efdadc4ea",
+  "ssm:account=364076391763:parameterName=/doorway/staging/vpc/appSubnets:region=us-west-1": "subnet-09c69417c809ab6bf,subnet-04608648fb68b5014",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/LISTING_PROCESSING_CRON_STRING:region=us-west-1": "0 * * * *",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/LOTTERY_PROCESSING_CRON_STRING:region=us-west-1": "0 * * * *",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/LOTTERY_PUBLISH_PROCESSING_CRON_STRING:region=us-west-1": "58 23 * * *",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/LOTTERY_DAYS_TILL_EXPIRY:region=us-west-1": "45",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/MFA_CODE_LENGTH:region=us-west-1": "5",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/MFA_CODE_VALID:region=us-west-1": "600000",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/AFS_PROCESSING_CRON_STRING:region=us-west-1": "15 * * * *",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/GOVDELIVERY_TOPIC:region=us-west-1": "5 * * * *",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/TEMP_FILE_CLEAR_CRON_STRING:region=us-west-1": "30 * * * *",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/PARTNERS_PORTAL_URL:region=us-west-1": "https://partners.staging.housingbayarea.mtc.ca.gov",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/PARTNERS_BASE_URL:region=us-west-1": "https://partners.dev.housingbayarea.mtc.ca.gov",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/THROTTLE_LIMIT:region=us-west-1": "180000",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/THROTTLE_TTL:region=us-west-1": "180000",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/ASSET_FS_CONFIG_s3_REGION:region=us-west-1": "us-west-1",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/ASSET_FS_CONFIG_s3_URL_FORMAT:region=us-west-1": "public",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/ASSET_UPLOAD_MAX_SIZE:region=us-west-1": "5",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/AUTH_LOCK_LOGIN_COOLDOWN:region=us-west-1": "5",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/AUTH_LOCK_LOGIN_AFTER_FAILED_ATTEMPTS:region=us-west-1": "5",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/CORS_ORIGINS:region=us-west-1": "5",
+  "ssm:account=364076391763:parameterName=/doorway/staging/s3/uploadsBucketName:region=us-west-1": "doorway-staging-public-uploads20230613151842127500000003",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/DUPLICATES_CLOSE_DATE:region=us-west-1": "2024-10-08 00:00 -08:00",
+  "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/DUPLICATES_PROCESSING_CRON_STRING:region=us-west-1": "5 * * * *",
+  "acknowledged-issue-numbers": [
+    32775,
+    34157
+  ]
+}

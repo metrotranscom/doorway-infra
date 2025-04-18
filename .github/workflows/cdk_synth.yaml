@@ -1,0 +1,27 @@
+on: [push]
+permissions: read-all
+jobs:
+  aws_cdk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install cdk
+        run: npm install -g aws-cdk
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+      - name: yarn install
+        working-directory: ./cdk/doorway-services
+        run: yarn install
+      - name: yarn build
+        working-directory: ./cdk/doorway-services
+        run: yarn build
+      - name: cdk synth
+        working-directory: ./cdk/doorway-services
+        run: cdk synth
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-west-1
