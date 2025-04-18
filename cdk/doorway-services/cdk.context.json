@@ -24,5 +24,8 @@
   "ssm:account=364076391763:parameterName=/doorway/staging/s3/uploadsBucketName:region=us-west-1": "doorway-staging-public-uploads20230613151842127500000003",
   "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/DUPLICATES_CLOSE_DATE:region=us-west-1": "2024-10-08 00:00 -08:00",
   "ssm:account=364076391763:parameterName=/doorway/staging/internal-api/DUPLICATES_PROCESSING_CRON_STRING:region=us-west-1": "5 * * * *",
-  "acknowledged-issue-numbers": [32775]
+  "acknowledged-issue-numbers": [
+    32775,
+    34157
+  ]
 }

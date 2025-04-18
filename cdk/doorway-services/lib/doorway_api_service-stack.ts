@@ -63,6 +63,10 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
       }).valueAsString,
     };
+
+
+    // Get important variables from parameter store
+    // Get the VPC this service will run in
     const vpcId = StringParameter.fromStringParameterAttributes(this, "vpcId", {
       parameterName: `/doorway/${props.environment}/vpc/id`,
     }).stringValue;
@@ -70,6 +74,8 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       vpcId: vpcId,
       availabilityZones: ["us-west-1a", "us-west-1c"],
     });
+
+    // Get the subnets
     const appSubnetIds: string[] = StringParameter.valueFromLookup(
       this,
       `/doorway/${props.environment}/vpc/appSubnets`,
@@ -78,6 +84,51 @@ export class DoorwayApiServiceStack extends cdk.Stack {
     appSubnetIds.forEach((id) => {
       appSubnets.push(Subnet.fromSubnetId(this, id, id));
     });
+
+    // The internal hosted DNS zone
+    const hostedZone = HostedZone.fromHostedZoneAttributes(
+      this,
+      "internalZone",
+      {
+        hostedZoneId: "Z084253138VJG63K273SM",
+        zoneName: "housingbayarea.int",
+      },
+    );
+
+    //The uploads bucket for doorway assets (images, documents)
+    const uploadsBucketName = StringParameter.fromStringParameterAttributes(
+      this,
+      "uploadsBucketName",
+      {
+        parameterName: `/doorway/${props.environment}/s3/uploadsBucketName`,
+      },
+    ).stringValue;
+     const uploadsBucketArn = `arn:aws:s3:::${uploadsBucketName}`;
+     const uploadsBucket = Bucket.fromBucketArn(
+      this,
+      "uploadsBucket",
+      uploadsBucketArn,
+     );
+
+    // The minimum amount of tasks the service should have running (To be implemented)
+    const minTasks = StringParameter.fromStringParameterAttributes(
+      this,
+      "minTasks",
+      {
+        parameterName: `/doorway/${props.environment}/internal-api/minimumTasks`,
+      },
+    ).stringValue;
+
+
+    // Get the SES Email Information
+    const sesIdentity = EmailIdentity.fromEmailIdentityName(
+      this,
+      "sesIdentity",
+      "housingbayarea.org",
+    );
+
+
+    // Set up the security group that allows the service to take traffic
     const appTierPrivateSG = new SecurityGroup(
       this,
       `doorway-${props.environment}-private-app-sg`,
@@ -89,14 +140,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         securityGroupName: `doorway-${props.environment}-private-app-sg`,
       },
     );
-    const hostedZone = HostedZone.fromHostedZoneAttributes(
-      this,
-      "internalZone",
-      {
-        hostedZoneId: "Z084253138VJG63K273SM",
-        zoneName: "housingbayarea.int",
-      },
-    );
+    // Set up an application load balancer inside the app subnet
     const privateLB = new elb.ApplicationLoadBalancer(
       this,
       `doorway-${props.environment}-private`,
@@ -110,13 +154,8 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         loadBalancerName: `doorway-${props.environment}-private-lb`,
       },
     );
-    const uploadsBucketName = StringParameter.fromStringParameterAttributes(
-      this,
-      "uploadsBucketName",
-      {
-        parameterName: `/doorway/${props.environment}/s3/uploadsBucketName`,
-      },
-    ).stringValue;
+
+    // Create the execution role for the doorway API service
     const executionRole = new Role(this, "executionRole", {
       assumedBy: new ServicePrincipal("ecs-tasks.amazonaws.com"),
     });
@@ -136,21 +175,10 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         "AmazonEC2ContainerRegistryReadOnly",
       ),
     );
-    const uploadsBucketArn = `arn:aws:s3:::${uploadsBucketName}`;
-    const uploadsBucket = Bucket.fromBucketArn(
-      this,
-      "uploadsBucket",
-      uploadsBucketArn,
-    );
     uploadsBucket.grantReadWrite(executionRole);
     uploadsBucket.grantPut(executionRole);
-    const sesIdentity = EmailIdentity.fromEmailIdentityName(
-      this,
-      "sesIdentity",
-      "housingbayarea.org",
-    );
     sesIdentity.grantSendEmail(executionRole);
-
+    // Add a bunch of random SES grants that grantSendEmail doesn't set up
     const policy = new PolicyStatement({
       actions: [
         "ses:SendEmail",
@@ -169,13 +197,8 @@ export class DoorwayApiServiceStack extends cdk.Stack {
     });
     executionRole.addToPolicy(policy);
 
-    const minTasks = StringParameter.fromStringParameterAttributes(
-      this,
-      "minTasks",
-      {
-        parameterName: `/doorway/${props.environment}/internal-api/minimumTasks`,
-      },
-    ).stringValue;
+    // Now we're down to business! Set up the fargate container task for the api
+    // Notice the load of environment variables we add to it below
     const task = new TaskDefinition(this, "task", {
       compatibility: Compatibility.FARGATE,
       cpu: "2048",
@@ -319,6 +342,15 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         //     },
         //   ),
         // ),
+        //  TEMP_FILE_CLEAR_CRON_STRING: Secret.fromSsmParameter(
+        //   StringParameter.fromStringParameterAttributes(
+        //     this,
+        //     "TEMP_FILE_CLEAR_CRON_STRING",
+        //     {
+        //       parameterName: `/doorway/${props.environment}/internal-api/TEMP_FILE_CLEAR_CRON_STRING`,
+        //     },
+        //   ),
+        // ),
         LOTTERY_DAYS_TILL_EXPIRY: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
@@ -356,15 +388,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        TEMP_FILE_CLEAR_CRON_STRING: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "TEMP_FILE_CLEAR_CRON_STRING",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/TEMP_FILE_CLEAR_CRON_STRING`,
-            },
-          ),
-        ),
+
         PARTNERS_PORTAL_URL: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
@@ -495,6 +519,9 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         },
       ],
     });
+
+
+    // Create the service in ECS
     const service = new FargateService(
       this,
       `doorway-${props.environment}-internal-api`,
@@ -511,6 +538,8 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         desiredCount: 2,
       },
     );
+
+    // Set up the target group and DNS names for the internal API Service
     const tg = new elb.ApplicationTargetGroup(this, "tg", {
       vpc: vpc,
       port: 3100,
