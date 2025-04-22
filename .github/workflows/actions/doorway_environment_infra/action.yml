@@ -1,0 +1,48 @@
+name: Doorway Environment Infra
+description: Generic CDK deployment for doorway environments
+inputs:
+  ENVIRONMENT:
+    description: The environment to deploy to
+    required: true
+  working-directory:
+    description: The working directory to run the command in
+    required: false
+    default: ./cdk/doorway-services
+  AWS_ACCESS_KEY_ID:
+    required: true
+    description: AWS Access Key ID
+  AWS_SECRET_ACCESS_KEY:
+    required: true
+    description: AWS Secret Access Key
+runs:
+  using: composite
+  steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+    - name: install cdk
+      shell: bash
+      run: npm install -g aws-cdk
+    - name: yarn-install-services
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: yarn install
+    - name: synth-services
+      shell: bash
+      run: cdk synth
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: us-west-1
+        ENVIRONMENT: ${{ inputs.ENVIRONMENT }}
+    - name: deploy-services
+      shell: bash
+      run: cdk deploy --all --require-approval never
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        AWS_ACCESS_KEY_ID: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: us-west-1
+        ENVIRONMENT: ${{ inputs.ENVIRONMENT }}

@@ -11,7 +11,7 @@ terraform {
   backend "s3" {
     bucket = "doorway-state"
     key    = "bloom/default"
-    region = "us-west-1"
+    region = "us-west-2"
   }
 }
 
