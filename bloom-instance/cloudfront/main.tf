@@ -74,6 +74,17 @@ module "log_bucket" {
   block_public_acls  = false
 
 }
+resource "aws_s3_bucket_ownership_controls" "s3_acl_control" {
+  bucket = module.log_bucket.bucket.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+resource "aws_s3_bucket_acl" "s3_acl" {
+  depends_on = [ aws_s3_bucket_ownership_controls.s3_acl_control ]
+  bucket = module.log_bucket.bucket.id
+  acl = "private"
+}
 resource "aws_cloudfront_distribution" "main" {
   origin {
     origin_id   = local.origin_id
