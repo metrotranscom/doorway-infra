@@ -87,4 +87,5 @@ module "backend_api" {
   alb_arn           = module.albs["public"].arn
   cert_arn          = module.certs["housingbayarea"].arn
   security_group_id = aws_security_group.ecs_sg.id
+  site_urls         = [var.backend_api_domain]
 }

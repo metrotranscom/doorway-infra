@@ -110,3 +110,7 @@ variable "security_group_id" {
   type = string
 
 }
+variable "site_urls" {
+  type = list(string)
+
+}
