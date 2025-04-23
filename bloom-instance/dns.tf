@@ -9,8 +9,8 @@ resource "aws_route53_record" "public" {
   name    = var.public_portal_domain
   type    = "A"
   alias {
-    name                   = module.cloudfront.dns_name
-    zone_id                = module.cloudfront.hosted_zone_id
+    name                   = var.public_portal_domain
+    zone_id                = var.dns.zones["housingbayarea.mtc.ca.gov"].id
     evaluate_target_health = false
   }
 }
@@ -19,8 +19,8 @@ resource "aws_route53_record" "partners" {
   name    = var.partners_portal_domain
   type    = "A"
   alias {
-    name                   = module.cloudfront.dns_name
-    zone_id                = module.cloudfront.hosted_zone_id
+    name                   = var.partners_portal_domain
+    zone_id                = var.dns.zones["housingbayarea.mtc.ca.gov"].id
     evaluate_target_health = false
   }
 }
@@ -30,8 +30,8 @@ resource "aws_route53_record" "api" {
   name    = var.backend_api_domain
   type    = "A"
   alias {
-    name                   = aws_api_gateway_domain_name.apigw.regional_domain_name
-    zone_id                = aws_api_gateway_domain_name.apigw.regional_zone_id
+    name                   = var.backend_api_domain
+    zone_id                = var.dns.zones["housingbayarea.mtc.ca.gov"].id
     evaluate_target_health = false
   }
 
