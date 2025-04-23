@@ -9,7 +9,7 @@ resource "aws_route53_record" "public" {
   name    = var.public_portal_domain
   type    = "A"
   alias {
-    name                   = var.public_portal_domain
+    name                   = module.albs["public"].dns_name
     zone_id                = var.dns.zones["housingbayarea.mtc.ca.gov"].id
     evaluate_target_health = false
   }
@@ -19,7 +19,7 @@ resource "aws_route53_record" "partners" {
   name    = var.partners_portal_domain
   type    = "A"
   alias {
-    name                   = var.partners_portal_domain
+    name                   = module.albs["public"].dns_name
     zone_id                = var.dns.zones["housingbayarea.mtc.ca.gov"].id
     evaluate_target_health = false
   }
@@ -30,7 +30,7 @@ resource "aws_route53_record" "api" {
   name    = var.backend_api_domain
   type    = "A"
   alias {
-    name                   = var.backend_api_domain
+    name                   = module.albs["public"].dns_name
     zone_id                = var.dns.zones["housingbayarea.mtc.ca.gov"].id
     evaluate_target_health = false
   }
