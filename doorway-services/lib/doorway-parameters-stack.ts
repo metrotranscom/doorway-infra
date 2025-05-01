@@ -276,6 +276,28 @@ export class DoorwayParametersStack extends cdk.Stack {
     cookieDomain.applyRemovalPolicy(
       cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
     );
+    const ASSET_FS_PRIVATE_CONFIG_s3_BUCKET = new StringParameter(
+      this,
+      "privateConfigBucket",
+      {
+        parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_PRIVATE_CONFIG_s3_BUCKET`,
+        stringValue: `doorway-dev-secure-uploads20230511215312497400000002`,
+      },
+    );
+    ASSET_FS_PRIVATE_CONFIG_s3_BUCKET.applyRemovalPolicy(
+      cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+    );
+    const USE_SECURE_DOWNLOAD_PATHWAY = new StringParameter(
+      this,
+      "useSecureDownloadPathway",
+      {
+        parameterName: `/doorway/${props.environment}/partners-portal/USE_SECURE_DOWNLOAD_PATHWAY`,
+        stringValue: `TRUE`,
+      },
+    );
+    USE_SECURE_DOWNLOAD_PATHWAY.applyRemovalPolicy(
+      cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE,
+    );
 
     const appSecret = new Secret(this, "appSecret", {
       secretName: `app-secret-${props.environment}`,
