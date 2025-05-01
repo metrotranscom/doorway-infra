@@ -255,21 +255,21 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           secret.Secret.fromSecretNameV2(
             this,
             "govdeliveryApiUrl",
-            "GOVDELIVERY_API_URL",
+            `doorway-${props.environment}/GOVDELIVERY_API_URL`,
           ),
         ),
         GOVDELIVERY_PASSWORD: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(
             this,
             "govdeliveryPassword",
-            "GOVDELIVERY_PASSWORD",
+            `doorway-${props.environment}/GOVDELIVERY_PASSWORD`,
           ),
         ),
         GOVDELIVERY_USERNAME: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(
             this,
             "govdeliveryUsername",
-            "GOVDELIVERY_USERNAME",
+            `doorway-${props.environment}/GOVDELIVERY_USERNAME`,
           ),
         ),
         EMAIL_API_KEY: Secret.fromSecretsManager(
