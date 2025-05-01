@@ -64,7 +64,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       }).valueAsString,
     };
 
-
     // Get important variables from parameter store
     // Get the VPC this service will run in
     const vpcId = StringParameter.fromStringParameterAttributes(this, "vpcId", {
@@ -103,12 +102,12 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         parameterName: `/doorway/${props.environment}/s3/uploadsBucketName`,
       },
     ).stringValue;
-     const uploadsBucketArn = `arn:aws:s3:::${uploadsBucketName}`;
-     const uploadsBucket = Bucket.fromBucketArn(
+    const uploadsBucketArn = `arn:aws:s3:::${uploadsBucketName}`;
+    const uploadsBucket = Bucket.fromBucketArn(
       this,
       "uploadsBucket",
       uploadsBucketArn,
-     );
+    );
 
     // The minimum amount of tasks the service should have running (To be implemented)
     const minTasks = StringParameter.fromStringParameterAttributes(
@@ -119,14 +118,12 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       },
     ).stringValue;
 
-
     // Get the SES Email Information
     const sesIdentity = EmailIdentity.fromEmailIdentityName(
       this,
       "sesIdentity",
       "housingbayarea.org",
     );
-
 
     // Set up the security group that allows the service to take traffic
     const appTierPrivateSG = new SecurityGroup(
@@ -306,9 +303,15 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             parameterName: `/doorway/${props.environment}/internal-api/LOG_LEVEL`,
           }),
         ),
-        ASSET_FS_PRIVATE_CONFIG_s3_BUCKET: Secret.fromSsmParameter(StringParameter.fromStringParameterAttributes(this, "ASSET_FS_PRIVATE_CONFIG_s3_BUCKET", {
-          parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_PRIVATE_CONFIG_s3_BUCKET`,
-        })),
+        ASSET_FS_PRIVATE_CONFIG_s3_BUCKET: Secret.fromSsmParameter(
+          StringParameter.fromStringParameterAttributes(
+            this,
+            "ASSET_FS_PRIVATE_CONFIG_s3_BUCKET",
+            {
+              parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_PRIVATE_CONFIG_s3_BUCKET`,
+            },
+          ),
+        ),
         // LISTING_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
         //   StringParameter.fromStringParameterAttributes(
         //     this,
@@ -522,7 +525,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         },
       ],
     });
-
 
     // Create the service in ECS
     const service = new FargateService(
