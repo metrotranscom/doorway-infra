@@ -14,6 +14,7 @@ phases:
       # - docker login -u "${DOCKERHUB_USERNAME}" -p "${DOCKERHUB_PASSWORD}"
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region "${ECR_REGION}" | docker login --username AWS --password-stdin "${ECR_ACCOUNT_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com"
+      - aws ecr describe-repositories --repository-names docker-hub/library/node --region us-west-2
 
   build:
     commands:
