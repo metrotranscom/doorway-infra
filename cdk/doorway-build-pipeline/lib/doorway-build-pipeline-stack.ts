@@ -1,5 +1,5 @@
 import { Stack, StackProps } from "aws-cdk-lib";
-import { PipelineProject } from "aws-cdk-lib/aws-codebuild";
+import { BuildSpec, PipelineProject } from "aws-cdk-lib/aws-codebuild";
 import { Artifact, Pipeline } from "aws-cdk-lib/aws-codepipeline";
 import {
   CodeBuildAction,
@@ -10,10 +10,15 @@ import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import * as fs from "fs";
 import YAML from "yaml";
 
+import { Repository } from "aws-cdk-lib/aws-ecr";
 import { Construct } from "constructs";
 export class DoorwayBuildPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props: PipelineProps) {
     super(scope, id, props);
+    const ecrRepository = new Repository(this, "doorway-ecr-repository", {
+      repositoryName: "doorway/backend",
+    });
+
     const pipelineRole = new Role(this, "doorway-app-pipeline-role", {
       assumedBy: new ServicePrincipal("codepipeline.amazonaws.com"),
     });
@@ -34,6 +39,12 @@ export class DoorwayBuildPipelineStack extends Stack {
     const backendBuildspec = YAML.parse(
       fs.readFileSync("./buildspec/backend.yaml", "utf8"),
     );
+    const dockerSecret = Secret.fromSecretNameV2(
+      this,
+      "dockerSecret",
+      props.dockerHubSecret,
+    ).secretArn;
+
     const githubSecret = Secret.fromSecretNameV2(
       this,
       "githubSecret",
@@ -58,31 +69,66 @@ export class DoorwayBuildPipelineStack extends Stack {
       actions: [doorwaySource],
     });
     const buildArtifact = new Artifact("BuildOutput");
+    const buildRole = new Role(this, "doorway-app-build-role", {
+      assumedBy: new ServicePrincipal("codebuild.amazonaws.com"),
+
+      managedPolicies: [
+        {
+          managedPolicyArn:
+            "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+        },
+        { managedPolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess" },
+      ],
+    });
+    ecrRepository.grantPullPush(buildRole);
+    buildRole.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          "cloudformation:*",
+          "ec2:*",
+          "ssm:*",
+          "codebuild:*",
+          "logs:*",
+          "iam:AssumeRole",
+          "iam:PassRole",
+        ],
+        resources: ["*"],
+      }),
+    );
+    buildRole.addToPolicy(
+      new PolicyStatement({
+        actions: ["secretsmanager:GetSecretValue"],
+        resources: [
+          dockerSecret,
+          `arn:aws:secretsmanager:${this.region}:${this.account}:secret:mtc/dockerHub*`,
+        ],
+      }),
+    );
 
     const buildAction = new CodeBuildAction({
       actionName: "Build",
       input: sourceArtifact,
       outputs: [buildArtifact],
       project: new PipelineProject(this, "doorway-app-build-project", {
-        buildSpec: backendBuildspec,
+        buildSpec: BuildSpec.fromObject(backendBuildspec),
         environmentVariables: {
           ECR_REGION: { value: this.region },
           ECR_ACCOUNT_ID: { value: this.account },
-          ECR_REPO_NAME: { value: "doorway" },
+          ECR_NAMESPACE: { value: "doorway" },
+          DOCKER_HUB_SECRET_ARN: {
+            value: `arn:aws:secretsmanager:${this.region}:${this.account}:secret:mtc/dockerHub`,
+          },
         },
 
-        role: new Role(this, "doorway-app-build-role", {
-          assumedBy: new ServicePrincipal("codebuild.amazonaws.com"),
-          managedPolicies: [
-            {
-              managedPolicyArn:
-                "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
-            },
-            { managedPolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess" },
-          ],
-        }),
+        role: buildRole,
       }),
     });
+    const ecrServer = Repository.fromRepositoryName(
+      this,
+      "ecrServer",
+      "mtc-core-ecr",
+    );
+
     const buildStage = pipeline.addStage({
       stageName: "Build",
       actions: [buildAction],
