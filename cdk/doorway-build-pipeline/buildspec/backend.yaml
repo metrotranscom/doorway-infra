@@ -14,7 +14,8 @@ phases:
       # - docker login -u "${DOCKERHUB_USERNAME}" -p "${DOCKERHUB_PASSWORD}"
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region "${ECR_REGION}" | docker login --username AWS --password-stdin "${ECR_ACCOUNT_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com"
-      - docker pull 364076391763.dkr.ecr.us-west-2.amazonaws.com/docker-hub/node:18.20-alpine
+      # Pull directly from Docker Hub instead of ECR
+      - docker pull node:18.20-alpine
 
   build:
     commands:

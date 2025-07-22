@@ -18,6 +18,9 @@ export class DoorwayBuildPipelineStack extends Stack {
     const ecrRepository = new Repository(this, "doorway-ecr-repository", {
       repositoryName: "doorway/backend",
     });
+    const ecrDockerHub = new Repository(this, "docker-hub", {
+      repositoryName: "docker-hub",
+    });
 
     const pipelineRole = new Role(this, "doorway-app-pipeline-role", {
       assumedBy: new ServicePrincipal("codepipeline.amazonaws.com"),
@@ -81,6 +84,7 @@ export class DoorwayBuildPipelineStack extends Stack {
       ],
     });
     ecrRepository.grantPullPush(buildRole);
+    ecrDockerHub.grantPull(buildRole);
     buildRole.addToPolicy(
       new PolicyStatement({
         actions: [
