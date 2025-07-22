@@ -18,9 +18,8 @@ export class DoorwayBuildPipelineStack extends Stack {
     const ecrRepository = new Repository(this, "doorway-ecr-repository", {
       repositoryName: "doorway/backend",
     });
-    const ecrDockerHub = new Repository(this, "docker-hub", {
-      repositoryName: "docker-hub",
-    });
+    // No need to create a repository for docker-hub if using pull-through cache
+    // The pull-through cache repository should already be configured in the AWS console
 
     const pipelineRole = new Role(this, "doorway-app-pipeline-role", {
       assumedBy: new ServicePrincipal("codepipeline.amazonaws.com"),
@@ -84,7 +83,19 @@ export class DoorwayBuildPipelineStack extends Stack {
       ],
     });
     ecrRepository.grantPullPush(buildRole);
-    ecrDockerHub.grantPull(buildRole);
+
+    // Add permissions to use the ECR pull-through cache
+    // Add permissions for jq
+    buildRole.addToPolicy(
+      new PolicyStatement({
+        actions: [
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchCheckLayerAvailability",
+        ],
+        resources: [`arn:aws:ecr:${this.region}:${this.account}:repository/*`],
+      }),
+    );
     buildRole.addToPolicy(
       new PolicyStatement({
         actions: [
