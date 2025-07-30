@@ -26,7 +26,7 @@ import { Bucket } from "aws-cdk-lib/aws-s3";
 import * as secret from "aws-cdk-lib/aws-secretsmanager";
 import { EmailIdentity } from "aws-cdk-lib/aws-ses";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
-export interface DoorwayApiServiceStackProps extends cdk.StackProps {
+export interface DoorwayStackProps extends cdk.StackProps {
   environment: string;
   env: {
     account: string;
@@ -42,7 +42,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
   public constructor(
     scope: cdk.App,
     id: string,
-    props: DoorwayApiServiceStackProps = {
+    props: DoorwayStackProps = {
       environment: "dev",
       env: {
         account: process.env.CDK_DEFAULT_ACCOUNT || "none",

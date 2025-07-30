@@ -1,4 +1,4 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { Stack, StackProps, Stage, StageProps } from "aws-cdk-lib";
 import {
   PolicyDocument,
   PolicyStatement,
@@ -11,6 +11,8 @@ import {
   CodePipeline,
   CodePipelineSource,
 } from "aws-cdk-lib/pipelines";
+import { Construct } from "constructs";
+import { DoorwayNetworkStack } from "./doorway-network-stack";
 export interface PipelineProps extends StackProps {
   githubSecret: string;
 }
@@ -122,6 +124,26 @@ export class DoorwayInfraPipelineStack extends Stack {
           }),
         ],
       }),
+    });
+    pipeline.addStage(
+      new DoorwayEnvironmentStage(this, "DoorwayDevEnvironmentStage", props),
+    );
+  }
+}
+class DoorwayEnvironmentStage extends Stage {
+  constructor(
+    scope: Construct,
+    id: string,
+    props?: StageProps,
+    environment: string = "dev",
+  ) {
+    super(scope, id, props);
+    new DoorwayNetworkStack(this, "DoorwayNetworkStack", {
+      environment: "dev",
+      env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+        region: process.env.CDK_DEFAULT_REGION || "no-region",
+      },
     });
   }
 }
