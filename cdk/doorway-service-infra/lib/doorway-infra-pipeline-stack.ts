@@ -18,7 +18,13 @@ export interface PipelineProps extends StackProps {
 }
 export class DoorwayInfraPipelineStack extends Stack {
   constructor(scope: any, id: string, props: PipelineProps) {
-    super(scope, id);
+    super(scope, id, {
+      ...props,
+      env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT,
+        region: process.env.CDK_DEFAULT_REGION || "us-west-2",
+      },
+    });
 
     const pipelineRole = new Role(this, "doorway-app-pipeline-role", {
       assumedBy: new ServicePrincipal("codepipeline.amazonaws.com"),
@@ -89,7 +95,7 @@ export class DoorwayInfraPipelineStack extends Stack {
       props.githubSecret,
     ).secretValue;
 
-    const pipeline = new CodePipeline(this, "Doorway-External-API-Pipeline", {
+    const pipeline = new CodePipeline(this, "Doorway-Infra-Pipeline", {
       pipelineName: "doorway-infra-pipeline",
       selfMutation: true,
       role: pipelineRole,
