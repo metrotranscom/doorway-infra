@@ -1,4 +1,4 @@
 {
-  "acknowledged-issue-numbers": [34892],
+  "acknowledged-issue-numbers": [34892, 34635],
   "ssm:account=364076391763:parameterName=/doorway/dev/vpc/appSubnets:region=us-west-1": "subnet-0672e2f14ebf58064,subnet-0fd7d2a6c1e96edea"
 }
