@@ -6,5 +6,9 @@
     "us-west-2b",
     "us-west-2c",
     "us-west-2d"
+  ],
+  "availability-zones:account=364076391763:region=us-west-1": [
+    "us-west-1a",
+    "us-west-1c"
   ]
 }
