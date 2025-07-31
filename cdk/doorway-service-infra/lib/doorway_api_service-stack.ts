@@ -66,19 +66,23 @@ export class DoorwayApiServiceStack extends cdk.Stack {
 
     // Get important variables from parameter store
     // Get the VPC this service will run in
-    const vpcId = StringParameter.fromStringParameterAttributes(this, "vpcId", {
-      parameterName: `/doorway/${props.environment}/vpc/id`,
-    }).stringValue;
+    const vpcId = cdk.Fn.importValue(`doorway-vpc-id-${props.environment}`);
+    const azs = cdk.Fn.importValue(`doorway-azs-${props.environment}`).split(
+      ",",
+    );
     const vpc = cdk.aws_ec2.Vpc.fromVpcAttributes(this, "vpc", {
       vpcId: vpcId,
-      availabilityZones: ["us-west-1a", "us-west-1c"],
+      availabilityZones: azs,
     });
 
     // Get the subnets
-    const appSubnetIds: string[] = StringParameter.valueFromLookup(
-      this,
-      `/doorway/${props.environment}/vpc/appSubnets`,
-    ).split(",");
+    const appSubnetIds: string[] = [];
+    appSubnetIds.push(
+      cdk.Fn.importValue(`doorway-app-subnet-1-${props.environment}`),
+    );
+    appSubnetIds.push(
+      cdk.Fn.importValue(`doorway-app-subnet-2-${props.environment}`),
+    );
     const appSubnets: ISubnet[] = [];
     appSubnetIds.forEach((id) => {
       appSubnets.push(Subnet.fromSubnetId(this, id, id));
@@ -93,21 +97,26 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         zoneName: "housingbayarea.int",
       },
     );
-
-    //The uploads bucket for doorway assets (images, documents)
-    const uploadsBucketName = StringParameter.fromStringParameterAttributes(
-      this,
-      "uploadsBucketName",
-      {
-        parameterName: `/doorway/${props.environment}/s3/uploadsBucketName`,
+    const publicUploadsBucket = new Bucket(this, "publicUploadsBucket", {
+      bucketName: `doorway-public-uploads-${props.environment}`,
+      blockPublicAccess: {
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true,
       },
-    ).stringValue;
-    const uploadsBucketArn = `arn:aws:s3:::${uploadsBucketName}`;
-    const uploadsBucket = Bucket.fromBucketArn(
-      this,
-      "uploadsBucket",
-      uploadsBucketArn,
-    );
+      enforceSSL: true,
+    });
+    const secureUploadsBucket = new Bucket(this, "secureUploadsBucket", {
+      bucketName: `doorway-secure-uploads-${props.environment}`,
+      blockPublicAccess: {
+        blockPublicAcls: true,
+        blockPublicPolicy: true,
+        ignorePublicAcls: true,
+        restrictPublicBuckets: true,
+      },
+      enforceSSL: true,
+    });
 
     // The minimum amount of tasks the service should have running (To be implemented)
     const minTasks = StringParameter.fromStringParameterAttributes(
@@ -172,8 +181,10 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         "AmazonEC2ContainerRegistryReadOnly",
       ),
     );
-    uploadsBucket.grantReadWrite(executionRole);
-    uploadsBucket.grantPut(executionRole);
+    publicUploadsBucket.grantReadWrite(executionRole);
+    publicUploadsBucket.grantPut(executionRole);
+    secureUploadsBucket.grantReadWrite(executionRole);
+    secureUploadsBucket.grantPut(executionRole);
     sesIdentity.grantSendEmail(executionRole);
     // Add a bunch of random SES grants that grantSendEmail doesn't set up
     const policy = new PolicyStatement({

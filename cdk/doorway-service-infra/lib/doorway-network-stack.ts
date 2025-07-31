@@ -47,7 +47,7 @@ export class DoorwayNetworkStack extends Stack {
       description: `The app security group for the doorway ${props.environment} environment`,
       value: appSG.securityGroupId,
     });
-    new CfnOutput(this, "doorway-core-vpc-id", {
+    new CfnOutput(this, "doorway-vpc-id", {
       exportName: `doorway-vpc-id-${props.environment}`,
       description: `The VPC for the doorway for the ${props.environment} environment`,
       value: vpc.vpcId,
@@ -63,6 +63,34 @@ export class DoorwayNetworkStack extends Stack {
         subnetGroupName: `doorway-db-${props.environment}`,
       }).subnets[1].subnetId,
       exportName: `doorway-db-subnet-2-${props.environment}`,
+    });
+    new CfnOutput(this, `doorway-azs-${props.environment}`, {
+      value: vpc.availabilityZones.join(", "),
+      exportName: `doorway-azs-${props.environment}`,
+    });
+    new CfnOutput(this, `doorway-public-subnet-1-${props.environment}`, {
+      value: vpc.selectSubnets({
+        subnetGroupName: `doorway-public-${props.environment}`,
+      }).subnets[0].subnetId,
+      exportName: `doorway-public-subnet-1-${props.environment}`,
+    });
+    new CfnOutput(this, `doorway-public-subnet-2-${props.environment}`, {
+      value: vpc.selectSubnets({
+        subnetGroupName: `doorway-public-${props.environment}`,
+      }).subnets[1].subnetId,
+      exportName: `doorway-public-subnet-2-${props.environment}`,
+    });
+    new CfnOutput(this, `doorway-app-subnet-1-${props.environment}`, {
+      value: vpc.selectSubnets({
+        subnetGroupName: `doorway-app-${props.environment}`,
+      }).subnets[0].subnetId,
+      exportName: `doorway-app-subnet-1-${props.environment}`,
+    });
+    new CfnOutput(this, `doorway-app-subnet-2-${props.environment}`, {
+      value: vpc.selectSubnets({
+        subnetGroupName: `doorway-app-${props.environment}`,
+      }).subnets[1].subnetId,
+      exportName: `doorway-app-subnet-2-${props.environment}`,
     });
   }
 }

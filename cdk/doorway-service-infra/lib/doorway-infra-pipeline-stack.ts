@@ -14,6 +14,7 @@ import {
 import { Construct } from "constructs";
 import { DoorwayDatabaseServerStack } from "./doorway-database-server-stack";
 import { DoorwayEcsClusterStack } from "./doorway-ecs-cluster";
+import { DoorwayGlobalResourcesStack } from "./doorway-global-resources-stack";
 import { DoorwayNetworkStack } from "./doorway-network-stack";
 export interface PipelineProps extends StackProps {
   githubSecret: string;
@@ -134,8 +135,22 @@ export class DoorwayInfraPipelineStack extends Stack {
       }),
     });
     pipeline.addStage(
+      new DoorwayGlobalStage(this, "DoorwayGlobalStage", {
+        env: {
+          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+          region: process.env.CDK_DEFAULT_REGION || "no-region",
+        },
+      }),
+    );
+    pipeline.addStage(
       new DoorwayEnvironmentStage(this, "DoorwayDevEnvironmentStage", props),
     );
+  }
+}
+class DoorwayGlobalStage extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    new DoorwayGlobalResourcesStack(this, "DoorwayGlobalResourcesStack");
   }
 }
 class DoorwayEnvironmentStage extends Stage {
