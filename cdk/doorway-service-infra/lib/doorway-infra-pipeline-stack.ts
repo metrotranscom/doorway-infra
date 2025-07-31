@@ -13,6 +13,7 @@ import {
 } from "aws-cdk-lib/pipelines";
 import { Construct } from "constructs";
 import { DoorwayDatabaseServerStack } from "./doorway-database-server-stack";
+import { DoorwayEcsClusterStack } from "./doorway-ecs-cluster";
 import { DoorwayNetworkStack } from "./doorway-network-stack";
 export interface PipelineProps extends StackProps {
   githubSecret: string;
@@ -145,19 +146,36 @@ class DoorwayEnvironmentStage extends Stage {
     environment: string = "dev",
   ) {
     super(scope, id, props);
-    new DoorwayNetworkStack(this, "DoorwayNetworkStack", {
+    const networkstack = new DoorwayNetworkStack(this, "DoorwayNetworkStack", {
       environment: environment,
       env: {
         account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
         region: process.env.CDK_DEFAULT_REGION || "no-region",
       },
     });
-    new DoorwayDatabaseServerStack(this, "DoorwayDatabaseServerStack", {
-      environment: environment,
-      env: {
-        account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
-        region: process.env.CDK_DEFAULT_REGION || "no-region",
+    const dbstack = new DoorwayDatabaseServerStack(
+      this,
+      "DoorwayDatabaseServerStack",
+      {
+        environment: environment,
+        env: {
+          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+          region: process.env.CDK_DEFAULT_REGION || "no-region",
+        },
       },
-    });
+    );
+    dbstack.addDependency(networkstack);
+    const ecsClusterStack = new DoorwayEcsClusterStack(
+      this,
+      "DoorwayEcsClusterStack",
+      {
+        environment: environment,
+        env: {
+          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+          region: process.env.CDK_DEFAULT_REGION || "no-region",
+        },
+      },
+    );
+    ecsClusterStack.addDependency(networkstack);
   }
 }
