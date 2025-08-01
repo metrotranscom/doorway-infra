@@ -250,38 +250,10 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           ),
         ),
 
-        PGUSER: Secret.fromSecretsManager(
-          secret.Secret.fromSecretNameV2(
-            this,
-            "pguser",
-            Fn.importValue(`doorwayDBSecret-${props.environment}`),
-          ),
-          "username",
-        ),
-        PGPASSWORD: Secret.fromSecretsManager(
-          secret.Secret.fromSecretNameV2(
-            this,
-            "pgpassword",
-            Fn.importValue(`doorwayDBSecret-${props.environment}`),
-          ),
-          "password",
-        ),
-        PGPORT: Secret.fromSecretsManager(
-          secret.Secret.fromSecretNameV2(
-            this,
-            "pgport",
-            Fn.importValue(`doorwayDBSecret-${props.environment}`),
-          ),
-          "port",
-        ),
-        PGHOST: Secret.fromSecretsManager(
-          secret.Secret.fromSecretNameV2(
-            this,
-            "pghost",
-            Fn.importValue(`doorwayDBSecret-${props.environment}`),
-          ),
-          "host",
-        ),
+        PGUSER: Secret.fromSecretsManager(dbSecret, "username"),
+        PGPASSWORD: Secret.fromSecretsManager(dbSecret, "password"),
+        PGPORT: Secret.fromSecretsManager(dbSecret, "port"),
+        PGHOST: Secret.fromSecretsManager(dbSecret, "host"),
         THROTTLE_LIMIT: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
