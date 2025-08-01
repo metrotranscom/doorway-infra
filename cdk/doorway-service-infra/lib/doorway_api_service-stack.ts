@@ -223,6 +223,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           `doorway-${props.environment}-tasks`,
         ),
       }),
+
       secrets: {
         GOOGLE_API_ID: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(this, "googleApiId", "GOOGLE_API_ID"),
@@ -288,15 +289,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             parameterName: `/doorway/${props.environment}/internal-api/LOG_LEVEL`,
           }),
         ),
-        ASSET_FS_PRIVATE_CONFIG_s3_BUCKET: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "ASSET_FS_PRIVATE_CONFIG_s3_BUCKET",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_PRIVATE_CONFIG_s3_BUCKET`,
-            },
-          ),
-        ),
+
         LISTING_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
@@ -403,24 +396,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             parameterName: `/doorway/${props.environment}/internal-api/THROTTLE_TTL`,
           }),
         ),
-        ASSET_FS_CONFIG_s3_REGION: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "ASSET_FS_CONFIG_s3_REGION",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_REGION`,
-            },
-          ),
-        ),
-        ASSET_FS_CONFIG_s3_URL_FORMAT: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "ASSET_FS_CONFIG_s3_URL_FORMAT",
-            {
-              parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_URL_FORMAT`,
-            },
-          ),
-        ),
+
         ASSET_UPLOAD_MAX_SIZE: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
@@ -452,15 +428,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
           StringParameter.fromStringParameterAttributes(this, "CORS_ORIGINS", {
             parameterName: `/doorway/${props.environment}/internal-api/CORS_ORIGINS`,
           }),
-        ),
-        ASSET_FS_CONFIG_s3_BUCKET: Secret.fromSsmParameter(
-          StringParameter.fromStringParameterAttributes(
-            this,
-            "ASSET_FS_CONFIG_s3_BUCKET",
-            {
-              parameterName: `/doorway/${props.environment}/s3/uploadsBucketName`,
-            },
-          ),
         ),
         DUPLICATES_CLOSE_DATE: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
@@ -500,6 +467,10 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         SHOW_DUPLICATES: "FALSE",
         NO_COLOR: "TRUE",
         ASSET_FS_CONFIG_s3_PATH_PREFIX: "",
+        ASSET_FS_PRIVATE_CONFIG_s3_BUCKET: secureUploadsBucket.bucketName,
+        ASSET_FS_CONFIG_s3_BUCKET: publicUploadsBucket.bucketName,
+        ASSET_FS_CONFIG_s3_REGION: props.env.region,
+        ASSET_FS_CONFIG_s3_URL_FORMAT: "public",
       },
       entryPoint: [],
       portMappings: [
