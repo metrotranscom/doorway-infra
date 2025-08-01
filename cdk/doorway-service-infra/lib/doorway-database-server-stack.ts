@@ -1,4 +1,4 @@
-import { Duration, Fn, Stack } from "aws-cdk-lib";
+import { CfnOutput, Duration, Fn, Stack } from "aws-cdk-lib";
 import { Port, SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import {
   DatabaseInstance,
@@ -80,5 +80,9 @@ export class DoorwayDatabaseServerStack extends Stack {
         automaticallyAfter: Duration.days(30),
       },
     );
+    new CfnOutput(this, "dbSecret", {
+      exportName: `doorwayDBSecret-${props.environment}`,
+      value: dbinstance.secret!.secretArn,
+    });
   }
 }

@@ -16,6 +16,8 @@ import { DoorwayDatabaseServerStack } from "./doorway-database-server-stack";
 import { DoorwayEcsClusterStack } from "./doorway-ecs-cluster";
 import { DoorwayGlobalResourcesStack } from "./doorway-global-resources-stack";
 import { DoorwayNetworkStack } from "./doorway-network-stack";
+import { DoorwayParametersStack } from "./doorway-parameters-stack";
+import { DoorwayApiServiceStack } from "./doorway_api_service-stack";
 export interface PipelineProps extends StackProps {
   githubSecret: string;
 }
@@ -168,6 +170,17 @@ class DoorwayEnvironmentStage extends Stage {
         region: process.env.CDK_DEFAULT_REGION || "no-region",
       },
     });
+    const parametersStack = new DoorwayParametersStack(
+      this,
+      "DoorwayParametersStack",
+      {
+        environment: environment,
+        env: {
+          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+          region: process.env.CDK_DEFAULT_REGION || "no-region",
+        },
+      },
+    );
     const dbstack = new DoorwayDatabaseServerStack(
       this,
       "DoorwayDatabaseServerStack",
@@ -192,5 +205,19 @@ class DoorwayEnvironmentStage extends Stage {
       },
     );
     ecsClusterStack.addDependency(networkstack);
+    const apiServiceStack = new DoorwayApiServiceStack(
+      this,
+      "DoorwayApiServiceStack",
+      {
+        environment: environment,
+        env: {
+          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+          region: process.env.CDK_DEFAULT_REGION || "no-region",
+        },
+      },
+    );
+    apiServiceStack.addDependency(ecsClusterStack);
+    apiServiceStack.addDependency(dbstack);
+    apiServiceStack.addDependency(parametersStack);
   }
 }

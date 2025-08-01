@@ -1,4 +1,5 @@
 import * as cdk from "aws-cdk-lib";
+import { Fn } from "aws-cdk-lib";
 import { ISubnet, SecurityGroup, Subnet } from "aws-cdk-lib/aws-ec2";
 import {
   Cluster,
@@ -26,6 +27,7 @@ import { Bucket } from "aws-cdk-lib/aws-s3";
 import * as secret from "aws-cdk-lib/aws-secretsmanager";
 import { EmailIdentity } from "aws-cdk-lib/aws-ses";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
+import { Construct } from "constructs";
 export interface DoorwayStackProps extends cdk.StackProps {
   environment: string;
   env: {
@@ -40,7 +42,7 @@ export interface DoorwayStackProps extends cdk.StackProps {
 }
 export class DoorwayApiServiceStack extends cdk.Stack {
   public constructor(
-    scope: cdk.App,
+    scope: Construct,
     id: string,
     props: DoorwayStackProps = {
       environment: "dev",
@@ -118,20 +120,11 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       enforceSSL: true,
     });
 
-    // The minimum amount of tasks the service should have running (To be implemented)
-    const minTasks = StringParameter.fromStringParameterAttributes(
-      this,
-      "minTasks",
-      {
-        parameterName: `/doorway/${props.environment}/internal-api/minimumTasks`,
-      },
-    ).stringValue;
-
     // Get the SES Email Information
     const sesIdentity = EmailIdentity.fromEmailIdentityName(
       this,
       "sesIdentity",
-      "housingbayarea.org",
+      "housingbayarea2.org",
     );
 
     // Set up the security group that allows the service to take traffic
@@ -231,20 +224,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         ),
       }),
       secrets: {
-        APP_SECRET: Secret.fromSecretsManager(
-          secret.Secret.fromSecretNameV2(
-            this,
-            "app-secret",
-            `app-secret-${props.environment}`,
-          ),
-        ),
-        CLOUDINARY_KEY: Secret.fromSecretsManager(
-          secret.Secret.fromSecretNameV2(
-            this,
-            "cloudinarykey",
-            `CLOUDINARY_KEY`,
-          ),
-        ),
         GOOGLE_API_ID: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(this, "googleApiId", "GOOGLE_API_ID"),
         ),
@@ -262,43 +241,38 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             "GOOGLE_API_KEY",
           ),
         ),
-        GOVDELIVERY_API_URL: Secret.fromSecretsManager(
+
+        PGUSER: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(
             this,
-            "govdeliveryApiUrl",
-            "GOVDELIVERY_API_URL",
+            "pguser",
+            Fn.importValue(`doorwayDBSecret-${props.environment}`),
           ),
+          "username",
         ),
-        GOVDELIVERY_PASSWORD: Secret.fromSecretsManager(
+        PGPASSWORD: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(
             this,
-            "govdeliveryPassword",
-            "GOVDELIVERY_PASSWORD",
+            "pgpassword",
+            Fn.importValue(`doorwayDBSecret-${props.environment}`),
           ),
+          "password",
         ),
-        GOVDELIVERY_USERNAME: Secret.fromSecretsManager(
+        PGPORT: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(
             this,
-            "govdeliveryUsername",
-            "GOVDELIVERY_USERNAME",
+            "pgport",
+            Fn.importValue(`doorwayDBSecret-${props.environment}`),
           ),
+          "port",
         ),
-        EMAIL_API_KEY: Secret.fromSecretsManager(
-          secret.Secret.fromSecretNameV2(this, "emailKey", "EMAIL_API_KEY"),
-        ),
-        DATABASE_URL: Secret.fromSecretsManager(
+        PGHOST: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(
             this,
-            "dbUrl",
-            StringParameter.fromStringParameterAttributes(
-              this,
-              "dbSecretName",
-              {
-                parameterName: `/doorway/${props.environment}/db/secret`,
-              },
-            ).stringValue,
+            "pghost",
+            Fn.importValue(`doorwayDBSecret-${props.environment}`),
           ),
-          "uri",
+          "host",
         ),
         THROTTLE_LIMIT: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
@@ -323,51 +297,51 @@ export class DoorwayApiServiceStack extends cdk.Stack {
             },
           ),
         ),
-        // LISTING_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
-        //   StringParameter.fromStringParameterAttributes(
-        //     this,
-        //     "LISTING_PROCESSING_CRON_STRING",
-        //     {
-        //       parameterName: `/doorway/${props.environment}/internal-api/LISTING_PROCESSING_CRON_STRING`,
-        //     },
-        //   ),
-        // ),
-        // LOTTERY_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
-        //   StringParameter.fromStringParameterAttributes(
-        //     this,
-        //     "LOTTERY_PROCESSING_CRON_STRING",
-        //     {
-        //       parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PROCESSING_CRON_STRING`,
-        //     },
-        //   ),
-        // ),
-        // LOTTERY_PUBLISH_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
-        //   StringParameter.fromStringParameterAttributes(
-        //     this,
-        //     "LOTTERY_PUBLISH_PROCESSING_CRON_STRING",
-        //     {
-        //       parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PUBLISH_PROCESSING_CRON_STRING`,
-        //     },
-        //   ),
-        // ),
-        // AFS_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
-        //   StringParameter.fromStringParameterAttributes(
-        //     this,
-        //     "AFS_PROCESSING_CRON_STRING",
-        //     {
-        //       parameterName: `/doorway/${props.environment}/internal-api/AFS_PROCESSING_CRON_STRING`,
-        //     },
-        //   ),
-        // ),
-        //  TEMP_FILE_CLEAR_CRON_STRING: Secret.fromSsmParameter(
-        //   StringParameter.fromStringParameterAttributes(
-        //     this,
-        //     "TEMP_FILE_CLEAR_CRON_STRING",
-        //     {
-        //       parameterName: `/doorway/${props.environment}/internal-api/TEMP_FILE_CLEAR_CRON_STRING`,
-        //     },
-        //   ),
-        // ),
+        LISTING_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
+          StringParameter.fromStringParameterAttributes(
+            this,
+            "LISTING_PROCESSING_CRON_STRING",
+            {
+              parameterName: `/doorway/${props.environment}/internal-api/LISTING_PROCESSING_CRON_STRING`,
+            },
+          ),
+        ),
+        LOTTERY_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
+          StringParameter.fromStringParameterAttributes(
+            this,
+            "LOTTERY_PROCESSING_CRON_STRING",
+            {
+              parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PROCESSING_CRON_STRING`,
+            },
+          ),
+        ),
+        LOTTERY_PUBLISH_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
+          StringParameter.fromStringParameterAttributes(
+            this,
+            "LOTTERY_PUBLISH_PROCESSING_CRON_STRING",
+            {
+              parameterName: `/doorway/${props.environment}/internal-api/LOTTERY_PUBLISH_PROCESSING_CRON_STRING`,
+            },
+          ),
+        ),
+        AFS_PROCESSING_CRON_STRING: Secret.fromSsmParameter(
+          StringParameter.fromStringParameterAttributes(
+            this,
+            "AFS_PROCESSING_CRON_STRING",
+            {
+              parameterName: `/doorway/${props.environment}/internal-api/AFS_PROCESSING_CRON_STRING`,
+            },
+          ),
+        ),
+        TEMP_FILE_CLEAR_CRON_STRING: Secret.fromSsmParameter(
+          StringParameter.fromStringParameterAttributes(
+            this,
+            "TEMP_FILE_CLEAR_CRON_STRING",
+            {
+              parameterName: `/doorway/${props.environment}/internal-api/TEMP_FILE_CLEAR_CRON_STRING`,
+            },
+          ),
+        ),
         LOTTERY_DAYS_TILL_EXPIRY: Secret.fromSsmParameter(
           StringParameter.fromStringParameterAttributes(
             this,
