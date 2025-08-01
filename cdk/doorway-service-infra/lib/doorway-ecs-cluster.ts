@@ -1,4 +1,4 @@
-import { Fn, Stack } from "aws-cdk-lib";
+import { CfnOutput, Fn, Stack } from "aws-cdk-lib";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
 
 import { Cluster, ContainerInsights } from "aws-cdk-lib/aws-ecs";
@@ -15,11 +15,19 @@ export class DoorwayEcsClusterStack extends Stack {
       vpcId: vpcId,
       availabilityZones: ["us-west-2a", "us-west-2b"],
     });
-    new Cluster(this, `doorway-ecs-cluster-${props.environment}`, {
-      clusterName: `doorway-ecs-cluster-${props.environment}`,
-      vpc: vpc,
-      containerInsightsV2: ContainerInsights.ENHANCED,
-      enableFargateCapacityProviders: true,
+    const cluster = new Cluster(
+      this,
+      `doorway-ecs-cluster-${props.environment}`,
+      {
+        clusterName: `doorway-ecs-cluster-${props.environment}`,
+        vpc: vpc,
+        containerInsightsV2: ContainerInsights.ENHANCED,
+        enableFargateCapacityProviders: true,
+      },
+    );
+    new CfnOutput(this, "doorwayEcsClusterName", {
+      value: cluster.clusterArn,
+      exportName: `doorway-ecs-cluster-arn-${props.environment}`,
     });
   }
 }

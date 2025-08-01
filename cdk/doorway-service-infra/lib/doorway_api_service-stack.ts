@@ -200,7 +200,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
 
     // Now we're down to business! Set up the fargate container task for the api
     // Notice the load of environment variables we add to it below
-    const task = new TaskDefinition(this, "task", {
+    const task = new TaskDefinition(this, "apiTask", {
       compatibility: Compatibility.FARGATE,
       cpu: "2048",
       memoryMiB: "4096",
@@ -489,14 +489,15 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       {
         taskDefinition: task,
         serviceName: `doorway-${props.environment}-internal-api`,
-        cluster: Cluster.fromClusterAttributes(this, "default-cluster", {
-          clusterName: `doorway-${props.environment}-default`,
-          vpc: vpc,
-        }),
+        cluster: Cluster.fromClusterArn(
+          this,
+          "ecsCluster",
+          Fn.importValue(`doorway-ecs-cluster-arn-${props.environment}`),
+        ),
         vpcSubnets: {
           subnets: appSubnets,
         },
-        desiredCount: 2,
+        desiredCount: 3,
       },
     );
 
