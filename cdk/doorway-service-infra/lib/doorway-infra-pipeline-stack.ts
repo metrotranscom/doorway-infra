@@ -145,7 +145,12 @@ export class DoorwayInfraPipelineStack extends Stack {
       }),
     );
     pipeline.addStage(
-      new DoorwayEnvironmentStage(this, "DoorwayDevEnvironmentStage", props),
+      new DoorwayEnvironmentStage(
+        this,
+        "DoorwayDevEnvironmentStage",
+        props,
+        "dev2",
+      ),
     );
   }
 }
