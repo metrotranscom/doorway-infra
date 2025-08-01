@@ -89,16 +89,6 @@ export class DoorwayParametersStack extends cdk.Stack {
       stringValue: "https://partners.dev.housingbayarea.mtc.ca.gov",
     });
 
-    new StringParameter(this, "s3Region", {
-      parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_REGION`,
-      stringValue: "us-west-1",
-    });
-
-    new StringParameter(this, "s3Url", {
-      parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_CONFIG_s3_URL_FORMAT`,
-      stringValue: "public",
-    });
-
     new StringParameter(this, "throttleTTL", {
       parameterName: `/doorway/${props.environment}/internal-api/THROTTLE_TTL`,
       stringValue: "180000",
@@ -132,11 +122,6 @@ export class DoorwayParametersStack extends cdk.Stack {
     new StringParameter(this, "cookieDomain", {
       parameterName: `/doorway/${props.environment}/internal-api/COOKIE_DOMAIN`,
       stringValue: `.${props.environment}.housingbayarea.mtc.ca.gov`,
-    });
-
-    new StringParameter(this, "privateConfigBucket", {
-      parameterName: `/doorway/${props.environment}/internal-api/ASSET_FS_PRIVATE_CONFIG_s3_BUCKET`,
-      stringValue: `doorway-dev-secure-uploads20230511215312497400000002`,
     });
 
     new StringParameter(this, "useSecureDownloadPathway", {
