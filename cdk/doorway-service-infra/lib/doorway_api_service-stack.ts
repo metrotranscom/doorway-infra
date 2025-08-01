@@ -197,6 +197,13 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       ],
     });
     executionRole.addToPolicy(policy);
+    const dbSecretName = Fn.importValue(`doorwayDBSecret-${props.environment}`);
+    const dbSecret = secret.Secret.fromSecretNameV2(
+      this,
+      "dbSecret",
+      dbSecretName,
+    );
+    dbSecret.grantRead(executionRole);
 
     // Now we're down to business! Set up the fargate container task for the api
     // Notice the load of environment variables we add to it below
