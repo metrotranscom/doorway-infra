@@ -12,7 +12,7 @@ export class DoorwayGlobalResourcesStack extends Stack {
     });
 
     new EmailIdentity(this, "DoorwaySesIdentity", {
-      identity: Identity.domain("housingbayarea.org"),
+      identity: Identity.domain("housingbayarea2.org"),
       configurationSet: sesConfigSet,
       dkimSigning: true,
       feedbackForwarding: true,
