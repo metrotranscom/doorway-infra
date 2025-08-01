@@ -489,11 +489,10 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       {
         taskDefinition: task,
         serviceName: `doorway-${props.environment}-internal-api`,
-        cluster: Cluster.fromClusterArn(
-          this,
-          "ecsCluster",
-          Fn.importValue(`doorway-ecs-cluster-arn-${props.environment}`),
-        ),
+        cluster: Cluster.fromClusterAttributes(this, "ecsCluster", {
+          clusterName: Fn.importValue(`dwEcsCluster-${props.environment}`),
+          vpc: vpc,
+        }),
         vpcSubnets: {
           subnets: appSubnets,
         },

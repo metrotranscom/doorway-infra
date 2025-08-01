@@ -26,8 +26,8 @@ export class DoorwayEcsClusterStack extends Stack {
       },
     );
     new CfnOutput(this, "doorwayEcsClusterName", {
-      value: cluster.clusterArn,
-      exportName: `doorway-ecs-cluster-arn-${props.environment}`,
+      value: cluster.clusterName,
+      exportName: `dwEcsCluster-${props.environment}`,
     });
   }
 }
