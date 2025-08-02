@@ -204,6 +204,12 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       dbSecretArn,
     );
     dbSecret.grantRead(executionRole);
+    const logGroup = new LogGroup(this, `doorway-${props.environment}-tasks`, {
+      logGroupName: `doorway-${props.environment}-tasks`,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      retention: cdk.aws_logs.RetentionDays.ONE_WEEK,
+    });
+    logGroup.grantWrite(executionRole);
 
     // Now we're down to business! Set up the fargate container task for the api
     // Notice the load of environment variables we add to it below
