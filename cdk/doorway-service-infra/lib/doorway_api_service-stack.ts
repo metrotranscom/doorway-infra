@@ -197,11 +197,11 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       ],
     });
     executionRole.addToPolicy(policy);
-    const dbSecretName = Fn.importValue(`doorwayDBSecret-${props.environment}`);
-    const dbSecret = secret.Secret.fromSecretNameV2(
+    const dbSecretArn = Fn.importValue(`doorwayDBSecret-${props.environment}`);
+    const dbSecret = secret.Secret.fromSecretCompleteArn(
       this,
       "dbSecret",
-      dbSecretName,
+      dbSecretArn,
     );
     dbSecret.grantRead(executionRole);
 
