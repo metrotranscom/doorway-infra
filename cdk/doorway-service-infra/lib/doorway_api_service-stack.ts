@@ -223,7 +223,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
     });
     task.addContainer("internal-api", {
       image: ContainerImage.fromRegistry(
-        `364076391763.dkr.ecr.us-west-1.amazonaws.com/doorway/backend:run-candidate`,
+        `${props.env.account}.dkr.ecr.${props.env.region}.amazonaws.com/doorway/backend:run-candidate`,
       ),
       cpu: 1,
       memoryLimitMiB: 1024,
