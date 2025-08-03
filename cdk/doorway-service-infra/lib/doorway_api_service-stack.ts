@@ -444,6 +444,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         ),
       },
       environment: {
+        APP_SECRET: "<reallylongdummyvaluethathisnotused>",
         ASSET_FILE_SERVICE: "s3",
         LISTINGS_PROCESSING_QUERY: "/listings",
         PORT: "3100",
