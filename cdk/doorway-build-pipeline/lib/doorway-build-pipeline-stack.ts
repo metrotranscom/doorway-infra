@@ -108,7 +108,7 @@ export class DoorwayBuildPipelineStack extends Stack {
       oauthToken: githubSecret,
       owner: "metrotranscom",
       repo: "doorway",
-      branch: "fix/update_image_location",
+      branch: "feat/add_docker_entrypoint",
       output: sourceArtifact,
     });
     const configSourceArtifact = new Artifact("ConfigSourceArtifact");
