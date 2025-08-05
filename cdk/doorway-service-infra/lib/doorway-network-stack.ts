@@ -47,6 +47,11 @@ export class DoorwayNetworkStack extends Stack {
       description: `The app security group for the doorway ${props.environment} environment`,
       value: appSG.securityGroupId,
     });
+    new CfnOutput(this, "doorway-default-sg", {
+      exportName: `doorway-default-sg-${props.environment}`,
+      description: `The default security group for the doorway ${props.environment} environment`,
+      value: vpc.vpcDefaultSecurityGroup,
+    });
     new CfnOutput(this, "doorway-vpc-id", {
       exportName: `doorway-vpc-id-${props.environment}`,
       description: `The VPC for the doorway for the ${props.environment} environment`,
