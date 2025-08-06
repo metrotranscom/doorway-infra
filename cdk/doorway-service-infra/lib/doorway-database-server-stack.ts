@@ -67,6 +67,10 @@ export class DoorwayDatabaseServerStack extends Stack {
         storageEncrypted: true,
         allocatedStorage: 20,
         storageType: StorageType.STANDARD,
+        databaseName: "bloom",
+        credentials: {
+          username: "doorway",
+        },
       },
     );
     new SecretRotation(
