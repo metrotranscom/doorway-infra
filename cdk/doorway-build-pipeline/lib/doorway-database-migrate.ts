@@ -84,12 +84,11 @@ export class DoorwayDatabaseMigrate {
 
       privateSubnetIds: [appSubnetId],
     });
-    const sgId = Fn.importValue(`doorway-app-sg-${props.environment}`);
-    const sg = SecurityGroup.fromLookupByName(
+    const sgId = Fn.importValue(`doorway-default-sg-${props.environment}`);
+    const sg = SecurityGroup.fromSecurityGroupId(
       stack,
-      `${id}-DefaultSecurityGroup`,
-      "default",
-      vpc,
+      `default-security-group-${props.environment}`,
+      sgId,
     );
 
     // Create the CodeBuild project

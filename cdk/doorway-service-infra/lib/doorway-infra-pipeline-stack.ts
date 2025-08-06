@@ -1,4 +1,4 @@
-import { Fn, Stack, StackProps, Stage, StageProps } from "aws-cdk-lib";
+import { Stack, StackProps, Stage, StageProps } from "aws-cdk-lib";
 import {
   PolicyDocument,
   PolicyStatement,
@@ -147,59 +147,64 @@ export class DoorwayInfraPipelineStack extends Stack {
       }),
     );
     pipeline.addStage(
-      new DoorwayEnvironmentBaseStage(this, "DoorwayEnvironmentBaseStage", {
-        env: {
-          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
-          region: process.env.CDK_DEFAULT_REGION || "no-region",
-        },
-      }),
-    );
-
-    const devStage = pipeline.addStage(
-      new DoorwayEnvironmentStage(
+      new DoorwayEnvironmentBaseStage(
         this,
-        "DoorwayDevEnvironmentStage",
-        props,
+        `DoorwayEnvironmentBaseStage-Dev`,
+        {
+          env: {
+            account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+            region: process.env.CDK_DEFAULT_REGION || "no-region",
+          },
+        },
         "dev2",
       ),
     );
-    const dbSecretArn = Fn.importValue(`doorwayDBSecret-dev2`);
 
-    // Add a pre-deployment step
-    devStage.addPre(
-      new CodeBuildStep("DatabaseMigration", {
-        env: {
-          // Regular environment variables
-          ENVIRONMENT: "dev2",
-          AWS_DEFAULT_REGION: "us-west-2",
-          // Secrets Manager secrets
-          DB_SECRET_ARN: dbSecretArn,
-        },
-        commands: [
-          "echo 'Running database migrations'",
-          "# Retrieve secrets and set as environment variables",
-          "export DB_CREDS=$(aws secretsmanager get-secret-value --secret-id $DB_SECRET_ARN --query SecretString --output text)",
-          "export PGHOST=$(echo $DB_CREDS | jq -r '.host')",
-          "export PGUSER=$(echo $DB_CREDS | jq -r '.username')",
-          "export PGPASSWORD=$(echo $DB_CREDS | jq -r '.password')",
-          "export PGPORT=$(echo $DB_CREDS | jq -r '.port')",
-          "export PGDATABASE=doorway",
-          "echo 'Database connection configured'",
-          `docker run ${props.env?.account}dkr.ecr.${props.env?.region}.amazonaws.com/doorway/backend:migrate-candidate -e PGHOST -e PGUSER -e PGPASSWORD -e PGPORT -e PGDATABASE`,
-        ],
-        rolePolicyStatements: [
-          new PolicyStatement({
-            actions: [
-              "ecr:*",
-              "ssm:*",
-              "rds:*",
-              "secretsmanager:GetSecretValue",
-            ],
-            resources: ["*"],
-          }),
-        ],
-      }),
-    );
+    // const devStage = pipeline.addStage(
+    //   new DoorwayEnvironmentStage(
+    //     this,
+    //     "DoorwayDevEnvironmentStage",
+    //     props,
+    //     "dev2",
+    //   ),
+    // );
+    // const dbSecretArn = Fn.importValue(`doorwayDBSecret-dev2`);
+
+    //   // Add a pre-deployment step
+    //   devStage.addPre(
+    //     new CodeBuildStep("DatabaseMigration", {
+    //       env: {
+    //         // Regular environment variables
+    //         ENVIRONMENT: "dev2",
+    //         AWS_DEFAULT_REGION: "us-west-2",
+    //         // Secrets Manager secrets
+    //         DB_SECRET_ARN: dbSecretArn,
+    //       },
+    //       commands: [
+    //         "echo 'Running database migrations'",
+    //         "# Retrieve secrets and set as environment variables",
+    //         "export DB_CREDS=$(aws secretsmanager get-secret-value --secret-id $DB_SECRET_ARN --query SecretString --output text)",
+    //         "export PGHOST=$(echo $DB_CREDS | jq -r '.host')",
+    //         "export PGUSER=$(echo $DB_CREDS | jq -r '.username')",
+    //         "export PGPASSWORD=$(echo $DB_CREDS | jq -r '.password')",
+    //         "export PGPORT=$(echo $DB_CREDS | jq -r '.port')",
+    //         "export PGDATABASE=doorway",
+    //         "echo 'Database connection configured'",
+    //         `docker run ${props.env?.account}dkr.ecr.${props.env?.region}.amazonaws.com/doorway/backend:migrate-candidate -e PGHOST -e PGUSER -e PGPASSWORD -e PGPORT -e PGDATABASE`,
+    //       ],
+    //       rolePolicyStatements: [
+    //         new PolicyStatement({
+    //           actions: [
+    //             "ecr:*",
+    //             "ssm:*",
+    //             "rds:*",
+    //             "secretsmanager:GetSecretValue",
+    //           ],
+    //           resources: ["*"],
+    //         }),ß
+    //       ],
+    //     }),
+    //   );
   }
 }
 class DoorwayGlobalStage extends Stage {
