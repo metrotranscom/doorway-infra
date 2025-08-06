@@ -2,6 +2,7 @@ import { SecretValue, Stack, StackProps } from "aws-cdk-lib";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { ConfigurationSet, EmailIdentity, Identity } from "aws-cdk-lib/aws-ses";
 import { Construct } from "constructs";
+import { DoorwayBuildPipelineStack } from "./pipelines/doorway-build-pipeline-stack";
 
 export class DoorwayGlobalResourcesStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -9,6 +10,10 @@ export class DoorwayGlobalResourcesStack extends Stack {
     const sesConfigSet = new ConfigurationSet(this, "DoorwaySesConfigSet", {
       configurationSetName: "DoorwaySesConfigSet",
       sendingEnabled: true,
+    });
+    new DoorwayBuildPipelineStack(this, "DoorwayBuildPipelineStack", {
+      dockerHubSecret: "DOCKER_HUB_SECRET",
+      githubSecret: "GITHUB_SECRET",
     });
 
     new EmailIdentity(this, "DoorwaySesIdentity", {

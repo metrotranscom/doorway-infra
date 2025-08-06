@@ -1,6 +1,7 @@
 import { CfnOutput, Stack } from "aws-cdk-lib";
 import {
   IpAddresses,
+  Port,
   SecurityGroup,
   SubnetType,
   Vpc,
@@ -33,6 +34,7 @@ export class DoorwayNetworkStack extends Stack {
         },
       ],
     });
+
     const appSG = new SecurityGroup(
       this,
       `doorway-app-sg-${props.environment}`,
@@ -42,6 +44,7 @@ export class DoorwayNetworkStack extends Stack {
         description: `App security group for the doorway ${props.environment} environment`,
       },
     );
+    appSG.addEgressRule(appSG, Port.allTcp(), "Allow all outbound traffic");
     new CfnOutput(this, "doorway-app-sg", {
       exportName: `doorway-app-sg-${props.environment}`,
       description: `The app security group for the doorway ${props.environment} environment`,
