@@ -11,10 +11,6 @@ export class DoorwayGlobalResourcesStack extends Stack {
       configurationSetName: "DoorwaySesConfigSet",
       sendingEnabled: true,
     });
-    new DoorwayBuildPipelineStack(this, "DoorwayBuildPipelineStack", {
-      dockerHubSecret: "DOCKER_HUB_SECRET",
-      githubSecret: "GITHUB_SECRET",
-    });
 
     new EmailIdentity(this, "DoorwaySesIdentity", {
       identity: Identity.domain("housingbayarea2.org"),
@@ -64,6 +60,10 @@ export class DoorwayGlobalResourcesStack extends Stack {
     new Secret(this, "cloudinarySecret", {
       secretName: "CLOUDINARY_SECRET",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
+    });
+    new DoorwayBuildPipelineStack(this, "DoorwayBuildPipelineStack", {
+      dockerHubSecret: "DOCKER_HUB_SECRET",
+      githubSecret: "GITHUB_SECRET",
     });
   }
 }
