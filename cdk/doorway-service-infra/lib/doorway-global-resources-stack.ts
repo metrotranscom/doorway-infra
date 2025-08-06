@@ -62,8 +62,8 @@ export class DoorwayGlobalResourcesStack extends Stack {
       secretStringValue: SecretValue.unsafePlainText("changeme"),
     });
     new DoorwayBuildPipelineStack(this, "DoorwayBuildPipelineStack", {
-      dockerHubSecret: "DOCKER_HUB_SECRET",
-      githubSecret: "GITHUB_SECRET",
+      dockerHubSecret: "mtc/dockerHub",
+      githubSecret: "mtc/githubSecret",
     });
   }
 }
