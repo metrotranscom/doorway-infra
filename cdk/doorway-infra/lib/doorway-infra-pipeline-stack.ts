@@ -123,7 +123,7 @@ export class DoorwayInfraPipelineStack extends Stack {
           ),
         },
         commands: [
-          "cd ${CODEBUILD_SRC_DIR}/cdk/doorway-service-infra",
+          "cd ${CODEBUILD_SRC_DIR}/cdk/doorway-infra",
           "npm install",
           "npm run build",
           "npx cdk synth",
