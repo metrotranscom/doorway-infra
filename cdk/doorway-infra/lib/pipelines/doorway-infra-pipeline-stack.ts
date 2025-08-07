@@ -11,14 +11,16 @@ import {
   CodePipeline,
   CodePipelineSource,
 } from "aws-cdk-lib/pipelines";
+import * as fs from "fs";
+import * as yaml from "yaml";
 
 import { Construct } from "constructs";
-import { DoorwayDatabaseServerStack } from "./doorway-database-server-stack";
-import { DoorwayEcsClusterStack } from "./doorway-ecs-cluster";
-import { DoorwayGlobalResourcesStack } from "./doorway-global-resources-stack";
-import { DoorwayNetworkStack } from "./doorway-network-stack";
-import { DoorwayParametersStack } from "./doorway-parameters-stack";
-import { DoorwayApiServiceStack } from "./doorway_api_service-stack";
+import { DoorwayDatabaseServerStack } from "../doorway-database-server-stack";
+import { DoorwayEcsClusterStack } from "../doorway-ecs-cluster";
+import { DoorwayGlobalResourcesStack } from "../doorway-global-resources-stack";
+import { DoorwayNetworkStack } from "../doorway-network-stack";
+import { DoorwayParametersStack } from "../doorway-parameters-stack";
+import { DoorwayApiServiceStack } from "../doorway_api_service-stack";
 export interface PipelineProps extends StackProps {
   githubSecret: string;
 }
@@ -100,27 +102,29 @@ export class DoorwayInfraPipelineStack extends Stack {
       "githubSecret",
       props.githubSecret,
     ).secretValue;
+    const source = CodePipelineSource.gitHub(
+      "metrotranscom/doorway-infra",
+      "feat/new_cdk",
+      {
+        authentication: githubSecret,
+      },
+    );
+    const config = CodePipelineSource.gitHub(
+      "metrotranscom/doorway-config",
+      "main",
+      {
+        authentication: githubSecret,
+      },
+    );
 
     const pipeline = new CodePipeline(this, "Doorway-Infra-Pipeline", {
       pipelineName: "doorway-infra-pipeline",
       selfMutation: true,
       role: pipelineRole,
       synth: new CodeBuildStep("Synth", {
-        input: CodePipelineSource.gitHub(
-          "metrotranscom/doorway-infra",
-          "feat/new_cdk",
-          {
-            authentication: githubSecret,
-          },
-        ),
+        input: source,
         additionalInputs: {
-          "../config": CodePipelineSource.gitHub(
-            "metrotranscom/doorway-config",
-            "main",
-            {
-              authentication: githubSecret,
-            },
-          ),
+          "../config": config,
         },
         commands: [
           "cd ${CODEBUILD_SRC_DIR}/cdk/doorway-infra",
@@ -146,18 +150,67 @@ export class DoorwayInfraPipelineStack extends Stack {
         },
       }),
     );
-    pipeline.addStage(
-      new DoorwayEnvironmentBaseStage(
-        this,
-        `DoorwayEnvironmentBaseStage-Dev`,
-        {
-          env: {
-            account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
-            region: process.env.CDK_DEFAULT_REGION || "no-region",
-          },
+    const devBaseStage = new DoorwayEnvironmentBaseStage(
+      this,
+      `DoorwayEnvironmentBaseStage-Dev`,
+      {
+        env: {
+          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+          region: process.env.CDK_DEFAULT_REGION || "no-region",
         },
-        "dev2",
-      ),
+      },
+      "dev2",
+    );
+
+    const devStageWithActions = pipeline.addStage(devBaseStage);
+
+    // Read buildspec and convert to commands
+    const buildspecPath = "./buildspec/post-deploy.yaml"; // Adjust path as needed
+    let commands: string[] = [];
+
+    try {
+      const buildspecContent = yaml.parse(
+        fs.readFileSync(buildspecPath, "utf8"),
+      );
+
+      // Extract commands from buildspec phases
+      if (buildspecContent.phases) {
+        Object.keys(buildspecContent.phases).forEach((phase) => {
+          if (buildspecContent.phases[phase].commands) {
+            commands.push(`echo "Phase: ${phase}"`);
+            commands.push(...buildspecContent.phases[phase].commands);
+          }
+        });
+      }
+    } catch (error) {
+      // Fallback to default commands if buildspec doesn't exist
+      commands = [
+        "echo 'Running post-deployment tasks'",
+        "# Add your specific commands here",
+      ];
+    }
+
+    // Add a post-deployment CodeBuild step
+    devStageWithActions.addPost(
+      new CodeBuildStep("PostDeploymentTasks", {
+        input: source,
+        env: {
+          ENVIRONMENT: "dev2",
+          DB_SECRET_ARN: `arn:aws:secretsmanager:${this.region}:${this.account}:secret:doorwayDBSecret-dev2*`,
+        },
+        commands: commands,
+        rolePolicyStatements: [
+          new PolicyStatement({
+            actions: [
+              "ecs:*",
+              "ssm:*",
+              "rds:*",
+              "secretsmanager:GetSecretValue",
+            ],
+            resources: ["*"],
+          }),
+        ],
+      }),
     );
 
     // const devStage = pipeline.addStage(
@@ -168,43 +221,9 @@ export class DoorwayInfraPipelineStack extends Stack {
     //     "dev2",
     //   ),
     // );
-    // const dbSecretArn = Fn.importValue(`doorwayDBSecret-dev2`);
+    //
 
-    //   // Add a pre-deployment step
-    //   devStage.addPre(
-    //     new CodeBuildStep("DatabaseMigration", {
-    //       env: {
-    //         // Regular environment variables
-    //         ENVIRONMENT: "dev2",
-    //         AWS_DEFAULT_REGION: "us-west-2",
-    //         // Secrets Manager secrets
-    //         DB_SECRET_ARN: dbSecretArn,
-    //       },
-    //       commands: [
-    //         "echo 'Running database migrations'",
-    //         "# Retrieve secrets and set as environment variables",
-    //         "export DB_CREDS=$(aws secretsmanager get-secret-value --secret-id $DB_SECRET_ARN --query SecretString --output text)",
-    //         "export PGHOST=$(echo $DB_CREDS | jq -r '.host')",
-    //         "export PGUSER=$(echo $DB_CREDS | jq -r '.username')",
-    //         "export PGPASSWORD=$(echo $DB_CREDS | jq -r '.password')",
-    //         "export PGPORT=$(echo $DB_CREDS | jq -r '.port')",
-    //         "export PGDATABASE=doorway",
-    //         "echo 'Database connection configured'",
-    //         `docker run ${props.env?.account}dkr.ecr.${props.env?.region}.amazonaws.com/doorway/backend:migrate-candidate -e PGHOST -e PGUSER -e PGPASSWORD -e PGPORT -e PGDATABASE`,
-    //       ],
-    //       rolePolicyStatements: [
-    //         new PolicyStatement({
-    //           actions: [
-    //             "ecr:*",
-    //             "ssm:*",
-    //             "rds:*",
-    //             "secretsmanager:GetSecretValue",
-    //           ],
-    //           resources: ["*"],
-    //         }),ß
-    //       ],
-    //     }),
-    //   );
+    // Add a pre-deployment step
   }
 }
 class DoorwayGlobalStage extends Stage {
