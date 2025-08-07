@@ -39,4 +39,4 @@ phases:
         --env PGHOST="${PGHOST}"
         --env PGDATABASE=bloom
         --env PGPORT="${PGPORT}"
-        "${MIGRATION_IMAGE}" sh -c "yarn ${MIGRATION_CMD}"
+        "${MIGRATION_IMAGE}"
