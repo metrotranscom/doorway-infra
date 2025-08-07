@@ -155,6 +155,7 @@ export class DoorwayInfraPipelineStack extends Stack {
     // Add a post-deployment CodeBuild step
     devStageWithActions.addPost(
       new CodeBuildStep("PostDeploymentTasks", {
+        projectName: "DatabaseMigration",
         input: source,
         env: {
           ECR_REGION: this.region,
