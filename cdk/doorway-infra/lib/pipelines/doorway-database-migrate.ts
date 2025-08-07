@@ -98,6 +98,9 @@ export class DoorwayDatabaseMigrate {
       subnetSelection: {
         subnets: [appSubnet],
       },
+      environment: {
+        privileged: true,
+      },
 
       buildSpec: BuildSpec.fromSourceFilename(props.buildspec),
       environmentVariables: {
