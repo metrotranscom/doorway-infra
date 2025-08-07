@@ -84,7 +84,7 @@ export class DoorwayDatabaseMigrate {
 
       privateSubnetIds: [appSubnetId],
     });
-    const sgId = Fn.importValue(`doorway-default-sg-${props.environment}`);
+    const sgId = Fn.importValue(`doorway-app-sg-${props.environment}`);
     const sg = SecurityGroup.fromSecurityGroupId(
       stack,
       `default-security-group-${props.environment}`,
