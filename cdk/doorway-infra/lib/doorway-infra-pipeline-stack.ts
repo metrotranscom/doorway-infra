@@ -128,7 +128,7 @@ export class DoorwayInfraPipelineStack extends Stack {
           "npm run build",
           "npx cdk synth",
         ],
-        primaryOutputDirectory: "cdk/doorway-service-infra/cdk.out",
+        primaryOutputDirectory: "cdk/doorway-infra/cdk.out",
         rolePolicyStatements: [
           new PolicyStatement({
             actions: ["cloudformation:*", "ec2:*", "ssm:*"],
