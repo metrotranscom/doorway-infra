@@ -1,10 +1,5 @@
-import { Stack, StackProps, Stage, StageProps } from "aws-cdk-lib";
-import {
-  PolicyDocument,
-  PolicyStatement,
-  Role,
-  ServicePrincipal,
-} from "aws-cdk-lib/aws-iam";
+import { Fn, Stack, StackProps, Stage, StageProps } from "aws-cdk-lib";
+import { PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import {
   CodeBuildStep,
@@ -14,6 +9,7 @@ import {
 import * as fs from "fs";
 import * as yaml from "yaml";
 
+import { SecurityGroup, Subnet, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
 import { DoorwayDatabaseServerStack } from "../doorway-database-server-stack";
 import { DoorwayEcsClusterStack } from "../doorway-ecs-cluster";
@@ -51,52 +47,7 @@ export class DoorwayInfraPipelineStack extends Stack {
         resources: ["*"],
       }),
     );
-    const buildRole = new Role(this, "doorway-app-build-role", {
-      assumedBy: new ServicePrincipal("codebuild.amazonaws.com"),
-      managedPolicies: [
-        {
-          managedPolicyArn:
-            "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
-        },
-        {
-          managedPolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-        },
-      ],
-      inlinePolicies: {
-        ECRPolicies: new PolicyDocument({
-          statements: [
-            new PolicyStatement({
-              actions: [
-                "ecr:BatchGetImage",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchCheckLayerAvailability",
-              ],
-              resources: [
-                `arn:aws:ecr:${this.region}:${this.account}:repository/*`,
-              ],
-            }),
-            new PolicyStatement({
-              actions: ["secretsmanager:GetSecretValue"],
-              resources: [
-                `arn:aws:secretsmanager:${this.region}:${this.account}:secret:mtc/dockerHub*`,
-              ],
-            }),
-            new PolicyStatement({
-              actions: [
-                "cloudformation:*",
-                "ec2:*",
-                "ssm:*",
-                "codebuild:*",
-                "logs:*",
-                "iam:AssumeRole",
-                "iam:PassRole",
-              ],
-              resources: ["*"],
-            }),
-          ],
-        }),
-      },
-    });
+
     const githubSecret = Secret.fromSecretNameV2(
       this,
       "githubSecret",
@@ -165,7 +116,7 @@ export class DoorwayInfraPipelineStack extends Stack {
     const devStageWithActions = pipeline.addStage(devBaseStage);
 
     // Read buildspec and convert to commands
-    const buildspecPath = "./buildspec/post-deploy.yaml"; // Adjust path as needed
+    const buildspecPath = "./buildspec/migrate.yml"; // Adjust path as needed
     let commands: string[] = [];
 
     try {
@@ -189,16 +140,32 @@ export class DoorwayInfraPipelineStack extends Stack {
         "# Add your specific commands here",
       ];
     }
+    const vpcId = Fn.importValue(`doorway-vpc-id-dev2`);
+    const subnetId = Fn.importValue(`doorway-app-subnet-1-dev2`);
+    const securityGroupId = Fn.importValue(`doorway-app-sg-dev2`);
+    const vpc = Vpc.fromVpcAttributes(this, "vpc", {
+      vpcId: vpcId,
+      availabilityZones: Fn.importValue(`doorway-azs-dev2`).split(", "),
+    });
+    const subnet = Subnet.fromSubnetAttributes(this, "subnet", {
+      subnetId: subnetId,
+    });
+    const sg = SecurityGroup.fromSecurityGroupId(this, "sg", securityGroupId);
 
     // Add a post-deployment CodeBuild step
     devStageWithActions.addPost(
       new CodeBuildStep("PostDeploymentTasks", {
         input: source,
         env: {
-          ENVIRONMENT: "dev2",
           DB_SECRET_ARN: `arn:aws:secretsmanager:${this.region}:${this.account}:secret:doorwayDBSecret-dev2*`,
         },
         commands: commands,
+        vpc: vpc,
+        securityGroups: [sg],
+        subnetSelection: { subnets: [subnet] },
+        buildEnvironment: {
+          privileged: true,
+        },
         rolePolicyStatements: [
           new PolicyStatement({
             actions: [
