@@ -157,7 +157,10 @@ export class DoorwayInfraPipelineStack extends Stack {
       new CodeBuildStep("PostDeploymentTasks", {
         input: source,
         env: {
-          DB_SECRET_ARN: `arn:aws:secretsmanager:${this.region}:${this.account}:secret:doorwayDBSecret-dev2*`,
+          ECR_REGION: this.region,
+          ECR_ACCOUNT_ID: this.account,
+          ECR_NAMESPACE: "doorway",
+          DB_CREDS_ARN: `arn:aws:secretsmanager:${this.region}:${this.account}:secret:doorwayDBSecret-dev2*`,
         },
         commands: commands,
         vpc: vpc,
