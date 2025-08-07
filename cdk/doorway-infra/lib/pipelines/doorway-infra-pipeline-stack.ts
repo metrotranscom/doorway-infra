@@ -1,5 +1,10 @@
 import { Fn, Stack, StackProps, Stage, StageProps } from "aws-cdk-lib";
-import { PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import {
+  PolicyDocument,
+  PolicyStatement,
+  Role,
+  ServicePrincipal,
+} from "aws-cdk-lib/aws-iam";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import {
   CodeBuildStep,
@@ -47,7 +52,48 @@ export class DoorwayInfraPipelineStack extends Stack {
         resources: ["*"],
       }),
     );
-
+    const buildRole = new Role(this, "doorway-app-build-role", {
+      assumedBy: new ServicePrincipal("codebuild.amazonaws.com"),
+      managedPolicies: [
+        {
+          managedPolicyArn:
+            "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+        },
+        {
+          managedPolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+        },
+      ],
+      inlinePolicies: {
+        ECRPolicies: new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ["ecr:*"],
+              resources: [
+                `arn:aws:ecr:${this.region}:${this.account}:repository/*`,
+              ],
+            }),
+            new PolicyStatement({
+              actions: ["secretsmanager:GetSecretValue"],
+              resources: [
+                `arn:aws:secretsmanager:${this.region}:${this.account}:secret:mtc/dockerHub*`,
+              ],
+            }),
+            new PolicyStatement({
+              actions: [
+                "cloudformation:*",
+                "ec2:*",
+                "ssm:*",
+                "codebuild:*",
+                "logs:*",
+                "iam:AssumeRole",
+                "iam:PassRole",
+              ],
+              resources: ["*"],
+            }),
+          ],
+        }),
+      },
+    });
     const githubSecret = Secret.fromSecretNameV2(
       this,
       "githubSecret",
@@ -157,6 +203,7 @@ export class DoorwayInfraPipelineStack extends Stack {
       new CodeBuildStep("PostDeploymentTasks", {
         projectName: "DatabaseMigration",
         input: source,
+        role: buildRole,
         env: {
           ECR_REGION: this.region,
           ECR_ACCOUNT_ID: this.account,
