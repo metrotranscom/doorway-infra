@@ -207,7 +207,7 @@ export class DoorwayInfraPipelineStack extends Stack {
         role: buildRole,
 
         commands: [
-          `cd scripts`,
+          "cd ${CODEBUILD_SRC_DIR}/scripts",
           `chmod +x dbMigrate.sh`,
           `./dbMigrate.sh  -a ${props.env?.account} -r ${props.env?.region}  -s ${dbSecret}`,
         ],
