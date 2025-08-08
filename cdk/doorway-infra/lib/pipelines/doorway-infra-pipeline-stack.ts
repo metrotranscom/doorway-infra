@@ -187,6 +187,7 @@ export class DoorwayInfraPipelineStack extends Stack {
           ECR_REGION: Aws.REGION,
           ECR_ACCOUNT_ID: Aws.ACCOUNT_ID,
           ECR_NAMESPACE: "doorway",
+          PG_DATABASE: "bloom",
         },
         commands: [
           "echo 'Running database migration'",
@@ -199,6 +200,7 @@ export class DoorwayInfraPipelineStack extends Stack {
           'aws ecr get-login-password --region "${ECR_REGION}" | docker login --username AWS --password-stdin "${ECR_ACCOUNT_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com"',
           'export ECR_REPO="${ECR_ACCOUNT_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${ECR_NAMESPACE}"',
           'export MIGRATION_IMAGE="${ECR_REPO}/backend:migrate-candidate"',
+          'export MIGRATION_CMD="${MIGRATION_CMD:-db:reseed:ci}"',
           'docker pull "${MIGRATION_IMAGE}"',
           'export MIGRATION_CMD="${MIGRATION_CMD:-db:migration:run}"',
 
