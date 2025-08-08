@@ -1,4 +1,4 @@
-import { Fn, Stack, StackProps, Stage, StageProps } from "aws-cdk-lib";
+import { Aws, Fn, Stack, StackProps, Stage, StageProps } from "aws-cdk-lib";
 import {
   PolicyDocument,
   PolicyStatement,
@@ -176,13 +176,13 @@ export class DoorwayInfraPipelineStack extends Stack {
     devStageWithActions.addPost(
       new CodeBuildStep("PostDeploymentTasks", {
         projectName: "DatabaseMigration",
-        input: source,
+        // Don't specify input - it will use the pipeline's source automatically
         role: buildRole,
 
         commands: [
           "cd ${CODEBUILD_SRC_DIR}/cdk/doorway-infra/scripts",
           `chmod +x dbMigrate.bash`,
-          `./dbMigrate.bash  -a ${props.env?.account} -r ${props.env?.region}  -s ${dbSecret}`,
+          `./dbMigrate.bash  -a ${Aws.ACCOUNT_ID} -r ${Aws.REGION}  -s ${dbSecret}`,
         ],
 
         vpc: vpc,
