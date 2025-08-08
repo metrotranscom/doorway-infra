@@ -181,8 +181,8 @@ export class DoorwayInfraPipelineStack extends Stack {
 
         commands: [
           "cd ${CODEBUILD_SRC_DIR}/cdk/doorway-infra/scripts",
-          `chmod +x dbMigrate.sh`,
-          `./dbMigrate.sh  -a ${props.env?.account} -r ${props.env?.region}  -s ${dbSecret}`,
+          `chmod +x dbMigrate.bash`,
+          `./dbMigrate.bash  -a ${props.env?.account} -r ${props.env?.region}  -s ${dbSecret}`,
         ],
 
         vpc: vpc,
