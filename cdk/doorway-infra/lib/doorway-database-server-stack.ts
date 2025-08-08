@@ -67,7 +67,7 @@ export class DoorwayDatabaseServerStack extends Stack {
         storageEncrypted: true,
         allocatedStorage: 20,
         storageType: StorageType.STANDARD,
-        databaseName: "bloom",
+        databaseName: "doorway",
         credentials: {
           username: "doorway",
         },
