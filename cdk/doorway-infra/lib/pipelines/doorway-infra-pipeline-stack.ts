@@ -11,8 +11,6 @@ import {
   CodePipeline,
   CodePipelineSource,
 } from "aws-cdk-lib/pipelines";
-import * as fs from "fs";
-import * as yaml from "yaml";
 
 import { SecurityGroup, Subnet, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
@@ -121,31 +119,6 @@ export class DoorwayInfraPipelineStack extends Stack {
 
     const devStageWithActions = pipeline.addStage(devBaseStage);
 
-    // Read buildspec and convert to commands
-    const buildspecPath = "./buildspec/migrate.yml"; // Adjust path as needed
-    let commands: string[] = [];
-
-    try {
-      const buildspecContent = yaml.parse(
-        fs.readFileSync(buildspecPath, "utf8"),
-      );
-
-      // Extract commands from buildspec phases
-      if (buildspecContent.phases) {
-        Object.keys(buildspecContent.phases).forEach((phase) => {
-          if (buildspecContent.phases[phase].commands) {
-            commands.push(`echo "Phase: ${phase}"`);
-            commands.push(...buildspecContent.phases[phase].commands);
-          }
-        });
-      }
-    } catch (error) {
-      // Fallback to default commands if buildspec doesn't exist
-      commands = [
-        "echo 'Running post-deployment tasks'",
-        "# Add your specific commands here",
-      ];
-    }
     const vpcId = Fn.importValue(`doorway-vpc-id-dev2`);
     const subnetId = Fn.importValue(`doorway-app-subnet-1-dev2`);
     const securityGroupId = Fn.importValue(`doorway-app-sg-dev2`);
@@ -207,7 +180,7 @@ export class DoorwayInfraPipelineStack extends Stack {
         role: buildRole,
 
         commands: [
-          "cd ${CODEBUILD_SRC_DIR}/scripts",
+          "cd ${CODEBUILD_SRC_DIR}/cdk/doorway-infra/scripts",
           `chmod +x dbMigrate.sh`,
           `./dbMigrate.sh  -a ${props.env?.account} -r ${props.env?.region}  -s ${dbSecret}`,
         ],
