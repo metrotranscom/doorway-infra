@@ -205,13 +205,13 @@ export class DoorwayInfraPipelineStack extends Stack {
         projectName: "DatabaseMigration",
         input: source,
         role: buildRole,
-        env: {
-          ECR_REGION: this.region,
-          ECR_ACCOUNT_ID: this.account,
-          ECR_NAMESPACE: "doorway",
-          DB_CREDS_ARN: dbSecret,
-        },
-        commands: commands,
+
+        commands: [
+          `cd scripts`,
+          `chmod +x dbMigrate.sh`,
+          `./dbMigrate.sh  -a ${props.env?.account} -r ${props.env?.region}  -s ${dbSecret}`,
+        ],
+
         vpc: vpc,
         securityGroups: [sg],
         subnetSelection: { subnets: [subnet] },
