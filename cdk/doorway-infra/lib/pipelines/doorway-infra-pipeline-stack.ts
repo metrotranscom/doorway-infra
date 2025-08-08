@@ -24,6 +24,7 @@ import { DoorwayParametersStack } from "../doorway-parameters-stack";
 import { DoorwayApiServiceStack } from "../doorway_api_service-stack";
 export interface PipelineProps extends StackProps {
   githubSecret: string;
+  dockerHubSecret: string;
 }
 export class DoorwayInfraPipelineStack extends Stack {
   constructor(scope: any, id: string, props: PipelineProps) {
@@ -52,65 +53,24 @@ export class DoorwayInfraPipelineStack extends Stack {
         resources: ["*"],
       }),
     );
-    const buildRole = new Role(this, "doorway-app-build-role", {
-      assumedBy: new ServicePrincipal("codebuild.amazonaws.com"),
-      managedPolicies: [
-        {
-          managedPolicyArn:
-            "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
-        },
-        {
-          managedPolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-        },
-      ],
-      inlinePolicies: {
-        ECRPolicies: new PolicyDocument({
-          statements: [
-            new PolicyStatement({
-              actions: ["ecr:*"],
-              resources: [
-                `arn:aws:ecr:${this.region}:${this.account}:repository/*`,
-              ],
-            }),
-            new PolicyStatement({
-              actions: ["secretsmanager:GetSecretValue"],
-              resources: [
-                `arn:aws:secretsmanager:${this.region}:${this.account}:secret:mtc/dockerHub*`,
-              ],
-            }),
-            new PolicyStatement({
-              actions: [
-                "cloudformation:*",
-                "ec2:*",
-                "ssm:*",
-                "codebuild:*",
-                "logs:*",
-                "iam:AssumeRole",
-                "iam:PassRole",
-              ],
-              resources: ["*"],
-            }),
-          ],
-        }),
-      },
-    });
     const githubSecret = Secret.fromSecretNameV2(
       this,
       "githubSecret",
       props.githubSecret,
-    ).secretValue;
+    );
+
     const source = CodePipelineSource.gitHub(
       "metrotranscom/doorway-infra",
       "feat/new_cdk",
       {
-        authentication: githubSecret,
+        authentication: githubSecret.secretValue,
       },
     );
     const config = CodePipelineSource.gitHub(
       "metrotranscom/doorway-config",
       "main",
       {
-        authentication: githubSecret,
+        authentication: githubSecret.secretValue,
       },
     );
 
@@ -189,6 +149,7 @@ export class DoorwayInfraPipelineStack extends Stack {
     const vpcId = Fn.importValue(`doorway-vpc-id-dev2`);
     const subnetId = Fn.importValue(`doorway-app-subnet-1-dev2`);
     const securityGroupId = Fn.importValue(`doorway-app-sg-dev2`);
+    const dbSecret = Fn.importValue(`doorwayDBSecret-dev2`);
     const vpc = Vpc.fromVpcAttributes(this, "vpc", {
       vpcId: vpcId,
       availabilityZones: Fn.importValue(`doorway-azs-dev2`).split(", "),
@@ -197,6 +158,46 @@ export class DoorwayInfraPipelineStack extends Stack {
       subnetId: subnetId,
     });
     const sg = SecurityGroup.fromSecurityGroupId(this, "sg", securityGroupId);
+    const buildRole = new Role(this, "doorway-app-build-role", {
+      assumedBy: new ServicePrincipal("codebuild.amazonaws.com"),
+      managedPolicies: [
+        {
+          managedPolicyArn:
+            "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+        },
+        {
+          managedPolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+        },
+      ],
+      inlinePolicies: {
+        ECRPolicies: new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ["ecr:*"],
+              resources: [
+                `arn:aws:ecr:${this.region}:${this.account}:repository/*`,
+              ],
+            }),
+            new PolicyStatement({
+              actions: ["secretsmanager:GetSecretValue"],
+              resources: [githubSecret.secretArn],
+            }),
+            new PolicyStatement({
+              actions: [
+                "cloudformation:*",
+                "ec2:*",
+                "ssm:*",
+                "codebuild:*",
+                "logs:*",
+                "iam:AssumeRole",
+                "iam:PassRole",
+              ],
+              resources: ["*"],
+            }),
+          ],
+        }),
+      },
+    });
 
     // Add a post-deployment CodeBuild step
     devStageWithActions.addPost(
@@ -208,7 +209,7 @@ export class DoorwayInfraPipelineStack extends Stack {
           ECR_REGION: this.region,
           ECR_ACCOUNT_ID: this.account,
           ECR_NAMESPACE: "doorway",
-          DB_CREDS_ARN: `arn:aws:secretsmanager:${this.region}:${this.account}:secret:doorwayDBSecret-dev2*`,
+          DB_CREDS_ARN: dbSecret,
         },
         commands: commands,
         vpc: vpc,

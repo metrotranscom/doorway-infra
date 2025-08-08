@@ -5,4 +5,5 @@ import { DoorwayInfraPipelineStack } from "../lib/pipelines/doorway-infra-pipeli
 const app = new cdk.App();
 new DoorwayInfraPipelineStack(app, "DoorwayInfraPipelineStack", {
   githubSecret: process.env.GITHUB_SECRET || "mtc/githubSecret",
+  dockerHubSecret: process.env.DOCKERHUB_SECRET || "mtc/dockerHub",
 });
