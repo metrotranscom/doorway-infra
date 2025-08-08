@@ -196,6 +196,7 @@ export class DoorwayInfraPipelineStack extends Stack {
           'export MIGRATION_IMAGE="${ECR_REPO}/backend:migrate-candidate"',
           'docker pull "${MIGRATION_IMAGE}"',
           'export MIGRATION_CMD="${MIGRATION_CMD:-db:migration:run}"',
+          "echo $PGHOST",
           'docker run --env PGUSER="${PGUSER}" --env PGPASSWORD="${PGPASSWORD}" --env PGHOST="${PGHOST}" --env PGDATABASE="${PGDATABASE}" --env PGPORT="${PGPORT}" --env MIGRATION_CMD="${MIGRATION_CMD}" "${MIGRATION_IMAGE}"',
         ],
 
