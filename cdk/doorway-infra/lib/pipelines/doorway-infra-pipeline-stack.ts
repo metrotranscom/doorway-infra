@@ -176,11 +176,13 @@ export class DoorwayInfraPipelineStack extends Stack {
     devStageWithActions.addPost(
       new CodeBuildStep("PostDeploymentTasks", {
         projectName: "DatabaseMigration",
-        // Don't specify input - it will use the pipeline's source automatically
+        additionalInputs: {
+          source: source,
+        },
         role: buildRole,
 
         commands: [
-          "cd ${CODEBUILD_SRC_DIR}/cdk/doorway-infra/scripts",
+          "cd ${CODEBUILD_SRC_DIR_source}/cdk/doorway-infra/scripts",
           `chmod +x dbMigrate.bash`,
           `./dbMigrate.bash  -a ${Aws.ACCOUNT_ID} -r ${Aws.REGION}  -s ${dbSecret}`,
         ],
