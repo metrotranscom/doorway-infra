@@ -176,15 +176,27 @@ export class DoorwayInfraPipelineStack extends Stack {
     devStageWithActions.addPost(
       new CodeBuildStep("PostDeploymentTasks", {
         projectName: "DatabaseMigration",
-        additionalInputs: {
-          source: source,
-        },
         role: buildRole,
-
+        env: {
+          DB_SECRET_ARN: dbSecret,
+          ECR_REGION: Aws.REGION,
+          ECR_ACCOUNT_ID: Aws.ACCOUNT_ID,
+          ECR_NAMESPACE: "doorway",
+        },
         commands: [
-          "cd ${CODEBUILD_SRC_DIR_source}/cdk/doorway-infra/scripts",
-          `chmod +x dbMigrate.bash`,
-          `./dbMigrate.bash  -a ${Aws.ACCOUNT_ID} -r ${Aws.REGION}  -s ${dbSecret}`,
+          "echo 'Running database migration'",
+          "# Get database credentials (secrets not logged)",
+          "export DB_CREDS=$(aws secretsmanager get-secret-value --secret-id $DB_SECRET_ARN --query SecretString --output text 2>/dev/null)",
+          "export DB_HOST=$(echo $DB_CREDS | jq -r '.host' 2>/dev/null)",
+          "export DB_USER=$(echo $DB_CREDS | jq -r '.username' 2>/dev/null)",
+          "export DB_PASSWORD=$(echo $DB_CREDS | jq -r '.password' 2>/dev/null)",
+          "export DB_PORT=$(echo $DB_CREDS | jq -r '.port' 2>/dev/null)",
+          'aws ecr get-login-password --region "${ECR_REGION}" | docker login --username AWS --password-stdin "${ECR_ACCOUNT_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com"',
+          'export ECR_REPO="${ECR_ACCOUNT_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${ECR_NAMESPACE}"',
+          'export MIGRATION_IMAGE="${ECR_REPO}/backend:migrate-candidate"',
+          'docker pull "${MIGRATION_IMAGE}"',
+          'export MIGRATION_CMD="${MIGRATION_CMD:-db:migration:run}"',
+          'docker run --env PGUSER="${PGUSER}" --env PGPASSWORD="${PGPASSWORD}" --env PGHOST="${PGHOST}" --env PGDATABASE="${PGDATABASE}" --env PGPORT="${PGPORT}" --env MIGRATION_CMD="${MIGRATION_CMD}" "${MIGRATION_IMAGE}"',
         ],
 
         vpc: vpc,
