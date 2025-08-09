@@ -204,26 +204,26 @@ export class DoorwayInfraPipelineStack extends Stack {
           'export MIGRATION_CMD="${MIGRATION_CMD:-db:reseed:ci}"',
           'docker pull "${MIGRATION_IMAGE}"',
           'export MIGRATION_CMD="${MIGRATION_CMD:-db:migration:run}"',
-          "docker run --rm",
-          '  --env PGUSER="$PGUSER"',
-          '  --env PGPASSWORD="$PGPASSWORD"',
-          '  --env PGHOST="$PGHOST"',
-          '  --env PGDATABASE="$PG_DATABASE"',
-          '  --env PGPORT="$PGPORT"',
-          '  --env MIGRATION_CMD="$MIGRATION_CMD"',
-          '  --env CLOUDINARY_CLOUD_NAME="not-used"',
-          '  --env LISTINGS_QUERY="/listings"',
-          '  --env FILE_SERVICE="cloudinary"',
-          '  --env PORT="3100"',
-          '  --env EMAIL_API_KEY="SG.dummy_value"',
-          '  --env APP_SECRET="dummy-value-that-is-at-least-16-character-long"',
-          '  --env CLOUDINARY_SECRET="dummy_secret"',
-          '  --env CLOUDINARY_KEY="dummy_key"',
-          '  --env ADMIN_ACCOUNTS="100"',
-          '  --env PARTNERS_BASE_URL="http://localhost:3001/not-used"',
-          '  --env PARTNERS_PORTAL_URL="http://localhost:3001/not-used"',
-          "  --env SKIP_MIGRATIONS=FALSE",
-          '  "$MIGRATION_IMAGE"',
+          `docker run --rm \
+            --env PGUSER="$PGUSER" \
+            --env PGPASSWORD="$PGPASSWORD" \
+            --env PGHOST="$PGHOST" \
+            --env PGDATABASE="$PG_DATABASE" \
+            --env PGPORT="$PGPORT" \
+            --env MIGRATION_CMD="$MIGRATION_CMD" \
+            --env CLOUDINARY_CLOUD_NAME="not-used" \
+            --env LISTINGS_QUERY="/listings" \
+            --env FILE_SERVICE="cloudinary" \
+            --env PORT="3100" \
+            --env EMAIL_API_KEY="SG.dummy_value" \
+            --env APP_SECRET="dummy-value-that-is-at-least-16-character-long" \
+            --env CLOUDINARY_SECRET="dummy_secret" \
+            --env CLOUDINARY_KEY="dummy_key" \
+            --env ADMIN_ACCOUNTS="100" \
+            --env PARTNERS_BASE_URL="http://localhost:3001/not-used" \
+            --env PARTNERS_PORTAL_URL="http://localhost:3001/not-used" \
+            --env SKIP_MIGRATIONS=FALSE \
+            $MIGRATION_IMAGE`,
         ],
 
         vpc: vpc,
