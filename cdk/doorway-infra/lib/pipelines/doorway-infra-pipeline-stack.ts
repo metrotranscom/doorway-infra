@@ -208,7 +208,7 @@ export class DoorwayInfraPipelineStack extends Stack {
             --env PGPASSWORD="\${PGPASSWORD}" \
             --env PGHOST="\${PGHOST}" \
             --env PGDATABASE="\${PGDATABASE}" --env PGPORT="\${PGPORT}" \
-            --env MIGRATION_CMD="\${MIGRATION_CMD}"
+            --env MIGRATION_CMD="\${MIGRATION_CMD}" \
             --env CLOUDINARY_CLOUD_NAME="\${CLOUDINARY_CLOUD_NAME:not-used}" \
             --env LISTINGS_QUERY="\${LISTINGS_QUERY:/listings}" \
             --env FILE_SERVICE="\${FILE_SERVICE:-cloudinary}" \
@@ -220,8 +220,7 @@ export class DoorwayInfraPipelineStack extends Stack {
             --env ADMIN_ACCOUNTS="\${ADMIN_ACCOUNTS:-100}" \
             --env PARTNERS_BASE_URL="\${PARTNERS_BASE_URL:-http://localhost:3001/not-used}" \
             --env PARTNERS_PORTAL_URL="\${PARTNERS_PORTAL_URL:-http://localhost:3001/not-used}" \
-            --env SKIP_MIGRATIONS=FALSE \
-            "\${MIGRATION_IMAGE}"`,
+            --env SKIP_MIGRATIONS=FALSE "\${MIGRATION_IMAGE}"`,
         ],
 
         vpc: vpc,
