@@ -1,63 +1,30 @@
-import { Stack } from "aws-cdk-lib";
+import { Stage, StageProps } from "aws-cdk-lib";
 import { Artifact } from "aws-cdk-lib/aws-codepipeline";
-import {
-  PolicyDocument,
-  PolicyStatement,
-  Role,
-  ServicePrincipal,
-} from "aws-cdk-lib/aws-iam";
+import { Construct } from "constructs";
+import { DoorwayApiServiceStack } from "../doorway_api_service-stack";
 export interface DoorwayEnvDeployProps {
   buildspec: string;
   source: Artifact;
 }
 
-export class DoorwayEnvDeploy {
-  constructor(stack: Stack, id: string, props: DoorwayEnvDeployProps) {
-    const role = new Role(stack, `${id}-doorway-app-build-role`, {
-      assumedBy: new ServicePrincipal("codebuild.amazonaws.com"),
-      managedPolicies: [
-        {
-          managedPolicyArn:
-            "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess",
+export class DoorwayEnvDeployStage extends Stage {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: StageProps,
+    environment: string = "dev",
+  ) {
+    super(scope, id, props);
+    const apiServiceStack = new DoorwayApiServiceStack(
+      this,
+      `doorway-api-service-${environment}`,
+      {
+        environment: environment,
+        env: {
+          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+          region: process.env.CDK_DEFAULT_REGION || "no-region",
         },
-        {
-          managedPolicyArn: "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-        },
-      ],
-      inlinePolicies: {
-        ECRPolicies: new PolicyDocument({
-          statements: [
-            new PolicyStatement({
-              actions: [
-                "ecr:BatchGetImage",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchCheckLayerAvailability",
-              ],
-              resources: [
-                `arn:aws:ecr:${stack.region}:${stack.account}:repository/*`,
-              ],
-            }),
-            new PolicyStatement({
-              actions: ["secretsmanager:GetSecretValue"],
-              resources: [
-                `arn:aws:secretsmanager:${stack.region}:${stack.account}:secret:mtc/dockerHub*`,
-              ],
-            }),
-            new PolicyStatement({
-              actions: [
-                "cloudformation:*",
-                "ec2:*",
-                "ssm:*",
-                "codebuild:*",
-                "logs:*",
-                "iam:AssumeRole",
-                "iam:PassRole",
-              ],
-              resources: ["*"],
-            }),
-          ],
-        }),
       },
-    });
+    );
   }
 }
