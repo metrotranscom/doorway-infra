@@ -1,7 +1,4 @@
-import { Fn, Stack } from "aws-cdk-lib";
-import { BuildSpec, PipelineProject } from "aws-cdk-lib/aws-codebuild";
-import { Artifact } from "aws-cdk-lib/aws-codepipeline";
-import { CodeBuildAction } from "aws-cdk-lib/aws-codepipeline-actions";
+import { Aws, Fn, Stack } from "aws-cdk-lib";
 import { SecurityGroup, Subnet, Vpc } from "aws-cdk-lib/aws-ec2";
 import {
   PolicyDocument,
@@ -9,20 +6,39 @@ import {
   Role,
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
+import { CodeBuildStep } from "aws-cdk-lib/pipelines";
 // Removed fs and YAML imports since we're using BuildSpec.fromSourceFilename
 
 export interface DoorwayDatabaseMigrateProps {
-  buildspec: string;
-
-  source: Artifact;
+  ecrNamespace?: string;
+  databaseName?: string;
   environment: string;
 }
 
 export class DoorwayDatabaseMigrate {
-  public readonly action: CodeBuildAction;
-
+  public readonly step: CodeBuildStep;
   constructor(stack: Stack, id: string, props: DoorwayDatabaseMigrateProps) {
-    const role = new Role(stack, `${id}-doorway-app-build-role`, {
+    const vpcId = Fn.importValue(`doorway-vpc-id-${props.environment}`);
+    const subnetId = Fn.importValue(
+      `doorway-app-subnet-1-${props.environment}`,
+    );
+    const securityGroupId = Fn.importValue(
+      `doorway-app-sg-1-${props.environment}`,
+    );
+    const dbSecretArn = Fn.importValue(
+      `doorwayDBSecret-arn-${props.environment}`,
+    );
+    const azs = Fn.importValue(`doorway-azs-${props.environment}`).split(", ");
+    const vpc = Vpc.fromVpcAttributes(stack, "vpc", {
+      vpcId: vpcId,
+      availabilityZones: azs,
+    });
+    const subnet = Subnet.fromSubnetAttributes(stack, "subnet", {
+      subnetId: subnetId,
+    });
+    const sg = SecurityGroup.fromSecurityGroupId(stack, "sg", securityGroupId);
+
+    const buildRole = new Role(stack, "doorway-app-build-role", {
       assumedBy: new ServicePrincipal("codebuild.amazonaws.com"),
       managedPolicies: [
         {
@@ -37,14 +53,14 @@ export class DoorwayDatabaseMigrate {
         ECRPolicies: new PolicyDocument({
           statements: [
             new PolicyStatement({
-              actions: [
-                "ecr:BatchGetImage",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchCheckLayerAvailability",
-              ],
+              actions: ["ecr:*"],
               resources: [
-                `arn:aws:ecr:${stack.region}:${stack.account}:repository/*`,
+                `arn:aws:ecr:${Aws.REGION}:${Aws.ACCOUNT_ID}:repository/*`,
               ],
+            }),
+            new PolicyStatement({
+              actions: ["secretsmanager:GetSecretValue"],
+              resources: [dbSecretArn],
             }),
             new PolicyStatement({
               actions: [
@@ -62,61 +78,59 @@ export class DoorwayDatabaseMigrate {
         }),
       },
     });
-    const secretArn = Fn.importValue(`doorwayDBSecret-${props.environment}`);
-    role.addToPolicy(
-      new PolicyStatement({
-        actions: ["secretsmanager:GetSecretValue"],
-        resources: [secretArn],
-      }),
-    );
-    const vpcId = Fn.importValue(`doorway-vpc-id-${props.environment}`);
-    const appSubnetId = Fn.importValue(
-      `doorway-app-subnet-1-${props.environment}`,
-    );
-    const appSubnet = Subnet.fromSubnetAttributes(stack, `${id}-AppSubnet`, {
-      subnetId: appSubnetId,
-    });
+    this.step = new CodeBuildStep("PostDeploymentTasks", {
+      projectName: "DatabaseMigration",
+      role: buildRole,
+      env: {
+        DB_SECRET_ARN: dbSecretArn,
+        ECR_REGION: Aws.REGION,
+        ECR_ACCOUNT_ID: Aws.ACCOUNT_ID,
+        ECR_NAMESPACE: props.ecrNamespace || "doorway",
+        PG_DATABASE: props.databaseName || "bloom",
+      },
 
-    const azs = Fn.importValue(`doorway-azs-${props.environment}`);
-    const vpc = Vpc.fromVpcAttributes(stack, `${id}-Vpc`, {
-      vpcId: vpcId,
-      availabilityZones: azs.split(", "),
+      commands: [
+        "echo 'Running database migration'",
+        "# Get database credentials (secrets not logged)",
+        "export DB_CREDS=$(aws secretsmanager get-secret-value --secret-id $DB_SECRET_ARN --query SecretString --output text 2>/dev/null)",
+        "export PGHOST=$(echo $DB_CREDS | jq -r '.host' 2>/dev/null)",
+        "export PGUSER=$(echo $DB_CREDS | jq -r '.username' 2>/dev/null)",
+        "export PGPASSWORD=$(echo $DB_CREDS | jq -r '.password' 2>/dev/null)",
+        "export PGPORT=$(echo $DB_CREDS | jq -r '.port' 2>/dev/null)",
+        'aws ecr get-login-password --region "${ECR_REGION}" | docker login --username AWS --password-stdin "${ECR_ACCOUNT_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com"',
+        'export ECR_REPO="${ECR_ACCOUNT_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${ECR_NAMESPACE}"',
+        'export MIGRATION_IMAGE="${ECR_REPO}/backend:migrate-candidate"',
+        'export MIGRATION_CMD="${MIGRATION_CMD:-db:reseed:ci}"',
+        'docker pull "${MIGRATION_IMAGE}"',
+        'export MIGRATION_CMD="${MIGRATION_CMD:-db:migration:run}"',
+        `docker run --rm \
+            --env PGUSER="$PGUSER" \
+            --env PGPASSWORD="$PGPASSWORD" \
+            --env PGHOST="$PGHOST" \
+            --env PGDATABASE="$PG_DATABASE" \
+            --env PGPORT="$PGPORT" \
+            --env MIGRATION_CMD="$MIGRATION_CMD" \
+            --env CLOUDINARY_CLOUD_NAME="not-used" \
+            --env LISTINGS_QUERY="/listings" \
+            --env FILE_SERVICE="cloudinary" \
+            --env PORT="3100" \
+            --env EMAIL_API_KEY="SG.dummy_value" \
+            --env APP_SECRET="dummy-value-that-is-at-least-16-character-long" \
+            --env CLOUDINARY_SECRET="dummy_secret" \
+            --env CLOUDINARY_KEY="dummy_key" \
+            --env ADMIN_ACCOUNTS="100" \
+            --env PARTNERS_BASE_URL="http://localhost:3001/not-used" \
+            --env PARTNERS_PORTAL_URL="http://localhost:3001/not-used" \
+            --env SKIP_MIGRATIONS=FALSE \
+            $MIGRATION_IMAGE`,
+      ],
 
-      privateSubnetIds: [appSubnetId],
-    });
-    const sgId = Fn.importValue(`doorway-app-sg-${props.environment}`);
-    const sg = SecurityGroup.fromSecurityGroupId(
-      stack,
-      `default-security-group-${props.environment}`,
-      sgId,
-    );
-
-    // Create the CodeBuild project
-    const project = new PipelineProject(stack, `${id}-Project`, {
       vpc: vpc,
       securityGroups: [sg],
-      subnetSelection: {
-        subnets: [appSubnet],
-      },
-      environment: {
+      subnetSelection: { subnets: [subnet] },
+      buildEnvironment: {
         privileged: true,
       },
-
-      buildSpec: BuildSpec.fromSourceFilename(props.buildspec),
-      environmentVariables: {
-        ECR_REGION: { value: stack.region },
-        ECR_ACCOUNT_ID: { value: stack.account },
-        ECR_NAMESPACE: { value: "doorway" },
-        DB_CREDS_ARN: { value: secretArn },
-      },
-      role: role,
-    });
-    // Create the CodeBuild action
-    this.action = new CodeBuildAction({
-      actionName: `${id}-DBMigrate`,
-      input: props.source,
-      outputs: [new Artifact(`${id}-BuildOutput`)],
-      project,
     });
   }
 }
