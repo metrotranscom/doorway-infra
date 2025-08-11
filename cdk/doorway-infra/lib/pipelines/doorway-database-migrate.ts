@@ -25,9 +25,7 @@ export class DoorwayDatabaseMigrate {
     const securityGroupId = Fn.importValue(
       `doorway-app-sg-${props.environment}`,
     );
-    const dbSecretArn = Fn.importValue(
-      `doorwayDBSecret-arn-${props.environment}`,
-    );
+    const dbSecretArn = Fn.importValue(`doorwayDBSecret-${props.environment}`);
     const azs = Fn.importValue(`doorway-azs-${props.environment}`).split(", ");
     const vpc = Vpc.fromVpcAttributes(stack, "vpc", {
       vpcId: vpcId,
