@@ -23,7 +23,7 @@ export class DoorwayDatabaseMigrate {
       `doorway-app-subnet-1-${props.environment}`,
     );
     const securityGroupId = Fn.importValue(
-      `doorway-app-sg-1-${props.environment}`,
+      `doorway-app-sg-${props.environment}`,
     );
     const dbSecretArn = Fn.importValue(
       `doorwayDBSecret-arn-${props.environment}`,
