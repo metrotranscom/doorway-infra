@@ -139,6 +139,12 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         securityGroupName: `doorway-${props.environment}-private-app-sg`,
       },
     );
+
+    // Export the security group ID for the database to reference
+    new cdk.CfnOutput(this, "appSecurityGroup", {
+      exportName: `doorway-app-sg-${props.environment}`,
+      value: appTierPrivateSG.securityGroupId,
+    });
     // Set up an application load balancer inside the app subnet
     const privateLB = new elb.ApplicationLoadBalancer(
       this,
