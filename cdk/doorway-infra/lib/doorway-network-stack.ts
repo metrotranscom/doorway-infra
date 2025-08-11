@@ -17,6 +17,7 @@ export class DoorwayNetworkStack extends Stack {
       ipAddresses: IpAddresses.cidr("10.3.0.0/16"),
       maxAzs: 2,
       enableDnsHostnames: true,
+      enableDnsSupport: true,
       subnetConfiguration: [
         {
           name: `doorway-public-${props.environment}`,
