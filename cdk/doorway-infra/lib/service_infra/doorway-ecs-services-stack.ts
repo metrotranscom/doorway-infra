@@ -46,6 +46,10 @@ export class DoorwayEcsServicesStack extends Stack {
               availabilityZones: Fn.importValue(
                 `doorway-azs-${props.environment}`,
               ).split(","),
+              publicSubnetIds: [
+                Fn.importValue(`doorway-public-subnet-1-${props.environment}`),
+                Fn.importValue(`doorway-public-subnet-2-${props.environment}`),
+              ],
             }),
             securityGroups: [
               SecurityGroup.fromSecurityGroupId(
@@ -110,14 +114,14 @@ export class DoorwayEcsServicesStack extends Stack {
             GOOGLE_MAPS_API_KEY: Secret.fromSecretsManager(
               secret.Secret.fromSecretNameV2(
                 this,
-                "googleApiKey",
+                "googleMapsApiKey",
                 "/doorway/GOOGLE_MAPS_API_KEY",
               ),
             ),
             GOOGLE_MAPS_MAP_ID: Secret.fromSecretsManager(
               secret.Secret.fromSecretNameV2(
                 this,
-                "googleApiKey",
+                "googleMapsMapId",
                 "/doorway/GOOGLE_MAPS_MAP_ID",
               ),
             ),
