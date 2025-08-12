@@ -1,6 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import { Fn } from "aws-cdk-lib";
-import { ISubnet, SecurityGroup, Subnet } from "aws-cdk-lib/aws-ec2";
+import { ISubnet, Subnet } from "aws-cdk-lib/aws-ec2";
 import {
   Cluster,
   Compatibility,
@@ -89,6 +89,14 @@ export class DoorwayApiServiceStack extends cdk.Stack {
     appSubnetIds.forEach((id) => {
       appSubnets.push(Subnet.fromSubnetId(this, id, id));
     });
+    const appTierPrivateSGId = cdk.Fn.importValue(
+      `doorway-app-sg-${props.environment}`,
+    );
+    const appTierPrivateSG = cdk.aws_ec2.SecurityGroup.fromSecurityGroupId(
+      this,
+      "appTierPrivateSG",
+      appTierPrivateSGId,
+    );
 
     // The internal hosted DNS zone
     const hostedZone = HostedZone.fromHostedZoneAttributes(
@@ -127,24 +135,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       "housingbayarea2.org",
     );
 
-    // Set up the security group that allows the service to take traffic
-    const appTierPrivateSG = new SecurityGroup(
-      this,
-      `doorway-${props.environment}-private-app-sg`,
-      {
-        vpc: vpc,
-        allowAllOutbound: true,
-        description:
-          "Private Application Security Group - used for internal communication",
-        securityGroupName: `doorway-${props.environment}-private-app-sg`,
-      },
-    );
-
-    // Export the security group ID for the database to reference
-    new cdk.CfnOutput(this, "appSecurityGroup", {
-      exportName: `doorway-app-sg-${props.environment}`,
-      value: appTierPrivateSG.securityGroupId,
-    });
     // Set up an application load balancer inside the app subnet
     const privateLB = new elb.ApplicationLoadBalancer(
       this,
