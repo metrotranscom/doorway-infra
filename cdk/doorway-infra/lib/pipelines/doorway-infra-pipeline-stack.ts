@@ -9,6 +9,7 @@ import {
 
 import { Construct } from "constructs";
 import { DoorwayGlobalResourcesStack } from "../base_infra/doorway-global-resources-stack";
+import { DoorwayEcsServicesStack } from "../service_infra/doorway-ecs-services-stack";
 import { DoorwayApiServiceStack } from "../service_infra/doorway_api_service-stack";
 import { DoorwayDatabaseMigrate } from "./doorway-database-migrate";
 import { DoorwayEnvironmentBaseStage } from "./doorway-environment-base-stage";
@@ -150,6 +151,17 @@ class DoorwayEnvironmentStage extends Stage {
     const apiServiceStack = new DoorwayApiServiceStack(
       this,
       "DoorwayApiServiceStack",
+      {
+        environment: environment,
+        env: {
+          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+          region: process.env.CDK_DEFAULT_REGION || "no-region",
+        },
+      },
+    );
+    const ecsServicesStack = new DoorwayEcsServicesStack(
+      this,
+      "DoorwayEcsServicesStack",
       {
         environment: environment,
         env: {
