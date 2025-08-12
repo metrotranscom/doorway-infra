@@ -45,7 +45,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
     scope: Construct,
     id: string,
     props: DoorwayStackProps = {
-      environment: "dev",
+      environment: "dev2",
       env: {
         account: process.env.CDK_DEFAULT_ACCOUNT || "none",
         region: process.env.CDK_DEFAULT_REGION || "none",
@@ -453,6 +453,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         ASSET_FS_CONFIG_s3_BUCKET: publicUploadsBucket.bucketName,
         ASSET_FS_CONFIG_s3_REGION: props.env.region,
         ASSET_FS_CONFIG_s3_URL_FORMAT: "public",
+        PGDATABASE: "bloom",
       },
       entryPoint: [],
       portMappings: [
