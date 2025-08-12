@@ -128,6 +128,46 @@ export class DoorwayParametersStack extends cdk.Stack {
       parameterName: `/doorway/${props.environment}/partners-portal/USE_SECURE_DOWNLOAD_PATHWAY`,
       stringValue: `TRUE`,
     });
+    new StringParameter(this, "cacheRevalidate", {
+      parameterName: `/doorway/${props.environment}/public-portal/CACHE_REVALIDATE`,
+      stringValue: "60",
+    });
+    new StringParameter(this, "bloomApiBase", {
+      parameterName: `/doorway/${props.environment}/public-portal/BLOOM_API_BASE`,
+      stringValue: "https://proxy.housingbayarea.org",
+    });
+    new StringParameter(this, "gtmKey", {
+      parameterName: `/doorway/${props.environment}/public-portal/GTM_KEY`,
+      stringValue: "G-MNLZ682PHQ",
+    });
+    new StringParameter(this, "idleTimeout", {
+      parameterName: `/doorway/${props.environment}/public-portal/IDLE_TIMEOUT`,
+      stringValue: "5",
+    });
+    new StringParameter(this, "jurisdictionName", {
+      parameterName: `/doorway/${props.environment}/public-portal/JURISDICTION_NAME`,
+      stringValue: "Bay Area",
+    });
+    new StringParameter(this, "languages", {
+      parameterName: `/doorway/${props.environment}/public-portal/LANGUAGES`,
+      stringValue: "en,es,zh,vi,tl",
+    });
+    new StringParameter(this, "listingsQuery", {
+      parameterName: `/doorway/${props.environment}/public-portal/LISTINGS_QUERY`,
+      stringValue: "/listings",
+    });
+    new StringParameter(this, "notificationsSignupURL", {
+      parameterName: `/doorway/${props.environment}/public-portal/NOTFICATIONS_SIGN_UP_URL`,
+      stringValue: "https://public.govdelivery.com/accounts/CAMTC/signup/36832",
+    });
+    new StringParameter(this, "showAllMapPins", {
+      parameterName: `/doorway/${props.environment}/public-portal/SHOW_ALL_MAP_PINS`,
+      stringValue: "TRUE",
+    });
+    new StringParameter(this, "showProfessionalPartners", {
+      parameterName: `/doorway/${props.environment}/public-portal/SHOW_PROFESSIONAL_PARTNERS`,
+      stringValue: "TRUE",
+    });
 
     new Secret(this, "appSecret", {
       secretName: `app-secret-${props.environment}`,

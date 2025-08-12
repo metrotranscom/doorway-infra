@@ -8,8 +8,8 @@ import {
 } from "aws-cdk-lib/pipelines";
 
 import { Construct } from "constructs";
-import { DoorwayGlobalResourcesStack } from "../doorway-global-resources-stack";
-import { DoorwayApiServiceStack } from "../doorway_api_service-stack";
+import { DoorwayGlobalResourcesStack } from "../base_infra/doorway-global-resources-stack";
+import { DoorwayApiServiceStack } from "../service_infra/doorway_api_service-stack";
 import { DoorwayDatabaseMigrate } from "./doorway-database-migrate";
 import { DoorwayEnvironmentBaseStage } from "./doorway-environment-base-stage";
 export interface PipelineProps extends StackProps {

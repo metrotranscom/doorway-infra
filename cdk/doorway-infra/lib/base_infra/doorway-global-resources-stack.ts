@@ -1,8 +1,9 @@
 import { SecretValue, Stack, StackProps } from "aws-cdk-lib";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { ConfigurationSet, EmailIdentity, Identity } from "aws-cdk-lib/aws-ses";
+import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
-import { DoorwayBuildPipelineStack } from "./pipelines/doorway-build-pipeline-stack";
+import { DoorwayBuildPipelineStack } from "../pipelines/doorway-build-pipeline-stack";
 
 export class DoorwayGlobalResourcesStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -19,47 +20,55 @@ export class DoorwayGlobalResourcesStack extends Stack {
       feedbackForwarding: true,
     });
     new Secret(this, "googleId", {
-      secretName: "GOOGLE_API_ID",
+      secretName: "/doorway/GOOGLE_API_ID",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
     });
 
     new Secret(this, "googleEmail", {
-      secretName: "GOOGLE_API_EMAIL",
+      secretName: "/doorway/GOOGLE_API_EMAIL",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
     });
 
     new Secret(this, "googleKey", {
-      secretName: "GOOGLE_API_KEY",
+      secretName: "/doorway/GOOGLE_API_KEY",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
     });
 
     new Secret(this, "govDeliveryURL", {
-      secretName: "GOVDELIVERY_API_URL",
+      secretName: "/doorway/GOVDELIVERY_API_URL",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
     });
 
     new Secret(this, "govDeliveryPassword", {
-      secretName: "GOVDELIVERY_PASSWORD",
+      secretName: "/doorway/GOVDELIVERY_PASSWORD",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
     });
 
     new Secret(this, "govDeliveryUsername", {
-      secretName: "GOVDELIVERY_USERNAME",
+      secretName: "/doorway/GOVDELIVERY_USERNAME",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
     });
     new Secret(this, "emailApiKey", {
-      secretName: "EMAIL_API_KEY",
+      secretName: "/doorway/EMAIL_API_KEY",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
     });
 
     new Secret(this, "cloudinaryKey", {
-      secretName: "CLOUDINARY_KEY",
+      secretName: "/doorway/CLOUDINARY_KEY",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
     });
 
     new Secret(this, "cloudinarySecret", {
-      secretName: "CLOUDINARY_SECRET",
+      secretName: "/doorway/CLOUDINARY_SECRET",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
+    });
+    new StringParameter(this, "publicHostedZone", {
+      parameterName: "/doorway/public-hosted-zone",
+      stringValue: "Z01682742VM0KIXZ4Y3W5",
+    });
+    new StringParameter(this, "privateHostedZone", {
+      parameterName: "/doorway/private-hosted-zone",
+      stringValue: "Z084253138VJG63K273SM",
     });
     new DoorwayBuildPipelineStack(this, "DoorwayBuildPipelineStack", {
       dockerHubSecret: "mtc/dockerHub",

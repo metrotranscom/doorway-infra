@@ -3,13 +3,12 @@ import { Vpc } from "aws-cdk-lib/aws-ec2";
 
 import { Cluster, ContainerInsights } from "aws-cdk-lib/aws-ecs";
 import { Construct } from "constructs";
-import { DoorwayStackProps } from "./doorway_api_service-stack";
+import { DoorwayStackProps } from "../service_infra/doorway_api_service-stack";
 
 export class DoorwayEcsClusterStack extends Stack {
   constructor(scope: Construct, id: string, props: DoorwayStackProps) {
     super(scope, id, props);
     const vpcId = Fn.importValue(`mtc-vpc-id-${props.environment}`);
-    const appSGId = Fn.importValue(`mtc-app-sg-${props.environment}`);
 
     const vpc = Vpc.fromVpcAttributes(this, "vpc", {
       vpcId: vpcId,
@@ -27,7 +26,7 @@ export class DoorwayEcsClusterStack extends Stack {
     );
     new CfnOutput(this, "doorwayEcsClusterName", {
       value: cluster.clusterName,
-      exportName: `dwEcsCluster-${props.environment}`,
+      exportName: `doorway-ecs-cluster-${props.environment}`,
     });
   }
 }

@@ -1,9 +1,9 @@
 import { Stage, StageProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { DoorwayDatabaseServerStack } from "../doorway-database-server-stack";
-import { DoorwayEcsClusterStack } from "../doorway-ecs-cluster";
-import { DoorwayNetworkStack } from "../doorway-network-stack";
-import { DoorwayParametersStack } from "../doorway-parameters-stack";
+import { DoorwayDatabaseServerStack } from "../base_infra/doorway-database-server-stack";
+import { DoorwayEcsClusterStack } from "../base_infra/doorway-ecs-cluster";
+import { DoorwayNetworkStack } from "../base_infra/doorway-network-stack";
+import { DoorwayParametersStack } from "../service_infra/doorway-parameters-stack";
 
 export class DoorwayEnvironmentBaseStage extends Stage {
   constructor(

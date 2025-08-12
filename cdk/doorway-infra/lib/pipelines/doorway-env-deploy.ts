@@ -1,7 +1,7 @@
 import { Stage, StageProps } from "aws-cdk-lib";
 import { Artifact } from "aws-cdk-lib/aws-codepipeline";
 import { Construct } from "constructs";
-import { DoorwayApiServiceStack } from "../doorway_api_service-stack";
+import { DoorwayApiServiceStack } from "../service_infra/doorway_api_service-stack";
 export interface DoorwayEnvDeployProps {
   buildspec: string;
   source: Artifact;

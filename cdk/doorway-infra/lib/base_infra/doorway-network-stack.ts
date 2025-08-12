@@ -7,7 +7,7 @@ import {
   Vpc,
 } from "aws-cdk-lib/aws-ec2";
 import { Construct } from "constructs";
-import { DoorwayStackProps } from "./doorway_api_service-stack";
+import { DoorwayStackProps } from "../service_infra/doorway_api_service-stack";
 
 export class DoorwayNetworkStack extends Stack {
   constructor(scope: Construct, id: string, props: DoorwayStackProps) {
