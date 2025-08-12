@@ -478,6 +478,7 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         vpcSubnets: {
           subnets: appSubnets,
         },
+        securityGroups: [appTierPrivateSG],
         desiredCount: 3,
       },
     );
