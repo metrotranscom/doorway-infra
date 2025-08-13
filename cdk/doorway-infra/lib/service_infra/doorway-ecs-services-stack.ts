@@ -222,7 +222,7 @@ export class DoorwayEcsServicesStack extends Stack {
             ),
           },
           environment: {
-            BACKEND_API_BASE: `http://${props.environment}.housingbayarea.int`,
+            BACKEND_API_BASE: `http://backend.${props.environment}.housingbayarea.int`,
           },
           logDriver: AwsLogDriver.awsLogs({
             streamPrefix: "doorway-public-portal",
