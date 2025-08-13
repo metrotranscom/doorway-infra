@@ -46,6 +46,7 @@ export class DoorwayNetworkStack extends Stack {
         description: `App security group for the doorway ${props.environment} environment`,
       },
     );
+    appSG.addIngressRule(appSG, Port.HTTP, "Allow inbound http traffic");
     appSG.addEgressRule(appSG, Port.allTcp(), "Allow all outbound traffic");
     new CfnOutput(this, "doorway-app-sg", {
       exportName: `doorway-app-sg-${props.environment}`,
