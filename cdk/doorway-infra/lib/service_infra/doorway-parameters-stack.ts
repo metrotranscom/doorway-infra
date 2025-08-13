@@ -168,7 +168,7 @@ export class DoorwayParametersStack extends cdk.Stack {
       parameterName: `/doorway/${props.environment}/public-portal/SHOW_PROFESSIONAL_PARTNERS`,
       stringValue: "TRUE",
     });
-    new StringParameter(this, "showProfessionalPartners", {
+    new StringParameter(this, "nextJSPortß", {
       parameterName: `/doorway/${props.environment}/public-portal/NEXTJS_PORT`,
       stringValue: "3000",
     });
