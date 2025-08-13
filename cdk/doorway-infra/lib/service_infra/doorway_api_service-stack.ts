@@ -107,27 +107,16 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         zoneName: "housingbayarea.int",
       },
     );
-    const publicUploadsBucket = new Bucket(this, "publicUploadsBucket", {
-      bucketName: `doorway-public-uploads-${props.environment}`,
-      blockPublicAccess: {
-        blockPublicAcls: true,
-        blockPublicPolicy: true,
-        ignorePublicAcls: true,
-        restrictPublicBuckets: true,
-      },
-      enforceSSL: true,
-    });
-    const secureUploadsBucket = new Bucket(this, "secureUploadsBucket", {
-      bucketName: `doorway-secure-uploads-${props.environment}`,
-      blockPublicAccess: {
-        blockPublicAcls: true,
-        blockPublicPolicy: true,
-        ignorePublicAcls: true,
-        restrictPublicBuckets: true,
-      },
-      enforceSSL: true,
-    });
-
+    const publicUploadsBucket = Bucket.fromBucketArn(
+      this,
+      `publicUploadsBucket`,
+      Fn.importValue(`doorway-public-uploads-${props.environment}`),
+    );
+    const secureUploadsBucket = Bucket.fromBucketArn(
+      this,
+      `secureUploadsBucket`,
+      Fn.importValue(`doorway-secure-uploads-${props.environment}`),
+    );
     // Get the SES Email Information
     const sesIdentity = EmailIdentity.fromEmailIdentityName(
       this,
