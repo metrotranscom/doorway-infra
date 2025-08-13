@@ -170,5 +170,6 @@ class DoorwayEnvironmentStage extends Stage {
         },
       },
     );
+    ecsServicesStack.addDependency(apiServiceStack);
   }
 }
