@@ -473,7 +473,9 @@ export class DoorwayApiServiceStack extends cdk.Stack {
         taskDefinition: task,
         serviceName: `doorway-${props.environment}-internal-api`,
         cluster: Cluster.fromClusterAttributes(this, "ecsCluster", {
-          clusterName: Fn.importValue(`dwEcsCluster-${props.environment}`),
+          clusterName: Fn.importValue(
+            `doorway-ecs-cluster-${props.environment}`,
+          ),
           vpc: vpc,
         }),
         vpcSubnets: {
