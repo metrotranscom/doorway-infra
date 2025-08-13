@@ -62,7 +62,7 @@ export class DoorwayNetworkStack extends Stack {
         hostedZoneId: StringParameter.fromStringParameterName(
           this,
           "hostedZoneId",
-          "/doorway/hosted-zone-id",
+          "/doorway/private-hosted-zone",
         ).stringValue,
         zoneName: `housingbayarea.int`,
       },
@@ -73,7 +73,7 @@ export class DoorwayNetworkStack extends Stack {
       hostedZoneId: StringParameter.fromStringParameterName(
         this,
         "hostedZoneIdForAssociation",
-        "/doorway/hosted-zone-id",
+        "/doorway/private-hosted-zone",
       ).stringValue,
       vpcId: vpc.vpcId,
     });
