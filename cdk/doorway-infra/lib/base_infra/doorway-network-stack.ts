@@ -6,11 +6,7 @@ import {
   SubnetType,
   Vpc,
 } from "aws-cdk-lib/aws-ec2";
-import {
-  CfnHostedZoneVPCAssociation,
-  PrivateHostedZone,
-} from "aws-cdk-lib/aws-route53";
-import { StringParameter } from "aws-cdk-lib/aws-ssm";
+
 import { Construct } from "constructs";
 import { DoorwayStackProps } from "../service_infra/doorway_api_service-stack";
 
@@ -53,30 +49,6 @@ export class DoorwayNetworkStack extends Stack {
     );
     appSG.addIngressRule(appSG, Port.HTTP, "Allow inbound http traffic");
     appSG.addEgressRule(appSG, Port.allTcp(), "Allow all outbound traffic");
-
-    // Import existing private hosted zone
-    const privateZone = PrivateHostedZone.fromHostedZoneAttributes(
-      this,
-      "privateZone",
-      {
-        hostedZoneId: StringParameter.fromStringParameterName(
-          this,
-          "hostedZoneId",
-          "/doorway/private-hosted-zone",
-        ).stringValue,
-        zoneName: `housingbayarea.int`,
-      },
-    );
-
-    // Associate the existing private hosted zone with this VPC
-    new CfnHostedZoneVPCAssociation(this, "privateZoneVpcAssociation", {
-      hostedZoneId: StringParameter.fromStringParameterName(
-        this,
-        "hostedZoneIdForAssociation",
-        "/doorway/private-hosted-zone",
-      ).stringValue,
-      vpcId: vpc.vpcId,
-    });
 
     new CfnOutput(this, "doorway-app-sg", {
       exportName: `doorway-app-sg-${props.environment}`,

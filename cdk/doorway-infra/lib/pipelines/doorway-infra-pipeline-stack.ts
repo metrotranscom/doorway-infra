@@ -117,6 +117,26 @@ export class DoorwayInfraPipelineStack extends Stack {
         environment: "dev2",
       }).step,
     );
+    devStageWithActions.addPost(
+      new CodeBuildStep("associateVPCWithHostedZone", {
+        env: {
+          AWS_DEFAULT_REGION: "us-west-2",
+          VPC_NAME: `doorway-dev2-vpc`,
+        },
+        commands: [
+          "echo 'Associating VPC with Hosted Zone'",
+          "VPC_ID=$(aws ec2 describe-vpcs --filters Name=tag:Name,Values=${VPC_NAME} --query 'Vpcs[0].VpcId' --output text)",
+          "export HOSTED_ZONE_ID=$(aws ssm get-parameter --name /doorway/hosted-zone-id --query Parameter.Value --output text)",
+          "aws route53 associate-vpc-with-hosted-zone --hosted-zone-id ${HOSTED_ZONE_ID} --vpc VPCRegion=${AWS_DEFAULT_REGION},VPCId=${VPC_ID}",
+        ],
+        rolePolicyStatements: [
+          new PolicyStatement({
+            actions: ["route53:AssociateVPCWithHostedZone"],
+            resources: ["*"],
+          }),
+        ],
+      }),
+    );
     pipeline.addStage(
       new DoorwayEnvironmentStage(
         this,
