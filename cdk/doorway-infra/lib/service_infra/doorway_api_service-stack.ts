@@ -224,20 +224,24 @@ export class DoorwayApiServiceStack extends cdk.Stack {
 
       secrets: {
         GOOGLE_API_ID: Secret.fromSecretsManager(
-          secret.Secret.fromSecretNameV2(this, "googleApiId", "GOOGLE_API_ID"),
+          secret.Secret.fromSecretNameV2(
+            this,
+            "googleApiId",
+            "/doorway/GOOGLE_API_ID",
+          ),
         ),
         GOOGLE_API_EMAIL: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(
             this,
             "googleApiEmail",
-            "GOOGLE_API_EMAIL",
+            "/doorway/GOOGLE_API_EMAIL",
           ),
         ),
         GOOGLE_API_KEY: Secret.fromSecretsManager(
           secret.Secret.fromSecretNameV2(
             this,
             "googleApiKey",
-            "GOOGLE_API_KEY",
+            "/doorway/GOOGLE_API_KEY",
           ),
         ),
 
