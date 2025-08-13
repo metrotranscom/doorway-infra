@@ -157,7 +157,7 @@ export class DoorwayParametersStack extends cdk.Stack {
       stringValue: "/listings",
     });
     new StringParameter(this, "notificationsSignupURL", {
-      parameterName: `/doorway/${props.environment}/public-portal/NOTFICATIONS_SIGN_UP_URL`,
+      parameterName: `/doorway/${props.environment}/public-portal/NOTIFICATIONS_SIGN_UP_URL`,
       stringValue: "https://public.govdelivery.com/accounts/CAMTC/signup/36832",
     });
     new StringParameter(this, "showAllMapPins", {
@@ -167,6 +167,10 @@ export class DoorwayParametersStack extends cdk.Stack {
     new StringParameter(this, "showProfessionalPartners", {
       parameterName: `/doorway/${props.environment}/public-portal/SHOW_PROFESSIONAL_PARTNERS`,
       stringValue: "TRUE",
+    });
+    new StringParameter(this, "showProfessionalPartners", {
+      parameterName: `/doorway/${props.environment}/public-portal/NEXTJS_PORT`,
+      stringValue: "3000",
     });
 
     new Secret(this, "appSecret", {
