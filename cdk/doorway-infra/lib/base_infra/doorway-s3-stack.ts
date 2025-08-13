@@ -19,7 +19,7 @@ export class DoorwayS3Stack extends Stack {
 
     // Output the bucket name
     new CfnOutput(this, "SecureBucketName", {
-      exportName: `doorway-secure-uploads-bucket-${props.environment}`,
+      exportName: `doorway-secure-uploads-${props.environment}`,
       value: secureUploadsBucket.bucketArn,
       description: `Doorway Secure Uploads Bucket ARN for the ${props.environment} environment`,
     });
@@ -35,7 +35,7 @@ export class DoorwayS3Stack extends Stack {
     });
     // Output the bucket name
     new CfnOutput(this, "PublicBucketName", {
-      exportName: `doorway-public-uploads-bucket-${props.environment}`,
+      exportName: `doorway-public-uploads-${props.environment}`,
       value: publicUploadsBucket.bucketArn,
       description: `Doorway Public Uploads Bucket ARN for the ${props.environment} environment`,
     });
