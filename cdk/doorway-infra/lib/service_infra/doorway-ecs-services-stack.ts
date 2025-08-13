@@ -1,4 +1,8 @@
 import { Fn, Stack } from "aws-cdk-lib";
+import {
+  Certificate,
+  CertificateValidation,
+} from "aws-cdk-lib/aws-certificatemanager";
 import { SecurityGroup, Subnet, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Repository } from "aws-cdk-lib/aws-ecr";
 import { Cluster, ContainerImage, Secret } from "aws-cdk-lib/aws-ecs";
@@ -31,6 +35,26 @@ export class DoorwayEcsServicesStack extends Stack {
         "AmazonEC2ContainerRegistryReadOnly",
       ),
     );
+    const hostedZone = PublicHostedZone.fromHostedZoneAttributes(
+      this,
+      `doorway-public-hosted-zone-${props.environment}`,
+      {
+        hostedZoneId: StringParameter.valueForStringParameter(
+          this,
+          `/doorway/public-hosted-zone`,
+        ),
+        zoneName: `housingbayarea.mtc.ca.gov`,
+      },
+    );
+    const cert = new Certificate(this, "doorwayPublicCert", {
+      domainName: `${props.environment}.housingbayarea.mtc.ca.gov`,
+      validation: {
+        method: CertificateValidation.fromDns().method,
+        props: {
+          hostedZone: hostedZone,
+        },
+      },
+    });
 
     const publicService = new ApplicationLoadBalancedFargateService(
       this,
@@ -86,6 +110,7 @@ export class DoorwayEcsServicesStack extends Stack {
             ),
             "run-f21478f5",
           ),
+          enableLogging: true,
           containerPort: 3000,
           executionRole: executionRole,
           taskRole: executionRole,
@@ -193,23 +218,13 @@ export class DoorwayEcsServicesStack extends Stack {
             BACKEND_API_BASE: `http://${props.environment}.housingbayarea.int`,
           },
         },
-
+        certificate: cert,
         listenerPort: 443,
         loadBalancerName: `doorway-public-lb-${props.environment}`,
         cpu: 1024,
         memoryLimitMiB: 2048,
         domainName: `${props.environment}.housingbayarea.mtc.ca.gov`,
-        domainZone: PublicHostedZone.fromHostedZoneAttributes(
-          this,
-          `doorway-public-hosted-zone-${props.environment}`,
-          {
-            hostedZoneId: StringParameter.valueForStringParameter(
-              this,
-              `/doorway/public-hosted-zone`,
-            ),
-            zoneName: `housingbayarea.mtc.ca.gov`,
-          },
-        ),
+        domainZone: hostedZone,
       },
     );
   }
