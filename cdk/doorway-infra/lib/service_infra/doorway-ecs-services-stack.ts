@@ -5,9 +5,16 @@ import {
 } from "aws-cdk-lib/aws-certificatemanager";
 import { SecurityGroup, Subnet, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Repository } from "aws-cdk-lib/aws-ecr";
-import { Cluster, ContainerImage, Secret } from "aws-cdk-lib/aws-ecs";
+import {
+  AwsLogDriver,
+  Cluster,
+  ContainerImage,
+  Secret,
+} from "aws-cdk-lib/aws-ecs";
 import { ApplicationLoadBalancedFargateService } from "aws-cdk-lib/aws-ecs-patterns";
+import { SslPolicy } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { ManagedPolicy, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
+import { LogGroup } from "aws-cdk-lib/aws-logs";
 import { PublicHostedZone } from "aws-cdk-lib/aws-route53";
 import * as secret from "aws-cdk-lib/aws-secretsmanager";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
@@ -217,9 +224,19 @@ export class DoorwayEcsServicesStack extends Stack {
           environment: {
             BACKEND_API_BASE: `http://${props.environment}.housingbayarea.int`,
           },
+          logDriver: AwsLogDriver.awsLogs({
+            streamPrefix: "doorway-public-portal",
+            logGroup: new LogGroup(this, `doorway-${props.environment}-tasks`, {
+              logGroupName: `/doorway/${props.environment}/ecs/doorway-public-portal`,
+            }),
+          }),
         },
+
         certificate: cert,
         listenerPort: 443,
+        redirectHTTP: true,
+        sslPolicy: SslPolicy.RECOMMENDED,
+        serviceName: `doorway-public-portal-service-${props.environment}`,
         loadBalancerName: `doorway-public-lb-${props.environment}`,
         cpu: 1024,
         memoryLimitMiB: 2048,
