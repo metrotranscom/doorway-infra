@@ -33,6 +33,10 @@ export class DoorwayGlobalResourcesStack extends Stack {
       secretName: "/doorway/GOOGLE_API_KEY",
       secretStringValue: SecretValue.unsafePlainText("changeme"),
     });
+    new Secret(this, "googleMapsKey", {
+      secretName: "/doorway/GOOGLE_MAPS_API_KEY",
+      secretStringValue: SecretValue.unsafePlainText("changeme"),
+    });
 
     new Secret(this, "govDeliveryURL", {
       secretName: "/doorway/GOVDELIVERY_API_URL",
