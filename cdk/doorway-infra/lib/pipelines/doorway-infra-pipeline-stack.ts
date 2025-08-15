@@ -9,9 +9,6 @@ import {
 
 import { Construct } from "constructs";
 import { DoorwayGlobalResourcesStack } from "../base_infra/doorway-global-resources-stack";
-import { DoorwayEcsServicesStack } from "../service_infra/doorway-ecs-services-stack";
-import { DoorwayApiServiceStack } from "../service_infra/doorway_api_service-stack";
-import { DoorwayDatabaseMigrate } from "./doorway-database-migrate";
 import { DoorwayEnvironmentBaseStage } from "./doorway-environment-base-stage";
 export interface PipelineProps extends StackProps {
   githubSecret: string;
@@ -111,45 +108,6 @@ export class DoorwayInfraPipelineStack extends Stack {
     );
 
     const devStageWithActions = pipeline.addStage(devBaseStage);
-
-    devStageWithActions.addPost(
-      new DoorwayDatabaseMigrate(this, "DoorwayDatabaseMigrate", {
-        environment: "dev2",
-      }).step,
-    );
-    devStageWithActions.addPost(
-      new CodeBuildStep("associateVPCWithHostedZone", {
-        env: {
-          AWS_DEFAULT_REGION: "us-west-2",
-          VPC_NAME: `doorway-dev2-vpc`,
-        },
-        commands: [
-          "echo 'Associating VPC with Hosted Zone'",
-          "VPC_ID=$(aws ec2 describe-vpcs --filters Name=tag:Name,Values=${VPC_NAME} --query 'Vpcs[0].VpcId' --output text)",
-          "export HOSTED_ZONE_ID=$(aws ssm get-parameter --name /doorway/hosted-zone-id --query Parameter.Value --output text)",
-          "aws route53 associate-vpc-with-hosted-zone --hosted-zone-id ${HOSTED_ZONE_ID} --vpc VPCRegion=${AWS_DEFAULT_REGION},VPCId=${VPC_ID}",
-        ],
-        rolePolicyStatements: [
-          new PolicyStatement({
-            actions: ["route53:AssociateVPCWithHostedZone"],
-            resources: ["*"],
-          }),
-        ],
-      }),
-    );
-    pipeline.addStage(
-      new DoorwayEnvironmentStage(
-        this,
-        "DoorwayEnvironmentStage-Dev",
-        {
-          env: {
-            account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
-            region: process.env.CDK_DEFAULT_REGION || "no-region",
-          },
-        },
-        "dev2",
-      ),
-    );
   }
 }
 
@@ -157,39 +115,5 @@ class DoorwayGlobalStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
     new DoorwayGlobalResourcesStack(this, "DoorwayGlobalResourcesStack");
-  }
-}
-class DoorwayEnvironmentStage extends Stage {
-  constructor(
-    scope: Construct,
-    id: string,
-    props?: StageProps,
-    environment: string = "dev",
-  ) {
-    super(scope, id, props);
-
-    const apiServiceStack = new DoorwayApiServiceStack(
-      this,
-      "DoorwayApiServiceStack",
-      {
-        environment: environment,
-        env: {
-          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
-          region: process.env.CDK_DEFAULT_REGION || "no-region",
-        },
-      },
-    );
-    const ecsServicesStack = new DoorwayEcsServicesStack(
-      this,
-      "DoorwayEcsServicesStack",
-      {
-        environment: environment,
-        env: {
-          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
-          region: process.env.CDK_DEFAULT_REGION || "no-region",
-        },
-      },
-    );
-    ecsServicesStack.addDependency(apiServiceStack);
   }
 }

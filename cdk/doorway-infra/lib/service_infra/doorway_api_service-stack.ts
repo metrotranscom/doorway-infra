@@ -13,7 +13,6 @@ import {
   TaskDefinition,
 } from "aws-cdk-lib/aws-ecs";
 //import * as ecs from "aws-cdk-lib/aws-ecs";
-import * as elb from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import {
   ManagedPolicy,
   PolicyStatement,
@@ -21,8 +20,7 @@ import {
   ServicePrincipal,
 } from "aws-cdk-lib/aws-iam";
 import { LogGroup } from "aws-cdk-lib/aws-logs";
-import { ARecord, HostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
-import { LoadBalancerTarget } from "aws-cdk-lib/aws-route53-targets";
+import { HostedZone } from "aws-cdk-lib/aws-route53";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import * as secret from "aws-cdk-lib/aws-secretsmanager";
 import { EmailIdentity } from "aws-cdk-lib/aws-ses";
@@ -122,21 +120,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       this,
       "sesIdentity",
       "housingbayarea2.org",
-    );
-
-    // Set up an application load balancer inside the app subnet
-    const privateLB = new elb.ApplicationLoadBalancer(
-      this,
-      `doorway-${props.environment}-private`,
-      {
-        vpc: vpc,
-        internetFacing: false,
-        securityGroup: appTierPrivateSG,
-        vpcSubnets: {
-          subnets: appSubnets,
-        },
-        loadBalancerName: `doorway-${props.environment}-private-lb`,
-      },
     );
 
     // Create the execution role for the doorway API service
@@ -479,22 +462,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       },
     );
 
-    // Set up the target group and DNS names for the internal API Service
-    const tg = new elb.ApplicationTargetGroup(this, "tg", {
-      vpc: vpc,
-      port: 3100,
-      protocol: elb.ApplicationProtocol.HTTP,
-      targetType: elb.TargetType.IP,
-      healthCheck: {
-        path: "/",
-        protocol: elb.Protocol.HTTP,
-        timeout: cdk.Duration.seconds(5),
-        interval: cdk.Duration.seconds(30),
-        healthyThresholdCount: 5,
-        unhealthyThresholdCount: 2,
-      },
-    });
-    service.attachToApplicationTargetGroup(tg);
     const scaling = service.autoScaleTaskCount({
       minCapacity: 2,
       maxCapacity: 10,
@@ -503,18 +470,6 @@ export class DoorwayApiServiceStack extends cdk.Stack {
       targetUtilizationPercent: 80,
       scaleInCooldown: cdk.Duration.seconds(60),
       scaleOutCooldown: cdk.Duration.seconds(60),
-    });
-    const listener = privateLB.addListener("privateLbListener", {
-      port: 80,
-      protocol: elb.ApplicationProtocol.HTTP,
-    });
-    listener.addTargetGroups("privateLBTG", {
-      targetGroups: [tg],
-    });
-    new ARecord(this, "internalAlias", {
-      zone: hostedZone,
-      recordName: `backend.${props.environment}`,
-      target: RecordTarget.fromAlias(new LoadBalancerTarget(privateLB)),
     });
   }
 }

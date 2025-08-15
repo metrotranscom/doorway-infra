@@ -3,7 +3,6 @@ import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { ConfigurationSet, EmailIdentity, Identity } from "aws-cdk-lib/aws-ses";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
-import { DoorwayBuildPipelineStack } from "../pipelines/doorway-build-pipeline-stack";
 
 export class DoorwayGlobalResourcesStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -77,10 +76,6 @@ export class DoorwayGlobalResourcesStack extends Stack {
     new StringParameter(this, "privateHostedZone", {
       parameterName: "/doorway/private-hosted-zone",
       stringValue: "Z084253138VJG63K273SM",
-    });
-    new DoorwayBuildPipelineStack(this, "DoorwayBuildPipelineStack", {
-      dockerHubSecret: "mtc/dockerHub",
-      githubSecret: "mtc/githubSecret",
     });
   }
 }
