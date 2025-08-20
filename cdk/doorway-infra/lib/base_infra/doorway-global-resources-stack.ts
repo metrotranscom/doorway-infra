@@ -73,9 +73,11 @@ export class DoorwayGlobalResourcesStack extends Stack {
       parameterName: "/doorway/public-hosted-zone",
       stringValue: "Z01682742VM0KIXZ4Y3W5",
     });
-    new StringParameter(this, "privateHostedZone", {
-      parameterName: "/doorway/private-hosted-zone",
-      stringValue: "Z084253138VJG63K273SM",
+
+    new StringParameter(this, "privateCertAuthority", {
+      parameterName: `/doorway/privateCertAuthority`,
+      stringValue:
+        "arn:aws:acm-pca:us-west-2:364076391763:certificate-authority/38e4d2b0-d431-46ff-944d-dab8ce318d2e",
     });
   }
 }
