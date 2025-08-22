@@ -1,6 +1,7 @@
 import { CfnOutput, Stack } from "aws-cdk-lib";
 import {
   IpAddresses,
+  Peer,
   Port,
   SecurityGroup,
   SubnetType,
@@ -54,6 +55,32 @@ export class DoorwayNetworkStack extends Stack {
       exportName: `doorway-app-sg-${props.environment}`,
       description: `The app security group for the doorway ${props.environment} environment`,
       value: appSG.securityGroupId,
+    });
+    const publicSG = new SecurityGroup(
+      this,
+      `doorway-public-sg-${props.environment}`,
+      {
+        vpc: vpc,
+        securityGroupName: `doorway-public-sg-${props.environment}`,
+        description: `Public security group for the doorway ${props.environment} environment`,
+      },
+    );
+    appSG.addIngressRule(
+      Peer.anyIpv4(),
+      Port.HTTP,
+      "Allow inbound http traffic",
+    );
+    appSG.addIngressRule(
+      Peer.anyIpv4(),
+      Port.HTTPS,
+      "Allow inbound https traffic",
+    );
+    appSG.addEgressRule(appSG, Port.allTcp(), "Allow all outbound traffic");
+
+    new CfnOutput(this, "doorway-public-sg", {
+      exportName: `doorway-public-sg-${props.environment}`,
+      description: `The publc security group for the doorway ${props.environment} environment`,
+      value: publicSG.securityGroupId,
     });
     new CfnOutput(this, "doorway-default-sg", {
       exportName: `doorway-default-sg-${props.environment}`,
