@@ -48,7 +48,7 @@ export class DoorwayNetworkStack extends Stack {
         description: `App security group for the doorway ${props.environment} environment`,
       },
     );
-    appSG.addIngressRule(appSG, Port.HTTP, "Allow inbound http traffic");
+    // Ingress rules will be added by services useing this security group
     appSG.addEgressRule(appSG, Port.allTcp(), "Allow all outbound traffic");
 
     new CfnOutput(this, "doorway-app-sg", {
@@ -65,17 +65,13 @@ export class DoorwayNetworkStack extends Stack {
         description: `Public security group for the doorway ${props.environment} environment`,
       },
     );
-    appSG.addIngressRule(
-      Peer.anyIpv4(),
-      Port.HTTP,
-      "Allow inbound http traffic",
+    publicSG.addIngressRule(Peer.anyIpv4(), Port.HTTP, "Allow HTTP access");
+    publicSG.addIngressRule(Peer.anyIpv4(), Port.HTTPS, "Allow HTTP access");
+    publicSG.addEgressRule(
+      publicSG,
+      Port.allTcp(),
+      "Allow all outbound traffic",
     );
-    appSG.addIngressRule(
-      Peer.anyIpv4(),
-      Port.HTTPS,
-      "Allow inbound https traffic",
-    );
-    appSG.addEgressRule(appSG, Port.allTcp(), "Allow all outbound traffic");
 
     new CfnOutput(this, "doorway-public-sg", {
       exportName: `doorway-public-sg-${props.environment}`,
