@@ -4,6 +4,7 @@ import { DoorwayDatabaseServerStack } from "../base_infra/doorway-database-serve
 import { DoorwayEcsClusterStack } from "../base_infra/doorway-ecs-cluster";
 import { DoorwayNetworkStack } from "../base_infra/doorway-network-stack";
 import { DoorwayS3Stack } from "../base_infra/doorway-s3-stack";
+import { DoorwaySecretsStack } from "../base_infra/doorway-secrets-stack";
 import { DoorwayParametersStack } from "../service_infra/doorway-parameters-stack";
 
 export class DoorwayEnvironmentBaseStage extends Stage {
@@ -58,6 +59,13 @@ export class DoorwayEnvironmentBaseStage extends Stage {
     ecsClusterStack.addDependency(networkstack);
     const s3BucketStack = new DoorwayS3Stack(this, "DoorwayS3BucketStack", {
       environment: environment,
+    });
+    const secretStack = new DoorwaySecretsStack(this, "DoorwaySecretsStack", {
+      environment: environment,
+      env: {
+        account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+        region: process.env.CDK_DEFAULT_REGION || "no-region",
+      },
     });
   }
 }
