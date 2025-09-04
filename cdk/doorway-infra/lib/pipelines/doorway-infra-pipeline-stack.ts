@@ -37,8 +37,27 @@ export class DoorwayInfraPipelineStack extends Stack {
           "logs:*",
           "iam:AssumeRole",
           "iam:PassRole",
+          "iam:CreateRole",
+          "iam:DeleteRole",
+          "iam:GetRole",
+          "iam:AttachRolePolicy",
+          "iam:DetachRolePolicy",
+          "iam:PutRolePolicy",
+          "iam:DeleteRolePolicy",
+          "sts:AssumeRole",
         ],
         resources: ["*"],
+      }),
+    );
+
+    // Allow the pipeline role to assume itself and other pipeline roles
+    pipelineRole.addToPolicy(
+      new PolicyStatement({
+        actions: ["sts:AssumeRole"],
+        resources: [
+          `arn:aws:iam::${this.account}:role/DoorwayInfraPipelineStack-*`,
+          `arn:aws:iam::${this.account}:role/cdk-*`,
+        ],
       }),
     );
     const githubSecret = Secret.fromSecretNameV2(
