@@ -26,10 +26,10 @@ export class DoorwayS3Stack extends Stack {
     const publicUploadsBucket = new Bucket(this, "publicUploadsBucket", {
       bucketName: `doorway-public-uploads-${props.environment}`,
       blockPublicAccess: {
-        blockPublicAcls: true,
-        blockPublicPolicy: true,
-        ignorePublicAcls: true,
-        restrictPublicBuckets: true,
+        blockPublicAcls: false,
+        blockPublicPolicy: false,
+        ignorePublicAcls: false,
+        restrictPublicBuckets: false,
       },
       enforceSSL: true,
     });
