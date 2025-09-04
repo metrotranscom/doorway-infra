@@ -126,7 +126,7 @@ export class DoorwayInfraPipelineStack extends Stack {
       "dev2",
     );
 
-    const devStageWithActions = pipeline.addStage(devBaseStage);
+    pipeline.addStage(devBaseStage);
   }
 }
 
