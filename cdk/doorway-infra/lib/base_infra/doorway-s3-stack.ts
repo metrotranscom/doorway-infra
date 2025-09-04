@@ -33,6 +33,8 @@ export class DoorwayS3Stack extends Stack {
       },
       enforceSSL: true,
     });
+    publicUploadsBucket.grantPublicAccess();
+
     // Output the bucket name
     new CfnOutput(this, "PublicBucketName", {
       exportName: `doorway-public-uploads-${props.environment}`,
