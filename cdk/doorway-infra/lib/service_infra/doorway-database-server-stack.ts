@@ -68,7 +68,6 @@ export class DoorwayDatabaseServerStack extends Stack {
         allocatedStorage: 20,
         storageType: StorageType.STANDARD,
         databaseName: "bloom",
-        instanceType: props.dbInstance,
         credentials: {
           username: "doorway",
         },
