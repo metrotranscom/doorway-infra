@@ -73,13 +73,6 @@ export class DoorwayInfraPipelineStack extends Stack {
         authentication: githubSecret.secretValue,
       },
     );
-    const config = CodePipelineSource.gitHub(
-      "metrotranscom/doorway-config",
-      "main",
-      {
-        authentication: githubSecret.secretValue,
-      },
-    );
 
     const pipeline = new CodePipeline(this, "Doorway-Infra-Pipeline", {
       pipelineName: "doorway-infra-pipeline",
@@ -87,9 +80,7 @@ export class DoorwayInfraPipelineStack extends Stack {
       role: pipelineRole,
       synth: new CodeBuildStep("Synth", {
         input: source,
-        additionalInputs: {
-          "../config": config,
-        },
+
         commands: [
           "cd ${CODEBUILD_SRC_DIR}/cdk/doorway-infra",
           "npm install",
