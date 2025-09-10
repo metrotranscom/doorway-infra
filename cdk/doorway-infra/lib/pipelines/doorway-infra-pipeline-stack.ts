@@ -125,8 +125,20 @@ export class DoorwayInfraPipelineStack extends Stack {
       },
       "dev2",
     );
+    const stagingBaseStage = new DoorwayEnvironmentBaseStage(
+      this,
+      `DoorwayEnvironmentBaseStage-Dev`,
+      {
+        env: {
+          account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
+          region: process.env.CDK_DEFAULT_REGION || "no-region",
+        },
+      },
+      "staging",
+    );
 
     pipeline.addStage(devBaseStage);
+    pipeline.addStage(stagingBaseStage);
   }
 }
 
