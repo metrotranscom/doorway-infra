@@ -16,6 +16,7 @@ export class DoorwayEnvironmentBaseStage extends Stage {
       this,
       `DoorwayNetworkStack-${environment}`,
       {
+        stackName: `DoorwayNetworkStack-${environment}`,
         environment: environment,
         env: {
           account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
@@ -28,6 +29,7 @@ export class DoorwayEnvironmentBaseStage extends Stage {
       this,
       `DoorwayDatabaseServerStack-${environment}`,
       {
+        stackName: `DoorwayDatabaseServerStack-${environment}`,
         environment: environment,
         env: {
           account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
@@ -35,11 +37,13 @@ export class DoorwayEnvironmentBaseStage extends Stage {
         },
       },
     );
+
     dbstack.addDependency(networkstack);
     const ecsClusterStack = new DoorwayEcsClusterStack(
       this,
       `DoorwayEcsClusterStack-${environment}`,
       {
+        stackName: `DoorwayEcsClusterStack-${environment}`,
         environment: environment,
         env: {
           account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
