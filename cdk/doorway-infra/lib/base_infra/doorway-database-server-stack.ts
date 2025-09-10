@@ -58,6 +58,7 @@ export class DoorwayDatabaseServerStack extends Stack {
       this,
       `doorway-database-${props.environment}`,
       {
+        instanceIdentifier: `doorway-database-${props.environment}`,
         engine: DatabaseInstanceEngine.POSTGRES,
         vpc: vpc,
         subnetGroup: subnetGroup,
