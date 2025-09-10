@@ -1,5 +1,4 @@
-import { SecretValue, Stack, StackProps } from "aws-cdk-lib";
-import { Secret } from "aws-cdk-lib/aws-secretsmanager";
+import { Stack, StackProps } from "aws-cdk-lib";
 import { ConfigurationSet, EmailIdentity, Identity } from "aws-cdk-lib/aws-ses";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
@@ -18,57 +17,7 @@ export class DoorwayGlobalResourcesStack extends Stack {
       dkimSigning: true,
       feedbackForwarding: true,
     });
-    new Secret(this, "googleId", {
-      secretName: "/doorway/GOOGLE_API_ID",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
 
-    new Secret(this, "googleEmail", {
-      secretName: "/doorway/GOOGLE_API_EMAIL",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
-
-    new Secret(this, "googleKey", {
-      secretName: "/doorway/GOOGLE_API_KEY",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
-    new Secret(this, "googleMapsKey", {
-      secretName: "/doorway/GOOGLE_MAPS_API_KEY",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
-    new Secret(this, "googleMapsMapId", {
-      secretName: "/doorway/GOOGLE_MAPS_MAP_ID",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
-
-    new Secret(this, "govDeliveryURL", {
-      secretName: "/doorway/GOVDELIVERY_API_URL",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
-
-    new Secret(this, "govDeliveryPassword", {
-      secretName: "/doorway/GOVDELIVERY_PASSWORD",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
-
-    new Secret(this, "govDeliveryUsername", {
-      secretName: "/doorway/GOVDELIVERY_USERNAME",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
-    new Secret(this, "emailApiKey", {
-      secretName: "/doorway/EMAIL_API_KEY",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
-
-    new Secret(this, "cloudinaryKey", {
-      secretName: "/doorway/CLOUDINARY_KEY",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
-
-    new Secret(this, "cloudinarySecret", {
-      secretName: "/doorway/CLOUDINARY_SECRET",
-      secretStringValue: SecretValue.unsafePlainText("changeme"),
-    });
     new StringParameter(this, "publicHostedZone", {
       parameterName: "/doorway/public-hosted-zone",
       stringValue: "Z01682742VM0KIXZ4Y3W5",
