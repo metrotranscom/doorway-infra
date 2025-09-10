@@ -1,5 +1,12 @@
 import { CfnOutput, Duration, Fn, Stack } from "aws-cdk-lib";
-import { Port, SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
+import {
+  InstanceClass,
+  InstanceSize,
+  InstanceType,
+  Port,
+  SecurityGroup,
+  Vpc,
+} from "aws-cdk-lib/aws-ec2";
 import {
   DatabaseInstance,
   DatabaseInstanceEngine,
@@ -59,6 +66,10 @@ export class DoorwayDatabaseServerStack extends Stack {
       `doorway-database-${props.environment}`,
       {
         instanceIdentifier: `doorway-database-${props.environment}`,
+        instanceType: props.environment.includes("dev")
+          ? InstanceType.of(InstanceClass.T3, InstanceSize.MICRO)
+          : InstanceType.of(InstanceClass.T4G, InstanceSize.SMALL),
+
         engine: DatabaseInstanceEngine.POSTGRES,
         vpc: vpc,
         subnetGroup: subnetGroup,
