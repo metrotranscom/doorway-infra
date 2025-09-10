@@ -3,7 +3,6 @@ import { Construct } from "constructs";
 import { DoorwayDatabaseServerStack } from "../base_infra/doorway-database-server-stack";
 import { DoorwayEcsClusterStack } from "../base_infra/doorway-ecs-cluster";
 import { DoorwayNetworkStack } from "../base_infra/doorway-network-stack";
-import { DoorwayParametersStack } from "../service_infra/doorway-parameters-stack";
 
 export class DoorwayEnvironmentBaseStage extends Stage {
   constructor(
@@ -13,16 +12,9 @@ export class DoorwayEnvironmentBaseStage extends Stage {
     environment: string = "dev",
   ) {
     super(scope, id, props);
-    const networkstack = new DoorwayNetworkStack(this, "DoorwayNetworkStack", {
-      environment: environment,
-      env: {
-        account: process.env.CDK_DEFAULT_ACCOUNT || "no-account",
-        region: process.env.CDK_DEFAULT_REGION || "no-region",
-      },
-    });
-    const parametersStack = new DoorwayParametersStack(
+    const networkstack = new DoorwayNetworkStack(
       this,
-      "DoorwayParametersStack",
+      `DoorwayNetworkStack-${environment}`,
       {
         environment: environment,
         env: {
@@ -31,9 +23,10 @@ export class DoorwayEnvironmentBaseStage extends Stage {
         },
       },
     );
+
     const dbstack = new DoorwayDatabaseServerStack(
       this,
-      "DoorwayDatabaseServerStack",
+      `DoorwayDatabaseServerStack-${environment}`,
       {
         environment: environment,
         env: {
@@ -45,7 +38,7 @@ export class DoorwayEnvironmentBaseStage extends Stage {
     dbstack.addDependency(networkstack);
     const ecsClusterStack = new DoorwayEcsClusterStack(
       this,
-      "DoorwayEcsClusterStack",
+      `DoorwayEcsClusterStack-${environment}`,
       {
         environment: environment,
         env: {
