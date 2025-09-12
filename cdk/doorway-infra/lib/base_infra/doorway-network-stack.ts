@@ -13,6 +13,10 @@ import { DoorwayStackProps } from "../service_infra/doorway_api_service-stack";
 
 export class DoorwayNetworkStack extends Stack {
   constructor(scope: Construct, id: string, props: DoorwayStackProps) {
+    props = {
+      ...props,
+      crossRegionReferences: true,
+    };
     super(scope, id, props);
     const vpc: Vpc = new Vpc(this, "doorway-core-vpc", {
       vpcName: `doorway-${props.environment}`,
