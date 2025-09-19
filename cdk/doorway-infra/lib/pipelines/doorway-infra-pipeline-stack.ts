@@ -114,7 +114,7 @@ export class DoorwayInfraPipelineStack extends Stack {
           region: process.env.CDK_DEFAULT_REGION || "no-region",
         },
       },
-      "dev2",
+      "dev",
     );
     const stagingBaseStage = new DoorwayEnvironmentBaseStage(
       this,
