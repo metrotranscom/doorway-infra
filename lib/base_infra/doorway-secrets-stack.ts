@@ -1,7 +1,7 @@
 import { SecretValue, Stack } from "aws-cdk-lib";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
-import { DoorwayStackProps } from "../service_infra/doorway_api_service-stack";
+import { DoorwayStackProps } from "./doorway-stack-props";
 
 export class DoorwaySecretsStack extends Stack {
   constructor(scope: Construct, id: string, props: DoorwayStackProps) {

@@ -3,7 +3,7 @@ import { Vpc } from "aws-cdk-lib/aws-ec2";
 
 import { Cluster, ContainerInsights } from "aws-cdk-lib/aws-ecs";
 import { Construct } from "constructs";
-import { DoorwayStackProps } from "../service_infra/doorway_api_service-stack";
+import { DoorwayStackProps } from "./doorway-stack-props";
 
 export class DoorwayEcsClusterStack extends Stack {
   constructor(scope: Construct, id: string, props: DoorwayStackProps) {

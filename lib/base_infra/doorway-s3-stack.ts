@@ -1,9 +1,10 @@
 import { CfnOutput, Stack } from "aws-cdk-lib";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
+import { DoorwayStackProps } from "./doorway-stack-props";
 
 export class DoorwayS3Stack extends Stack {
-  constructor(scope: Construct, id: string, props: { environment: string }) {
+  constructor(scope: Construct, id: string, props: DoorwayStackProps) {
     super(scope, id);
 
     const secureUploadsBucket = new Bucket(this, "secureUploadsBucket", {

@@ -18,7 +18,7 @@ import {
   SecretRotationApplication,
 } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
-import { DoorwayStackProps } from "../service_infra/doorway_api_service-stack";
+import { DoorwayStackProps } from "./doorway-stack-props";
 
 export class DoorwayDatabaseServerStack extends Stack {
   constructor(scope: Construct, id: string, props: DoorwayStackProps) {

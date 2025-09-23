@@ -9,7 +9,7 @@ import {
 } from "aws-cdk-lib/aws-ec2";
 
 import { Construct } from "constructs";
-import { DoorwayStackProps } from "../service_infra/doorway_api_service-stack";
+import { DoorwayStackProps } from "./doorway-stack-props";
 
 export class DoorwayNetworkStack extends Stack {
   constructor(scope: Construct, id: string, props: DoorwayStackProps) {
