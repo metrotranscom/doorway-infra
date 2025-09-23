@@ -20,7 +20,7 @@ lint:
   ignore:
     - linters: [ALL]
       paths:
-        - cdk/doorway-services/node_modules/**
+        - terraform_backup
   enabled:
     - actionlint@1.7.7
     - bandit@1.8.6
