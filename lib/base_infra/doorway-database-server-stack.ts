@@ -18,14 +18,25 @@ import {
   SecretRotationApplication,
 } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
+
 import { DoorwayStackProps } from "./doorway-stack-props";
 
+/** @class
+ * This is the CDK Stack that creates an RDS Postgres database server
+ */
+
 export class DoorwayDatabaseServerStack extends Stack {
+  /**
+   * @constructor
+   * @param Construct scope - the CDK Execution Context this is running in
+   * @param string id - unique name for the stack
+   * @param DoorwayStackProps props - in addition to the properties inherited by the CDK StackProps class, adds a string property of "environment" which is the name of the Doorway environment.
+   */
   constructor(scope: Construct, id: string, props: DoorwayStackProps) {
     super(scope, id, props);
+    // Get the network information for the VPC that this database will reside in
     const vpcId = Fn.importValue(`doorway-vpc-id-${props.environment}`);
     const appSGId = Fn.importValue(`doorway-app-sg-${props.environment}`);
-
     const vpc = Vpc.fromVpcAttributes(this, "vpc", {
       vpcId: vpcId,
       availabilityZones: ["us-west-2a", "us-west-2b"],
@@ -34,7 +45,7 @@ export class DoorwayDatabaseServerStack extends Stack {
         Fn.importValue(`doorway-db-subnet-2-${props.environment}`),
       ],
     });
-
+    // Create the RDS Subnet group
     const subnetGroup = new SubnetGroup(
       this,
       `db-subnets-${props.environment}`,
@@ -47,7 +58,7 @@ export class DoorwayDatabaseServerStack extends Stack {
         },
       },
     );
-
+    // The database security group which takes inbound traffic over port 5432 (the postgres default port)
     const dbSG = new SecurityGroup(this, `doorway-db-sg-${props.environment}`, {
       vpc: vpc,
       securityGroupName: `doorway-db-sg-${props.environment}`,
@@ -60,7 +71,7 @@ export class DoorwayDatabaseServerStack extends Stack {
       Port.tcp(5432),
       "Allow app access to database",
     );
-
+    //Create thes server itself
     const dbinstance = new DatabaseInstance(
       this,
       `doorway-database-${props.environment}`,
@@ -85,6 +96,7 @@ export class DoorwayDatabaseServerStack extends Stack {
         },
       },
     );
+    // Set up secret rotation for the database password and user
     new SecretRotation(
       this,
       `doorway-db-server-secret-rotation-${props.environment}`,
@@ -96,6 +108,7 @@ export class DoorwayDatabaseServerStack extends Stack {
         automaticallyAfter: Duration.days(30),
       },
     );
+    // Create a stack output of the db secret arn.
     new CfnOutput(this, "dbSecret", {
       exportName: `doorwayDBSecret-${props.environment}`,
       value: dbinstance.secret!.secretArn,
