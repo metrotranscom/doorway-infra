@@ -1,0 +1,42 @@
+# AWS CodeBuild config
+# This file is referenced in the infra repo as a CodeBuild buildspec target.
+
+## The environment variables in this file are passed in through the buildbuild resource.
+## Check the terraform scripts to see where these variables originate from.
+
+version: 0.2
+env:
+  shell: bash
+  secrets-manager:
+    PGUSER: "${DB_CREDS_ARN}:username"
+    PGPASSWORD: "${DB_CREDS_ARN}:password"
+    PGHOST: "${DB_CREDS_ARN}:host"
+    PGDATABASE: "${DB_CREDS_ARN}:db_name"
+    PGPORT: "${DB_CREDS_ARN}:port"
+
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region "${ECR_REGION}" | docker login --username AWS --password-stdin "${ECR_ACCOUNT_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com"
+  build:
+    commands:
+      - export ECR_REPO="${ECR_ACCOUNT_ID}.dkr.ecr.${ECR_REGION}.amazonaws.com/${ECR_NAMESPACE}"
+
+      - export MIGRATION_IMAGE="${ECR_REPO}/backend:migrate-candidate"
+
+      # Pull down migration candidate image
+      - docker pull "${MIGRATION_IMAGE}"
+
+      # Default to db:migration:run
+      - export MIGRATION_CMD="${MIGRATION_CMD:-db:migration:run}"
+
+      # Execute migration
+      # Note that many of these vars are required by the app but not used for migration
+      - >
+        docker run
+        --env PGUSER="${PGUSER}"
+        --env PGPASSWORD="${PGPASSWORD}"
+        --env PGHOST="${PGHOST}"
+        --env PGDATABASE=bloom
+        --env PGPORT="${PGPORT}"
+        "${MIGRATION_IMAGE}"
